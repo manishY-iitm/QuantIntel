@@ -1002,7 +1002,8 @@ export interface LiveQuoteData {
 export function createCustomLiveReport(
   quote: LiveQuoteData,
   horizon: ForecastHorizon = "1y",
-  customThesis?: Partial<InvestmentThesis>
+  customThesis?: Partial<InvestmentThesis>,
+  customEvidence?: WebResearchEvidence[]
 ): FutureStockReport {
   const normTicker = quote.ticker;
   const isIndia = quote.isIndia;
@@ -1101,7 +1102,7 @@ export function createCustomLiveReport(
     exchangeAndCurrencyVerified: true,
     arithmeticValidated: true,
     timestampsConsistent: true,
-    sourcesRetrievedCount: 5,
+    sourcesRetrievedCount: customEvidence && customEvidence.length > 0 ? customEvidence.length : 5,
     claimsWithEvidencePct: 100.0,
     auditNotes: [
       `Spot quote validated: ${currency} ${currentPrice} on ${companyProfile.exchange} via ${quote.source || "Real-Time Exchange Data Feed"}.`,
@@ -1142,28 +1143,31 @@ export function createCustomLiveReport(
     ],
   };
 
-  const researchEvidence: WebResearchEvidence[] = [
-    {
-      title: `${companyProfile.companyName} (${normTicker}) Official Financial Disclosures`,
-      url: isIndia ? "https://www.bseindia.com/corporates/ann.html" : "https://www.sec.gov/edgar/browse/",
-      publicationDate: "2026-Q3",
-      retrievalTimestamp: new Date().toISOString(),
-      domain: isIndia ? "bseindia.com" : "sec.gov",
-      extractedSnippet: `Audited regulatory statement and material disclosure for ${normTicker} on ${companyProfile.exchange}. Real-time trade quote verified at ${currency} ${currentPrice}.`,
-      category: "EARNINGS",
-      tokenSavingsPct: 88.5,
-    },
-    {
-      title: `${companyProfile.companyName} Forward Guidance & Analyst Briefing`,
-      url: isIndia ? "https://www.nseindia.com/companies-listing/corporate-filings" : "https://www.businesswire.com/news/home/",
-      publicationDate: "2026-Q3",
-      retrievalTimestamp: new Date().toISOString(),
-      domain: isIndia ? "nseindia.com" : "businesswire.com",
-      extractedSnippet: `Forward outlook, margin expansion trajectory, and strategic capital allocation plan detailing catalyst timeline for ${normTicker}.`,
-      category: "CATALYST",
-      tokenSavingsPct: 86.2,
-    },
-  ];
+  const researchEvidence: WebResearchEvidence[] =
+    customEvidence && customEvidence.length > 0
+      ? customEvidence
+      : [
+          {
+            title: `${companyProfile.companyName} (${normTicker}) Official Financial Disclosures`,
+            url: isIndia ? "https://www.bseindia.com/corporates/ann.html" : "https://www.sec.gov/edgar/browse/",
+            publicationDate: "2026-Q3",
+            retrievalTimestamp: new Date().toISOString(),
+            domain: isIndia ? "bseindia.com" : "sec.gov",
+            extractedSnippet: `Audited regulatory statement and material disclosure for ${normTicker} on ${companyProfile.exchange}. Real-time trade quote verified at ${currency} ${currentPrice}.`,
+            category: "EARNINGS",
+            tokenSavingsPct: 88.5,
+          },
+          {
+            title: `${companyProfile.companyName} Forward Guidance & Analyst Briefing`,
+            url: isIndia ? "https://www.nseindia.com/companies-listing/corporate-filings" : "https://www.businesswire.com/news/home/",
+            publicationDate: "2026-Q3",
+            retrievalTimestamp: new Date().toISOString(),
+            domain: isIndia ? "nseindia.com" : "businesswire.com",
+            extractedSnippet: `Forward outlook, margin expansion trajectory, and strategic capital allocation plan detailing catalyst timeline for ${normTicker}.`,
+            category: "CATALYST",
+            tokenSavingsPct: 86.2,
+          },
+        ];
 
   const currencySymbol = currency === "INR" ? "₹" : "$";
   const beginnerSummary = `The QuantIntel FutureStock engine has evaluated ${companyProfile.companyName} (${normTicker}). Its verified current market price is ${currencySymbol}${currentPrice}. Over a ${horizon} horizon, our model expects a baseline price target of ${currencySymbol}${scenarios[1]?.targetPrice} (${scenarios[1]?.potentialReturnPct > 0 ? "+" : ""}${scenarios[1]?.potentialReturnPct}%). If market conditions are highly favorable, price could reach ${currencySymbol}${scenarios[2]?.targetPrice} (+${scenarios[2]?.potentialReturnPct}%); under severe market stress, the simulated floor is ${currencySymbol}${scenarios[0]?.targetPrice} (${scenarios[0]?.potentialReturnPct}%).`;

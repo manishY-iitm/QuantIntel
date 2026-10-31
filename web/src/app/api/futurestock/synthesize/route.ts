@@ -12,21 +12,32 @@ export async function POST(request: NextRequest) {
       horizon,
       aiProvider,
       aiKey,
+      evidence = [],
     } = body;
 
     const apiKey = aiKey || process.env.GEMINI_API_KEY || "";
     const provider = (aiProvider || "gemini").toLowerCase();
 
+    // Format TinyFish scraped evidence for Gemini context
+    let evidenceContext = "";
+    if (Array.isArray(evidence) && evidence.length > 0) {
+      evidenceContext = "\n\nLive Web Disclosures & News Scraped via TinyFish Web Agent:\n" +
+        evidence
+          .map((e: any, i: number) => `[${i + 1}] ${e.title} (${e.domain || "News Source"})\nSnippet: ${e.extractedSnippet || e.title}`)
+          .join("\n\n");
+    }
+
     // If provider is gemini and key exists, invoke Google Gemini
     if ((provider === "gemini" || !aiProvider) && apiKey) {
       try {
-        const prompt = `You are a Chief Quantitative Equity Strategist. Generate an institutional equity research thesis and risk assessment for:
+        const prompt = `You are a Chief Quantitative Equity Strategist. Generate an institutional equity research thesis and adversarial risk assessment for:
 Company: ${companyName} (${ticker})
 Exchange: ${exchange || "Global"}
 Current Price: ${currency} ${currentPrice}
 Forecast Horizon: ${horizon || "1y"}
+${evidenceContext}
 
-Respond ONLY in valid JSON matching this exact structure:
+Ground your thesis in the live disclosures provided above if available. Respond ONLY in valid JSON matching this exact structure:
 {
   "coreThesis": "2 sentences synthesizing the core investment thesis and asymmetric risk-reward profile.",
   "bullishArgument": "1-2 sentences on primary catalyst, margin drivers, or TAM expansion upside.",
