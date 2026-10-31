@@ -16,11 +16,11 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
 
   const sampleTriggers = [
     { label: "🔮 JPL (Jio Platforms IPO)", type: "FUTURESTOCK", ticker: "JPL" },
+    { label: "🔮 RELIANCE.NS (Post-Bonus ₹1,164)", type: "FUTURESTOCK", ticker: "RELIANCE.NS" },
     { label: "🔮 NVDA Blackwell Quant Target", type: "FUTURESTOCK", ticker: "NVDA" },
-    { label: "🔮 ZOMATO.NS Quick Commerce Turnaround", type: "FUTURESTOCK", ticker: "ZOMATO.NS" },
+    { label: "🔮 ETERNAL.NS (Zomato & Blinkit)", type: "FUTURESTOCK", ticker: "ETERNAL.NS" },
     { label: "📈 Biogen FDA AdCom CAR ($BIIB)", type: "CATALYST", id: "biogen_fda" },
     { label: "📈 CrowdStrike IT Outage Shock ($CRWD)", type: "CATALYST", id: "crowdstrike_outage" },
-    { label: "📈 Tesla SEC 8-K Restructure ($TSLA)", type: "CATALYST", id: "tesla_8k" },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {

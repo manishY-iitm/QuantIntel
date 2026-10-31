@@ -147,10 +147,15 @@ def test_jio_ipo_and_country_aware_resolution():
     assert profile.ticker == "JPL.NS"
     assert profile.currency == "INR"
     assert profile.is_ipo is True
-    assert profile.current_price == 450.0
-    assert profile.market_cap >= 9_000_000_000_000.0  # ₹9.2 Lakh Crore ($110B)
+    assert profile.current_price >= 1100.0  # Current market quote level ~₹1,180 - ₹1,431+
+    assert profile.market_cap >= 9_000_000_000_000.0  # ₹13.18 Lakh Crore (~$158B)
     assert not df.empty
     assert "Close" in df.columns
+
+    # Test Reliance Post-Bonus Price Resolution
+    rel_profile, _, _ = service.get_company_data("RELIANCE")
+    assert rel_profile.ticker == "RELIANCE.NS"
+    assert 1100.0 <= rel_profile.current_price <= 1350.0  # 1164.9 post 1:1 bonus issue
 
     # 4. Test Orchestrator End-to-End on Jio IPO
     orchestrator = FutureStockOrchestrator()

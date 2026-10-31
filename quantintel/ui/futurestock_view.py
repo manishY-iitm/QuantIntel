@@ -56,15 +56,16 @@ def render_futurestock_view():
     st.sidebar.markdown("### 🔮 FutureStock Setup")
     
     ticker_presets = {
-        "Jio Platforms ($JPL) — Expected Mega IPO": "JPL",
-        "NVIDIA ($NVDA) — AI Hardware Leader": "NVDA",
-        "Apple ($AAPL) — Global Tech Ecosystem": "AAPL",
-        "Tesla ($TSLA) — EV & Energy Transition": "TSLA",
-        "Reliance ($RELIANCE.NS) — Indian Conglomerate": "RELIANCE.NS",
-        "Zomato ($ZOMATO.NS) — Indian Quick Commerce": "ZOMATO.NS",
-        "Swiggy ($SWIGGY.NS) — Food Delivery & Quick Commerce": "SWIGGY.NS",
-        "CrowdStrike ($CRWD) — Cybersecurity Platform": "CRWD",
-        "Arm Holdings ($ARM) — Semiconductor Architecture": "ARM",
+        "Jio Platforms ($JPL) — Expected Mega IPO (~₹1,180 - ₹1,431)": "JPL",
+        "Reliance ($RELIANCE.NS) — Post-Bonus (₹1,164.90)": "RELIANCE.NS",
+        "Eternal / Zomato ($ETERNAL.NS) — Quick Commerce & Blinkit": "ETERNAL.NS",
+        "Bharti Airtel ($BHARTIARTL.NS) — Telecom Duopoly Leader": "BHARTIARTL.NS",
+        "Swiggy ($SWIGGY.NS) — Food Delivery & Instamart": "SWIGGY.NS",
+        "NVIDIA ($NVDA) — AI Compute Hardware ($204.6)": "NVDA",
+        "Apple ($AAPL) — Global Tech Ecosystem ($344.6)": "AAPL",
+        "Tesla ($TSLA) — EV & Energy Transition ($399.8)": "TSLA",
+        "CrowdStrike ($CRWD) — Cybersecurity Platform ($250.4)": "CRWD",
+        "Arm Holdings ($ARM) — Semiconductor Architecture ($205.9)": "ARM",
     }
     
     preset_choice = st.sidebar.selectbox("Quick Stock Selectors:", ["Custom Stock Search ✏️"] + list(ticker_presets.keys()))

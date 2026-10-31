@@ -322,5 +322,113 @@
     "model_version": "FutureStock-v1.0-CLM-GBM",
     "realized_outcome_price": null,
     "evaluation": null
+  },
+  {
+    "record_id": "fs_JPL_1793434606",
+    "ticker": "JPL",
+    "company_name": "JPL Corporation",
+    "exchange": "NASDAQ",
+    "currency": "USD",
+    "timestamp_utc": "2026-10-31T08:16:46.070481+00:00",
+    "reference_price": 185.0,
+    "horizon": "1m",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 166.24,
+        "potential_return_pct": -10.14,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 188.04,
+        "potential_return_pct": 1.64,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 214.21,
+        "potential_return_pct": 15.79,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 166.24,
+    "monte_carlo_p50": 188.04,
+    "monte_carlo_p95": 214.21,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
+  },
+  {
+    "record_id": "fs_RELIANCE.NS_1793434641",
+    "ticker": "RELIANCE.NS",
+    "company_name": "Reliance Industries Limited",
+    "exchange": "NSI",
+    "currency": "INR",
+    "timestamp_utc": "2026-10-31T08:17:21.647501+00:00",
+    "reference_price": 1164.9,
+    "horizon": "1m",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 1051.47,
+        "potential_return_pct": -9.74,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 1157.09,
+        "potential_return_pct": -0.67,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 1280.36,
+        "potential_return_pct": 9.91,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 1051.47,
+    "monte_carlo_p50": 1157.09,
+    "monte_carlo_p95": 1280.36,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
+  },
+  {
+    "record_id": "fs_NVDA_1793435318",
+    "ticker": "NVDA",
+    "company_name": "NVIDIA Corporation",
+    "exchange": "NMS",
+    "currency": "USD",
+    "timestamp_utc": "2026-10-31T08:28:38.377133+00:00",
+    "reference_price": 204.64,
+    "horizon": "1y",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 121.86,
+        "potential_return_pct": -40.45,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 255.4,
+        "potential_return_pct": 24.8,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 519.64,
+        "potential_return_pct": 153.93,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 121.86,
+    "monte_carlo_p50": 255.4,
+    "monte_carlo_p95": 519.64,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
   }
 ]

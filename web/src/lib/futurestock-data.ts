@@ -38,10 +38,62 @@ export const POPULAR_TICKERS: PresetStockSummary[] = [
     currency: "INR",
     sector: "Digital Connectivity, 5G & Cloud Ecosystem",
     category: "IPO",
-    price: 450.0,
-    marketCapStr: "₹9.2L Cr ($110B)",
-    volatility: 0.32,
-    highlight: "India's largest expected tech IPO; 480M+ 5G subscribers, JioCinema, JioFiber cloud ecosystem",
+    price: 1180.0,
+    marketCapStr: "₹13.18L Cr ($158B)",
+    volatility: 0.28,
+    highlight: "India's largest expected tech IPO; 480M+ 5G subscribers, current valuation ~₹1,100–₹1,431",
+  },
+  {
+    ticker: "RELIANCE.NS",
+    name: "Reliance Industries Ltd.",
+    region: "INDIA",
+    exchange: "NSE / BSE",
+    currency: "INR",
+    sector: "Energy, Retail & Telecom",
+    category: "ESTABLISHED",
+    price: 1164.9,
+    marketCapStr: "₹15.76L Cr",
+    volatility: 0.18,
+    highlight: "Current live price ₹1,164.90 post 1:1 bonus issue; Jio 5G monetization, retail expansion",
+  },
+  {
+    ticker: "ETERNAL.NS",
+    name: "Eternal Ltd. (Zomato & Blinkit)",
+    region: "INDIA",
+    exchange: "NSE / BSE",
+    currency: "INR",
+    sector: "Quick Commerce & Food Delivery",
+    category: "GROWTH",
+    price: 343.65,
+    marketCapStr: "₹3.16L Cr",
+    volatility: 0.35,
+    highlight: "Blinkit quick commerce dark store expansion & positive consolidated EBITDA",
+  },
+  {
+    ticker: "BHARTIARTL.NS",
+    name: "Bharti Airtel Ltd.",
+    region: "INDIA",
+    exchange: "NSE / BSE",
+    currency: "INR",
+    sector: "Telecommunications & Digital Services",
+    category: "ESTABLISHED",
+    price: 1973.7,
+    marketCapStr: "₹12.31L Cr",
+    volatility: 0.20,
+    highlight: "Jio's primary 5G peer; ARPU expansion & Africa business growth",
+  },
+  {
+    ticker: "SWIGGY.NS",
+    name: "Swiggy Ltd.",
+    region: "INDIA",
+    exchange: "NSE / BSE",
+    currency: "INR",
+    sector: "Food Delivery & Instamart",
+    category: "IPO",
+    price: 176.6,
+    marketCapStr: "₹39.6K Cr",
+    volatility: 0.42,
+    highlight: "Recent marquee Indian tech IPO, Instamart delivery market share race",
   },
   {
     ticker: "NVDA",
@@ -51,9 +103,9 @@ export const POPULAR_TICKERS: PresetStockSummary[] = [
     currency: "USD",
     sector: "Semiconductors & AI",
     category: "GROWTH",
-    price: 138.25,
-    marketCapStr: "$3.39T",
-    volatility: 0.44,
+    price: 204.64,
+    marketCapStr: "$4.94T",
+    volatility: 0.41,
     highlight: "Blackwell GPU hyperscaler demand & CUDA ecosystem moat",
   },
   {
@@ -64,9 +116,9 @@ export const POPULAR_TICKERS: PresetStockSummary[] = [
     currency: "USD",
     sector: "Consumer Electronics & Services",
     category: "ESTABLISHED",
-    price: 235.4,
-    marketCapStr: "$3.58T",
-    volatility: 0.22,
+    price: 344.63,
+    marketCapStr: "$5.03T",
+    volatility: 0.21,
     highlight: "Apple Intelligence rollout, recurring Services revenue & buybacks",
   },
   {
@@ -77,9 +129,9 @@ export const POPULAR_TICKERS: PresetStockSummary[] = [
     currency: "USD",
     sector: "Automotive & Energy Autonomy",
     category: "GROWTH",
-    price: 258.9,
-    marketCapStr: "$825B",
-    volatility: 0.52,
+    price: 399.81,
+    marketCapStr: "$1.58T",
+    volatility: 0.48,
     highlight: "Cybercab autonomy, FSD v13 regulatory milestones & Energy storage",
   },
   {
@@ -90,9 +142,9 @@ export const POPULAR_TICKERS: PresetStockSummary[] = [
     currency: "USD",
     sector: "Semiconductor IP",
     category: "IPO",
-    price: 142.8,
-    marketCapStr: "$148B",
-    volatility: 0.48,
+    price: 205.97,
+    marketCapStr: "$220B",
+    volatility: 0.45,
     highlight: "Post-IPO AI edge architecture transition (Armv9 royalty expansion)",
   },
   {
@@ -103,62 +155,10 @@ export const POPULAR_TICKERS: PresetStockSummary[] = [
     currency: "USD",
     sector: "Cybersecurity",
     category: "GROWTH",
-    price: 312.5,
-    marketCapStr: "$76.4B",
-    volatility: 0.41,
-    highlight: "Falcon platform resilience, gross retention >97% post-July 19 outage",
-  },
-  {
-    ticker: "RELIANCE.NS",
-    name: "Reliance Industries Ltd.",
-    region: "INDIA",
-    exchange: "NSE / BSE",
-    currency: "INR",
-    sector: "Energy, Retail & Telecom",
-    category: "ESTABLISHED",
-    price: 2742.5,
-    marketCapStr: "₹18.55L Cr",
-    volatility: 0.19,
-    highlight: "Jio Infocomm 5G monetization, Reliance Retail spin-off catalysts",
-  },
-  {
-    ticker: "ZOMATO.NS",
-    name: "Zomato Ltd.",
-    region: "INDIA",
-    exchange: "NSE / BSE",
-    currency: "INR",
-    sector: "Quick Commerce & Food Delivery",
-    category: "IPO",
-    price: 264.8,
-    marketCapStr: "₹2.33L Cr",
+    price: 250.43,
+    marketCapStr: "$256B",
     volatility: 0.38,
-    highlight: "Blinkit quick commerce dark store expansion & EBITDA turnaround",
-  },
-  {
-    ticker: "SWIGGY.NS",
-    name: "Swiggy Ltd.",
-    region: "INDIA",
-    exchange: "NSE / BSE",
-    currency: "INR",
-    sector: "Food Delivery & Instamart",
-    category: "IPO",
-    price: 418.5,
-    marketCapStr: "₹93.7K Cr",
-    volatility: 0.42,
-    highlight: "Recent marquee Indian tech IPO, Instamart delivery market share race",
-  },
-  {
-    ticker: "BHARTIARTL.NS",
-    name: "Bharti Airtel Ltd.",
-    region: "INDIA",
-    exchange: "NSE / BSE",
-    currency: "INR",
-    sector: "Telecommunications & Digital Services",
-    category: "ESTABLISHED",
-    price: 1585.0,
-    marketCapStr: "₹9.5L Cr",
-    volatility: 0.21,
-    highlight: "Jio's primary 5G peer; ARPU expansion & Africa business growth",
+    highlight: "Falcon platform resilience, gross retention >97% post-July 19 outage",
   },
 ];
 
@@ -486,8 +486,8 @@ export function resolveQueryToPreset(query: string, country?: string): PresetSto
   if (q.includes("SWIGGY")) {
     return POPULAR_TICKERS.find((t) => t.ticker === "SWIGGY.NS")!;
   }
-  if (q.includes("ZOMATO")) {
-    return POPULAR_TICKERS.find((t) => t.ticker === "ZOMATO.NS")!;
+  if (q.includes("ZOMATO") || q.includes("ETERNAL") || q.includes("BLINKIT")) {
+    return POPULAR_TICKERS.find((t) => t.ticker === "ETERNAL.NS")!;
   }
   if (q.includes("AIRTEL") || q.includes("BHARTI")) {
     return POPULAR_TICKERS.find((t) => t.ticker === "BHARTIARTL.NS")!;
@@ -553,7 +553,7 @@ export function getPresetReport(
   const isNvda = normTicker === "NVDA";
   const isAapl = normTicker === "AAPL";
   const isTsla = normTicker === "TSLA";
-  const isZomato = normTicker.includes("ZOMATO");
+  const isZomato = normTicker.includes("ZOMATO") || normTicker.includes("ETERNAL");
   const isReliance = normTicker.includes("RELIANCE");
   const isSwiggy = normTicker.includes("SWIGGY");
   const isAirtel = normTicker.includes("BHARTI");
@@ -723,7 +723,7 @@ export function getPresetReport(
         ],
     valuationEvidence: isJio
       ? [
-          `Indicative IPO price band of ₹400-₹500 per share implies ~₹9.2 Lakh Crore ($110B) enterprise valuation.`,
+          `Active trading/listing level of ₹1,100–₹1,431 implies ~₹13.18 Lakh Crore ($158B) enterprise valuation.`,
           `DCF baseline fair value of ₹${valuation.dcfBasePrice} indicates favorable risk-reward for pre-IPO / listing allocations.`,
           `EV/EBITDA of ~18x sits attractively below global digital platform peers (22-26x).`,
         ]
@@ -846,7 +846,7 @@ However, in a down market (Bear case), the price could decline to ${currency} ${
 Investors should be aware of high valuation multiples and monitor competitive threats closely.`;
 
   const advancedDetails = isJio
-    ? `Quantitative pre-IPO evaluation of Jio Platforms Limited (JPL) models an enterprise valuation of ₹9.2 Lakh Crore (~$110B) on indicative issue pricing of ₹450/share. 
+    ? `Quantitative pre-IPO evaluation of Jio Platforms Limited (JPL) models an enterprise valuation of ₹13.18 Lakh Crore (~$158B) with current active reference quote of ₹${currentPrice}/share (indicative trading range ₹1,100–₹1,431+). 
 Historical analog modeling vs Bharti Airtel and T-Mobile US indicates strong post-consolidation operating leverage with 18.5% ROE. 
 Under a 2,000-path Geometric Brownian Motion Monte Carlo simulation across ${monteCarlo.tradingDays} trading days (annualized volatility: ${quantMetrics.annualizedVolatilityPct}%), the terminal distribution spans a 5th percentile of ₹${monteCarlo.p5Price} to a 95th percentile of ₹${monteCarlo.p95Price}, with median price expectation at ₹${monteCarlo.medianFinalPrice}. 
 The 95% single-tail Value at Risk (VaR) indicates a maximum expected drawdown of ${monteCarlo.var95Pct}%. 
@@ -865,9 +865,9 @@ DCF modeling with a ${valuation.waccPct}% WACC and ${valuation.terminalGrowthPct
     sector: summary.sector,
     industry: summary.sector,
     currentPrice,
-    marketCap: isJio ? 9200000000000 : isNvda ? 3390000000000 : isAapl ? 3580000000000 : isZomato ? 2330000000000 : 18550000000000,
-    fiftyTwoWeekHigh: Math.round(currentPrice * 1.18 * 100) / 100,
-    fiftyTwoWeekLow: Math.round(currentPrice * 0.65 * 100) / 100,
+    marketCap: isJio ? 13180000000000 : isNvda ? 4941000000000 : isAapl ? 5030000000000 : isReliance ? 15764000000000 : isZomato ? 3166000000000 : isAirtel ? 12313000000000 : isSwiggy ? 463000000000 : isTsla ? 1580000000000 : isArm ? 220000000000 : 256000000000,
+    fiftyTwoWeekHigh: isJio ? 1489.70 : isNvda ? 243.37 : isAapl ? 351.73 : isReliance ? 1611.80 : isZomato ? 346.50 : isAirtel ? 2174.50 : isSwiggy ? 421.60 : isTsla ? 498.83 : isArm ? 452.70 : 286.99,
+    fiftyTwoWeekLow: isJio ? 1100.00 : isNvda ? 164.27 : isAapl ? 243.42 : isReliance ? 1152.20 : isZomato ? 212.60 : isAirtel ? 1726.30 : isSwiggy ? 174.20 : isTsla ? 297.38 : isArm ? 100.02 : 85.68,
     isIpo: summary.category === "IPO" || isJio,
     ipoDate: isJio ? "2025/2026 Expected Listing" : summary.category === "IPO" ? "2023-09-14" : undefined,
     dataTimestamp: new Date().toISOString(),

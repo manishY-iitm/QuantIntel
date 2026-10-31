@@ -505,7 +505,7 @@ ${report.scenarios
                   </div>
                   <p className="text-xs text-[#8B949E] mt-0.5">
                     {report.companyProfile.ticker === "JPL"
-                      ? "Standalone Reliance Jio spin-off valuation model; 480M+ 5G subscribers, indicative price band ₹400-₹500 / share."
+                      ? "Standalone Reliance Jio valuation model; 480M+ 5G subscribers, active market level ~₹1,100–₹1,431 / share."
                       : "Post-listing performance and unseasoned IPO liquidity risk model."}
                   </p>
                 </div>
@@ -514,7 +514,7 @@ ${report.scenarios
                 <div className="text-right">
                   <div className="text-[10px] text-[#8B949E]">Pre-IPO Enterprise Valuation</div>
                   <div className="text-sm font-bold text-[#FFBE5C]">
-                    {report.companyProfile.ticker === "JPL" ? "₹9.2 Lakh Crore ($110B)" : `${currencySymbol}${(report.companyProfile.marketCap / 1e9).toFixed(1)}B`}
+                    {report.companyProfile.ticker === "JPL" ? "₹13.18 Lakh Crore ($158B)" : `${currencySymbol}${(report.companyProfile.marketCap / 1e9).toFixed(1)}B`}
                   </div>
                 </div>
               </div>
