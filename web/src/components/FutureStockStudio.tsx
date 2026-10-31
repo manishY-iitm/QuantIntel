@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   TrendingUp,
   TrendingDown,
@@ -22,12 +22,15 @@ import {
   ArrowDownRight,
   ChevronRight,
   Sliders,
+  Globe,
+  Flame,
 } from "lucide-react";
 
 import {
   POPULAR_TICKERS,
   MACRO_STRESS_SCENARIOS,
   getPresetReport,
+  resolveQueryToPreset,
   runClientMonteCarlo,
   buildForecastScenarios,
 } from "../lib/futurestock-data";
@@ -39,8 +42,10 @@ import {
 } from "../lib/futurestock-types";
 
 export function FutureStockStudio() {
-  const [selectedTicker, setSelectedTicker] = useState<string>("NVDA");
+  const [selectedTicker, setSelectedTicker] = useState<string>("JPL");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>("ALL");
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [horizon, setHorizon] = useState<ForecastHorizon>("1y");
   const [presentationMode, setPresentationMode] = useState<"BEGINNER" | "ADVANCED">("ADVANCED");
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
@@ -49,10 +54,49 @@ export function FutureStockStudio() {
   const [activeTab, setActiveTab] = useState<"FORECAST" | "VALUATION" | "THESIS" | "PORTFOLIO" | "EVIDENCE">("FORECAST");
   const [copiedStatus, setCopiedStatus] = useState<boolean>(false);
 
-  // Load report based on ticker and horizon
+  const searchBoxRef = useRef<HTMLFormElement>(null);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filter suggestion list based on query and country
+  const matchingSuggestions = useMemo(() => {
+    const q = searchQuery.trim().toUpperCase();
+    if (!q) {
+      // Show default popular choices based on selected country
+      return POPULAR_TICKERS.filter((item) => {
+        if (selectedCountry === "INDIA") return item.region === "INDIA";
+        if (selectedCountry === "US") return item.region === "US";
+        return true;
+      }).slice(0, 6);
+    }
+    return POPULAR_TICKERS.filter((item) => {
+      const matchText =
+        item.ticker.includes(q) ||
+        item.name.toUpperCase().includes(q) ||
+        item.sector.toUpperCase().includes(q) ||
+        item.highlight.toUpperCase().includes(q) ||
+        (q.includes("JIO") && item.ticker === "JPL");
+
+      if (!matchText) return false;
+      if (selectedCountry === "INDIA") return item.region === "INDIA";
+      if (selectedCountry === "US") return item.region === "US";
+      return true;
+    });
+  }, [searchQuery, selectedCountry]);
+
+  // Load report based on ticker, horizon, and country
   const report: FutureStockReport = useMemo(() => {
-    return getPresetReport(selectedTicker, horizon);
-  }, [selectedTicker, horizon]);
+    return getPresetReport(selectedTicker, horizon, selectedCountry);
+  }, [selectedTicker, horizon, selectedCountry]);
 
   const currencySymbol = report.companyProfile.currency === "INR" ? "₹" : "$";
 
@@ -66,21 +110,18 @@ export function FutureStockStudio() {
 
   const handleTickerSelect = (t: string) => {
     setSelectedTicker(t);
+    setSearchQuery(t);
+    setShowSuggestions(false);
     handleRefresh();
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      const match = POPULAR_TICKERS.find(
-        (p) => p.ticker.toLowerCase() === searchQuery.trim().toLowerCase()
-      );
-      if (match) {
-        setSelectedTicker(match.ticker);
-      } else {
-        setSelectedTicker(searchQuery.toUpperCase().trim());
-      }
-      setSearchQuery("");
+      const resolved = resolveQueryToPreset(searchQuery, selectedCountry);
+      setSelectedTicker(resolved.ticker);
+      setSearchQuery(resolved.ticker);
+      setShowSuggestions(false);
       handleRefresh();
     }
   };
@@ -212,7 +253,7 @@ ${report.scenarios
               FutureStock Intelligence Terminal
             </h1>
             <p className="mt-1 text-sm text-[#8B949E] max-w-2xl">
-              8-agent orchestrated quantitative research, probabilistic Monte Carlo fan forecasting, 3-stage DCF valuation, and adversarial risk auditing for US & Indian equities.
+              8-agent orchestrated quantitative research, probabilistic Monte Carlo fan forecasting, 3-stage DCF valuation, and adversarial risk auditing for US &amp; Indian equities.
             </p>
           </div>
 
@@ -276,7 +317,7 @@ ${report.scenarios
             <div className="flex items-center space-x-2 font-mono text-xs text-[#8B949E]">
               <Activity className="h-3.5 w-3.5 text-[#00C4CC] animate-pulse" />
               <span className="text-white font-semibold">8-AGENT RESEARCH COLLECTIVE:</span>
-              <span className="text-[#10B981]">ONLINE & STREAMING</span>
+              <span className="text-[#10B981]">ONLINE &amp; STREAMING</span>
             </div>
             <div className="text-[11px] font-mono text-[#8B949E]">
               TinyFish DOM Cleaner: <span className="text-[#10B981] font-semibold">88.5% token reduction</span> | Audit: <span className="text-[#10B981] font-semibold">PASSED</span>
@@ -307,30 +348,90 @@ ${report.scenarios
           </div>
         </div>
 
-        {/* Ticker & Horizon Selection Bar */}
+        {/* Dual Search Controls (Stock Name / IPO + Country Selector) */}
         <div className="mb-8 rounded-xl border border-[#1E2C3D] bg-[#0E1520] p-4 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Search Form */}
-            <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B949E]" />
-              <input
-                type="text"
-                placeholder="Search ticker (e.g. NVDA, AAPL, RELIANCE.NS, ZOMATO.NS)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-[#1E2C3D] bg-[#080C12] py-2 pl-9 pr-20 text-xs text-white placeholder-[#484F58] focus:border-[#00C4CC] focus:outline-none focus:ring-1 focus:ring-[#00C4CC]"
-              />
+            {/* Dual Search Input Bar */}
+            <form onSubmit={handleSearchSubmit} className="relative flex-1 flex flex-col sm:flex-row items-center gap-2 max-w-2xl" ref={searchBoxRef}>
+              {/* Search Bar 1: Stock Name / IPO */}
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B949E]" />
+                <input
+                  type="text"
+                  placeholder="Enter Stock name or IPO (e.g. Jio IPO, JPL, NVDA, Zomato, Reliance)..."
+                  value={searchQuery}
+                  onFocus={() => setShowSuggestions(true)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  className="w-full rounded-lg border border-[#1E2C3D] bg-[#080C12] py-2 pl-9 pr-3 text-xs text-white placeholder-[#484F58] focus:border-[#00C4CC] focus:outline-none focus:ring-1 focus:ring-[#00C4CC] font-mono"
+                />
+              </div>
+
+              {/* Search Bar 2: Country / Market Region */}
+              <div className="w-full sm:w-56 relative">
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#00C4CC]" />
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    setSelectedCountry(e.target.value);
+                    handleRefresh();
+                  }}
+                  className="w-full rounded-lg border border-[#1E2C3D] bg-[#080C12] py-2 pl-8 pr-3 text-xs text-[#C9D1D9] focus:border-[#00C4CC] focus:outline-none font-mono cursor-pointer appearance-none"
+                >
+                  <option value="ALL">🌐 All Markets (Auto-Detect)</option>
+                  <option value="INDIA">🇮🇳 India (NSE / BSE - ₹ INR)</option>
+                  <option value="US">🇺🇸 United States (NASDAQ - $ USD)</option>
+                  <option value="GLOBAL">🌍 Global Markets</option>
+                </select>
+              </div>
+
+              {/* Action Button */}
               <button
                 type="submit"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-[#00C4CC]/20 px-2.5 py-1 text-[11px] font-semibold text-[#00C4CC] hover:bg-[#00C4CC] hover:text-[#090D12] transition-colors"
+                className="w-full sm:w-auto rounded-lg bg-[#00C4CC] px-4 py-2 text-xs font-bold text-[#070B10] hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-[#00C4CC]/20 whitespace-nowrap"
               >
                 Analyze
               </button>
+
+              {/* Typeahead Suggestions Dropdown */}
+              {showSuggestions && matchingSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 sm:right-56 mt-1 z-30 rounded-xl border border-[#1E2C3D] bg-[#0E1520] shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
+                  <div className="p-1.5 text-[10px] font-mono uppercase text-[#8B949E] border-b border-[#1E2C3D]/60 bg-[#0B111A]">
+                    Matched Stocks &amp; IPOs:
+                  </div>
+                  {matchingSuggestions.map((item) => (
+                    <button
+                      key={item.ticker}
+                      type="button"
+                      onClick={() => handleTickerSelect(item.ticker)}
+                      className="w-full flex items-center justify-between p-2.5 hover:bg-[#162334] text-left transition-colors border-b border-[#1E2C3D]/30 last:border-none"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono font-bold text-white text-xs">{item.ticker}</span>
+                        <span className="text-xs text-[#8B949E] truncate max-w-xs">{item.name}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {item.category === "IPO" && (
+                          <span className="rounded bg-[#FFBE5C]/20 border border-[#FFBE5C]/40 px-1.5 py-0.2 text-[9px] font-mono font-bold text-[#FFBE5C]">
+                            IPO
+                          </span>
+                        )}
+                        <span className="text-[11px] font-mono text-[#00C4CC]">
+                          {item.currency === "INR" ? "₹" : "$"}{item.price}
+                        </span>
+                        <span className="text-[10px] text-[#484F58]">{item.region}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </form>
 
             {/* Horizon Selector */}
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono text-[#8B949E]">Forecast Horizon:</span>
+              <span className="text-xs font-mono text-[#8B949E]">Horizon:</span>
               <div className="flex rounded-lg border border-[#1E2C3D] bg-[#080C12] p-0.5">
                 {(["1m", "3m", "6m", "1y", "3y", "5y"] as ForecastHorizon[]).map((h) => (
                   <button
@@ -377,13 +478,49 @@ ${report.scenarios
                   <span>{item.ticker}</span>
                   <span className="text-[10px] text-[#484F58] font-sans">({item.region})</span>
                   {item.category === "IPO" && (
-                    <span className="rounded bg-[#FFBE5C]/20 px-1 py-0.2 text-[9px] text-[#FFBE5C]">IPO</span>
+                    <span className="rounded bg-[#FFBE5C]/20 px-1 py-0.2 text-[9px] text-[#FFBE5C] font-bold">IPO</span>
                   )}
                 </button>
               );
             })}
           </div>
         </div>
+
+        {/* Dedicated IPO Prospectus Banner (Shown for IPOs like Jio Platforms JPL, Swiggy, Arm) */}
+        {report.companyProfile.isIpo && (
+          <div className="mb-6 rounded-xl border border-[#FFBE5C]/40 bg-gradient-to-r from-[#FFBE5C]/10 via-[#0B111A] to-[#FFBE5C]/10 p-4 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center space-x-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FFBE5C]/20 text-[#FFBE5C] border border-[#FFBE5C]/40 text-sm">
+                  🚀
+                </span>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold text-white text-sm">
+                      INITIAL PUBLIC OFFERING (IPO) PROSPECTUS INTELLIGENCE
+                    </span>
+                    <span className="rounded bg-[#FFBE5C] px-1.5 py-0.2 text-[10px] font-bold text-[#070B10]">
+                      {report.companyProfile.ticker === "JPL" ? "UPCOMING MEGA-IPO" : "RECENT LISTING"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#8B949E] mt-0.5">
+                    {report.companyProfile.ticker === "JPL"
+                      ? "Standalone Reliance Jio spin-off valuation model; 480M+ 5G subscribers, indicative price band ₹400-₹500 / share."
+                      : "Post-listing performance and unseasoned IPO liquidity risk model."}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 font-mono text-xs">
+                <div className="text-right">
+                  <div className="text-[10px] text-[#8B949E]">Pre-IPO Enterprise Valuation</div>
+                  <div className="text-sm font-bold text-[#FFBE5C]">
+                    {report.companyProfile.ticker === "JPL" ? "₹9.2 Lakh Crore ($110B)" : `${currencySymbol}${(report.companyProfile.marketCap / 1e9).toFixed(1)}B`}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Company Header Card */}
         <div className="mb-8 rounded-xl border border-[#1E2C3D] bg-gradient-to-r from-[#0E1520] via-[#0B111A] to-[#0E1520] p-6 shadow-xl">
@@ -404,7 +541,7 @@ ${report.scenarios
                 </span>
                 {report.companyProfile.isIpo && (
                   <span className="rounded-md bg-gradient-to-r from-[#FF7B72]/20 to-[#FFBE5C]/20 border border-[#FF7B72]/40 px-2 py-0.5 text-xs font-bold text-[#FF7B72]">
-                    RECENT IPO
+                    IPO MODEL
                   </span>
                 )}
               </div>
@@ -561,7 +698,7 @@ ${report.scenarios
                         {/* Assumptions */}
                         <div className="mt-4 pt-3 border-t border-[#1E2C3D]">
                           <div className="text-[11px] font-mono font-medium text-[#C9D1D9] mb-1.5">
-                            Key Drivers & Assumptions:
+                            Key Drivers &amp; Assumptions:
                           </div>
                           <ul className="space-y-1 text-xs text-[#8B949E]">
                             {sc.keyAssumptions.map((assump, idx) => (
@@ -677,7 +814,6 @@ ${report.scenarios
                   })}
 
                   {/* Key Percentile Horizontal Markers */}
-                  {/* P95 Line */}
                   <line
                     x1={padLeft}
                     y1={getY(mc.p95Price)}
@@ -687,7 +823,6 @@ ${report.scenarios
                     strokeWidth="1.5"
                     strokeDasharray="4 2"
                   />
-                  {/* Median Line */}
                   <line
                     x1={padLeft}
                     y1={getY(mc.medianFinalPrice)}
@@ -696,7 +831,6 @@ ${report.scenarios
                     stroke="#00C4CC"
                     strokeWidth="2"
                   />
-                  {/* P5 Line */}
                   <line
                     x1={padLeft}
                     y1={getY(mc.p5Price)}
@@ -784,7 +918,7 @@ ${report.scenarios
                   </div>
                 </div>
                 <div className="rounded-lg bg-[#080C12] p-2.5 border border-[#1E2C3D]">
-                  <div className="text-[10px] text-[#8B949E]">Model Seed & Assumptions</div>
+                  <div className="text-[10px] text-[#8B949E]">Model Seed &amp; Assumptions</div>
                   <div className="text-[11px] text-[#C9D1D9] truncate">
                     Stationary Log-Normal GBM
                   </div>
@@ -830,7 +964,7 @@ ${report.scenarios
               <div className="flex items-center justify-between border-b border-[#1E2C3D] pb-3 mb-4">
                 <h3 className="text-base font-bold text-white flex items-center space-x-2">
                   <PieChart className="h-4 w-4 text-[#00C4CC]" />
-                  <span>Fundamental Health & Cash Flow Audit</span>
+                  <span>Fundamental Health &amp; Cash Flow Audit</span>
                 </h3>
                 <span className="text-xs font-mono text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded border border-[#10B981]/30">
                   {report.financials.notes || "Audited Disclosures"}
@@ -1034,7 +1168,7 @@ ${report.scenarios
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
                     <span>🏛️</span>
-                    <span>Historical Analogs & Comparable Cycles</span>
+                    <span>Historical Analogs &amp; Comparable Cycles</span>
                   </h3>
                   <p className="text-xs text-[#8B949E]">
                     Comparative analysis against previous technological breakouts and cyclical market leaders.
@@ -1109,7 +1243,7 @@ ${report.scenarios
               <div className="border-b border-[#1E2C3D] pb-3 mb-6">
                 <h3 className="text-base font-bold text-white flex items-center space-x-2">
                   <Sliders className="h-4 w-4 text-[#00C4CC]" />
-                  <span>Portfolio Intelligence & Macro Stress Testing</span>
+                  <span>Portfolio Intelligence &amp; Macro Stress Testing</span>
                 </h3>
                 <p className="text-xs text-[#8B949E]">
                   Simulate macroeconomic liquidity shocks and calculate portfolio impact based on empirical asset beta and covariance.

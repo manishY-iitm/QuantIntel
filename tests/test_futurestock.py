@@ -1,5 +1,5 @@
 import pytest
-from quantintel.futurestock.schemas import ForecastHorizon, ScenarioType, PortfolioHolding
+from quantintel.futurestock.schemas import ForecastHorizon, ScenarioType, PortfolioHolding, MarketRegion
 from quantintel.futurestock.market_data import MarketDataService
 from quantintel.futurestock.quant_engine import FutureStockQuantEngine
 from quantintel.futurestock.agents.orchestrator import FutureStockOrchestrator
@@ -121,3 +121,47 @@ def test_portfolio_analysis():
     assert res.portfolio_annualized_volatility_pct > 0
     assert len(res.stress_scenarios) >= 3
     assert "NVDA" in res.correlation_matrix
+
+
+def test_jio_ipo_and_country_aware_resolution():
+    service = MarketDataService()
+
+    # 1. Test Jio variations
+    for query in ["JIO", "JPL", "JIO IPO", "Jio Platforms", "Reliance Jio"]:
+        ticker, region, benchmark = service.resolve_ticker(query)
+        assert ticker == "JPL.NS", f"Failed for query {query}"
+        assert region == MarketRegion.INDIA
+        assert benchmark == "^NSEI"
+
+    # 2. Test Country Filter
+    t_in, reg_in, _ = service.resolve_ticker("TCS", country="India")
+    assert t_in == "TCS.NS"
+    assert reg_in == MarketRegion.INDIA
+
+    t_us, reg_us, _ = service.resolve_ticker("Apple", country="US")
+    assert t_us == "AAPL"
+    assert reg_us == MarketRegion.US
+
+    # 3. Test JPL Company Profile and Financials
+    profile, financials, df = service.get_company_data("JPL")
+    assert profile.ticker == "JPL.NS"
+    assert profile.currency == "INR"
+    assert profile.is_ipo is True
+    assert profile.current_price == 450.0
+    assert profile.market_cap >= 9_000_000_000_000.0  # ₹9.2 Lakh Crore ($110B)
+    assert not df.empty
+    assert "Close" in df.columns
+
+    # 4. Test Orchestrator End-to-End on Jio IPO
+    orchestrator = FutureStockOrchestrator()
+    report = orchestrator.research("JIO IPO", horizon=ForecastHorizon.ONE_YEAR, country="India")
+    assert report is not None
+    assert report.company_profile.ticker == "JPL.NS"
+    assert report.company_profile.currency == "INR"
+    assert report.company_profile.is_ipo is True
+    assert report.verification_audit.is_audit_passed is True
+    assert len(report.scenarios) == 3
+    # Check verified arithmetic: target vs return
+    for s in report.scenarios:
+        expected = round(((s.target_price / s.reference_price) - 1.0) * 100, 2)
+        assert abs(s.potential_return_pct - expected) < 0.05

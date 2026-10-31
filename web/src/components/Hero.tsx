@@ -15,6 +15,7 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
   );
 
   const sampleTriggers = [
+    { label: "🔮 JPL (Jio Platforms IPO)", type: "FUTURESTOCK", ticker: "JPL" },
     { label: "🔮 NVDA Blackwell Quant Target", type: "FUTURESTOCK", ticker: "NVDA" },
     { label: "🔮 ZOMATO.NS Quick Commerce Turnaround", type: "FUTURESTOCK", ticker: "ZOMATO.NS" },
     { label: "📈 Biogen FDA AdCom CAR ($BIIB)", type: "CATALYST", id: "biogen_fda" },

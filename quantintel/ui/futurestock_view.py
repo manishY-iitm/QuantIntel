@@ -56,22 +56,31 @@ def render_futurestock_view():
     st.sidebar.markdown("### 🔮 FutureStock Setup")
     
     ticker_presets = {
+        "Jio Platforms ($JPL) — Expected Mega IPO": "JPL",
         "NVIDIA ($NVDA) — AI Hardware Leader": "NVDA",
         "Apple ($AAPL) — Global Tech Ecosystem": "AAPL",
         "Tesla ($TSLA) — EV & Energy Transition": "TSLA",
         "Reliance ($RELIANCE.NS) — Indian Conglomerate": "RELIANCE.NS",
         "Zomato ($ZOMATO.NS) — Indian Quick Commerce": "ZOMATO.NS",
+        "Swiggy ($SWIGGY.NS) — Food Delivery & Quick Commerce": "SWIGGY.NS",
         "CrowdStrike ($CRWD) — Cybersecurity Platform": "CRWD",
         "Arm Holdings ($ARM) — Semiconductor Architecture": "ARM",
     }
     
     preset_choice = st.sidebar.selectbox("Quick Stock Selectors:", ["Custom Stock Search ✏️"] + list(ticker_presets.keys()))
     
-    default_ticker = "NVDA"
+    default_ticker = "JPL"
     if preset_choice != "Custom Stock Search ✏️":
         default_ticker = ticker_presets[preset_choice]
 
-    ticker_input = st.sidebar.text_input("Enter Ticker / Company:", value=default_ticker, help="Supports US (NVDA, AAPL) and Indian equities (RELIANCE.NS, TCS.NS, ZOMATO.NS)")
+    ticker_input = st.sidebar.text_input("Enter Ticker / Company:", value=default_ticker, help="Supports US (NVDA, AAPL) and Indian equities/IPOs (JPL, RELIANCE.NS, ZOMATO.NS)")
+    
+    country_choice = st.sidebar.selectbox(
+        "Country / Market Region:",
+        ["Auto-Detect 🌐", "India (NSE / BSE - ₹) 🇮🇳", "United States (NASDAQ / NYSE - $) 🇺🇸"],
+        index=0,
+    )
+    country_param = "INDIA" if "India" in country_choice else "US" if "United States" in country_choice else None
     
     horizon_map = {
         "1 Month (21 Trading Days)": ForecastHorizon.ONE_MONTH,
@@ -101,6 +110,7 @@ def render_futurestock_view():
                 query=ticker_input,
                 horizon=selected_horizon,
                 is_beginner_mode=is_beginner_mode,
+                country=country_param,
             )
 
             report = None

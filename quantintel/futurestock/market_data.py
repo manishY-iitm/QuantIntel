@@ -30,58 +30,155 @@ class MarketDataService:
     """
 
     @staticmethod
-    def resolve_ticker(query: str) -> Tuple[str, MarketRegion, str]:
+    def resolve_ticker(query: str, country: Optional[str] = None) -> Tuple[str, MarketRegion, str]:
         """
         Normalize query into ticker symbol, region, and primary benchmark.
-        Supports standard US symbols and Indian NSE (.NS) / BSE (.BO) conventions.
+        Supports standard US symbols, Indian NSE (.NS) / BSE (.BO) conventions,
+        and natural company/IPO names (e.g. 'Jio', 'JPL', 'Reliance', 'Nvidia', 'Zomato').
+        Optionally takes a country filter to resolve ambiguous symbols.
         """
-        raw = query.strip().upper()
+        raw = query.strip().upper().replace("$", "")
+        country_norm = (country or "").strip().upper()
+        is_india_country = country_norm in ["INDIA", "IN", "NSE", "BSE", "INDIAN"]
+        is_us_country = country_norm in ["US", "USA", "UNITED STATES", "NASDAQ", "NYSE", "AMERICA"]
 
-        # Mapping for common Indian companies
+        # Clean common prefixes/suffixes like "STOCK", "SHARE", "INC", "LTD"
+        clean_name = (
+            raw.replace(" STOCK", "")
+            .replace(" SHARES", "")
+            .replace(" EQUITY", "")
+            .strip()
+        )
+
+        # Mapping for Indian companies and IPOs
         indian_names = {
+            # Jio Platforms / Jio IPO
+            "JIO": "JPL.NS",
+            "JPL": "JPL.NS",
+            "JIO IPO": "JPL.NS",
+            "JPL IPO": "JPL.NS",
+            "JIO PLATFORMS": "JPL.NS",
+            "JIO PLATFORMS LIMITED": "JPL.NS",
+            "RELIANCE JIO": "JPL.NS",
+            "JIO 5G": "JPL.NS",
+            # Reliance Industries
             "RELIANCE": "RELIANCE.NS",
+            "RIL": "RELIANCE.NS",
+            "RELIANCE INDUSTRIES": "RELIANCE.NS",
+            # TCS & Infosys
             "TCS": "TCS.NS",
+            "TATA CONSULTANCY": "TCS.NS",
+            "TATA CONSULTANCY SERVICES": "TCS.NS",
             "INFOSYS": "INFY.NS",
             "INFY": "INFY.NS",
+            # Consumer Tech & Quick Commerce
             "ZOMATO": "ZOMATO.NS",
+            "ZOMATO IPO": "ZOMATO.NS",
+            "SWIGGY": "SWIGGY.NS",
+            "SWIGGY IPO": "SWIGGY.NS",
+            # Auto & Conglomerates
             "TATAMOTORS": "TATAMOTORS.NS",
             "TATA MOTORS": "TATAMOTORS.NS",
+            "TATA": "TATAMOTORS.NS",
+            "MAHINDRA": "M&M.NS",
+            "M&M": "M&M.NS",
+            # Banking & Finance
             "HDFCBANK": "HDFCBANK.NS",
             "HDFC": "HDFCBANK.NS",
+            "HDFC BANK": "HDFCBANK.NS",
             "ICICIBANK": "ICICIBANK.NS",
+            "ICICI": "ICICIBANK.NS",
+            "ICICI BANK": "ICICIBANK.NS",
+            "SBIN": "SBIN.NS",
+            "SBI": "SBIN.NS",
+            "STATE BANK OF INDIA": "SBIN.NS",
+            "BAJAJ FINANCE": "BAJFINANCE.NS",
+            "BAJFINANCE": "BAJFINANCE.NS",
+            # Telecom & IT
+            "BHARTI AIRTEL": "BHARTIARTL.NS",
+            "AIRTEL": "BHARTIARTL.NS",
+            "BHARTIARTL": "BHARTIARTL.NS",
             "WIPRO": "WIPRO.NS",
-            "SWIGGY": "SWIGGY.NS",
+            "HCLTECH": "HCLTECH.NS",
+            "HCL": "HCLTECH.NS",
+            "ITC": "ITC.NS",
+            "L&T": "LT.NS",
+            "LT": "LT.NS",
+            "LARSEN": "LT.NS",
         }
 
+        # Mapping for US & Global companies
+        us_names = {
+            "NVIDIA": "NVDA",
+            "APPLE": "AAPL",
+            "TESLA": "TSLA",
+            "MICROSOFT": "MSFT",
+            "ALPHABET": "GOOGL",
+            "GOOGLE": "GOOGL",
+            "AMAZON": "AMZN",
+            "META": "META",
+            "FACEBOOK": "META",
+            "ARM": "ARM",
+            "ARM HOLDINGS": "ARM",
+            "ARM IPO": "ARM",
+            "CROWDSTRIKE": "CRWD",
+            "BROADCOM": "AVGO",
+            "AMD": "AMD",
+            "ADVANCED MICRO DEVICES": "AMD",
+            "NETFLIX": "NFLX",
+            "BERKSHIRE": "BRK-B",
+            "BIOGEN": "BIIB",
+        }
+
+        # Check explicit mappings first
+        if clean_name in indian_names:
+            return indian_names[clean_name], MarketRegion.INDIA, "^NSEI"
         if raw in indian_names:
             return indian_names[raw], MarketRegion.INDIA, "^NSEI"
 
+        if clean_name in us_names and not is_india_country:
+            return us_names[clean_name], MarketRegion.US, "QQQ"
+        if raw in us_names and not is_india_country:
+            return us_names[raw], MarketRegion.US, "QQQ"
+
+        # Check for partial Jio search matches
+        if "JIO" in clean_name or clean_name == "JPL":
+            return "JPL.NS", MarketRegion.INDIA, "^NSEI"
+
+        # Country filter explicit override
+        if is_india_country:
+            clean_ticker = raw if (raw.endswith(".NS") or raw.endswith(".BO")) else f"{raw}.NS"
+            return clean_ticker, MarketRegion.INDIA, "^NSEI"
+
+        # Check NSE/BSE suffixes
         if raw.endswith(".NS") or raw.endswith(".BO"):
             return raw, MarketRegion.INDIA, "^NSEI"
 
         # Default to US equities
-        clean_ticker = raw.replace("$", "")
-        # Select appropriate US benchmark
+        clean_ticker = raw
         benchmark = "SPY"
-        if clean_ticker in ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "ARM", "CRWD"]:
+        if clean_ticker in ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "ARM", "CRWD", "AVGO", "AMD"]:
             benchmark = "QQQ"
         elif clean_ticker in ["BIIB", "MRNA", "GILD", "VRTX"]:
             benchmark = "XBI"
 
         return clean_ticker, MarketRegion.US, benchmark
 
-    def get_company_data(self, ticker: str) -> Tuple[CompanyProfile, FinancialMetrics, pd.DataFrame]:
+    def get_company_data(
+        self, ticker: str, country: Optional[str] = None
+    ) -> Tuple[CompanyProfile, FinancialMetrics, pd.DataFrame]:
         """
         Retrieve structured company profile, fundamental metrics, and historical daily bars.
+        Supports both ticker symbols and company names across US and Indian markets.
         """
-        cache_key = f"market_data_{ticker}"
+        resolved_ticker, region, benchmark = self.resolve_ticker(ticker, country=country)
+        cache_key = f"market_data_{resolved_ticker}"
         now = time.time()
         if cache_key in _MARKET_DATA_CACHE:
             ts, cached_val = _MARKET_DATA_CACHE[cache_key]
             if now - ts < CACHE_TTL_SECONDS:
                 return cached_val
 
-        resolved_ticker, region, benchmark = self.resolve_ticker(ticker)
         stock_df = pd.DataFrame()
         info: Dict[str, Any] = {}
 
@@ -97,7 +194,7 @@ class MarketDataService:
             info = {}
             stock_df = pd.DataFrame()
 
-        # If data is empty or unavailable, synthesize a realistic profile and historical series
+        # If data is empty or unavailable (e.g. JPL IPO unlisted or offline), synthesize calibrated model
         if stock_df.empty or len(stock_df) < 20:
             profile, financials, stock_df = self._build_calibrated_fallback(resolved_ticker, region)
         else:
@@ -163,15 +260,30 @@ class MarketDataService:
         self, ticker: str, region: MarketRegion
     ) -> Tuple[CompanyProfile, FinancialMetrics, pd.DataFrame]:
         """
-        Calibrated fallback for test suites and offline operation.
+        Calibrated fallback for unlisted IPOs, test suites, and offline operations.
         Labels all items as estimated.
         """
         is_india = region == MarketRegion.INDIA
         currency = "INR" if is_india else "USD"
         exchange = "NSE" if is_india else "NASDAQ"
         base_price = 1450.0 if is_india else 185.0
+        is_ipo = False
+        ipo_date = None
 
-        if "NVDA" in ticker:
+        if "JPL" in ticker or "JIO" in ticker:
+            # Jio Platforms Limited (Expected Mega IPO)
+            base_price = 450.0
+            name = "Jio Platforms Limited (JPL) - Expected Mega IPO"
+            sector = "Digital Connectivity, 5G & Cloud Ecosystem"
+            market_cap = 9_200_000_000_000.0  # ~₹9.2 Lakh Crore (~$110B)
+            rev_growth = 14.8
+            gross_margin = 53.0
+            pe = 34.5
+            exchange = "NSE / BSE (IPO Prospectus)"
+            is_ipo = True
+            ipo_date = "2025/2026 Expected Listing"
+            notes = "Jio Platforms (JPL) standalone IPO model. 480M+ subscribers, JioCinema, JioFiber cloud infrastructure."
+        elif "NVDA" in ticker:
             base_price = 205.0
             name = "NVIDIA Corporation"
             sector = "Semiconductors & AI Hardware"
@@ -179,6 +291,19 @@ class MarketDataService:
             rev_growth = 105.0
             gross_margin = 75.0
             pe = 25.8
+            notes = "NVIDIA AI compute leadership model."
+        elif "SWIGGY" in ticker:
+            base_price = 420.0
+            name = "Swiggy Limited"
+            sector = "Food Delivery & Quick Commerce (Instamart)"
+            market_cap = 94_000_000_000.0
+            rev_growth = 35.0
+            gross_margin = 28.0
+            pe = 95.0
+            exchange = "NSE / BSE"
+            is_ipo = True
+            ipo_date = "2024-11-13"
+            notes = "Recent marquee Indian tech IPO listing."
         elif "RELIANCE" in ticker:
             base_price = 1165.0
             name = "Reliance Industries Limited"
@@ -187,6 +312,7 @@ class MarketDataService:
             rev_growth = 11.5
             gross_margin = 32.0
             pe = 19.2
+            notes = "Reliance conglomerate baseline."
         elif "ZOMATO" in ticker:
             base_price = 260.0
             name = "Zomato Limited"
@@ -195,6 +321,8 @@ class MarketDataService:
             rev_growth = 68.0
             gross_margin = 42.0
             pe = 82.0
+            is_ipo = True
+            notes = "Turnaround quick commerce model."
         elif "CRWD" in ticker:
             base_price = 320.0
             name = "CrowdStrike Holdings Inc."
@@ -203,6 +331,7 @@ class MarketDataService:
             rev_growth = 31.0
             gross_margin = 78.0
             pe = 72.0
+            notes = "Falcon platform resilience."
         else:
             name = f"{ticker} Corporation"
             sector = "Technology & Industrials"
@@ -210,6 +339,7 @@ class MarketDataService:
             rev_growth = 14.0
             gross_margin = 55.0
             pe = 22.0
+            notes = "Calibrated historical baseline (marked as estimated fallback)."
 
         profile = CompanyProfile(
             ticker=ticker,
@@ -223,7 +353,8 @@ class MarketDataService:
             market_cap=market_cap,
             fifty_two_week_high=round(base_price * 1.25, 2),
             fifty_two_week_low=round(base_price * 0.78, 2),
-            is_ipo=False,
+            is_ipo=is_ipo,
+            ipo_date=ipo_date,
         )
 
         financials = FinancialMetrics(
@@ -242,7 +373,7 @@ class MarketDataService:
             return_on_invested_capital_pct=16.8,
             shares_outstanding=round(market_cap / base_price),
             is_estimated=True,
-            notes="Calibrated historical baseline (marked as estimated fallback).",
+            notes=notes,
         )
 
         # Generate 252 business days of price bars

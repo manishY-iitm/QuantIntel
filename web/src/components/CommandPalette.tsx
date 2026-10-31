@@ -57,7 +57,8 @@ export function CommandPalette({
     (t) =>
       t.ticker.toLowerCase().includes(query.toLowerCase()) ||
       t.name.toLowerCase().includes(query.toLowerCase()) ||
-      t.sector.toLowerCase().includes(query.toLowerCase())
+      t.sector.toLowerCase().includes(query.toLowerCase()) ||
+      (query.toLowerCase().includes("jio") && t.ticker === "JPL")
   );
 
   const filteredCases = PRESET_CASES.filter(

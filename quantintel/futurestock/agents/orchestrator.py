@@ -5,7 +5,7 @@ coordinates parallel/sequential agents, and consolidates the verified FutureStoc
 """
 
 from datetime import datetime, timezone
-from typing import Generator, Dict, Any, List, Optional
+from typing import Generator, Dict, Any, List, Optional, Union
 import pandas as pd
 
 from quantintel.futurestock.schemas import (
@@ -47,21 +47,23 @@ class FutureStockOrchestrator:
         query: str,
         horizon: ForecastHorizon = ForecastHorizon.ONE_YEAR,
         is_beginner_mode: bool = False,
+        country: Optional[str] = None,
     ) -> Generator[Dict[str, Any], None, FutureStockReport]:
         """
         Stream agent execution steps and compile final verified research dossier.
         """
         # Step 1: Agent A - Resolution & Planning
+        country_str = f" [Market: {country}]" if country else ""
         yield {
             "step": 1,
             "agent": "Agent A: Chief Research Orchestrator",
             "title": "Resolving Entity, Exchange & Research Plan",
-            "details": f"Analyzing query '{query}'. Determining legal corporate entity, exchange mapping, and currency.",
+            "details": f"Analyzing query '{query}'{country_str}. Determining legal corporate entity, exchange mapping, and currency.",
             "status": "completed",
         }
 
-        resolved_ticker, region, benchmark = self.market_data_service.resolve_ticker(query)
-        profile, financials, df = self.market_data_service.get_company_data(resolved_ticker)
+        resolved_ticker, region, benchmark = self.market_data_service.resolve_ticker(query, country=country)
+        profile, financials, df = self.market_data_service.get_company_data(resolved_ticker, country=country)
 
         yield {
             "step": 2,
@@ -447,3 +449,24 @@ class FutureStockOrchestrator:
             invalidation_conditions=invalidation,
             unanswered_questions=questions,
         )
+
+    def research(
+        self,
+        query: str,
+        horizon: Union[ForecastHorizon, str] = ForecastHorizon.ONE_YEAR,
+        is_beginner_mode: bool = False,
+        country: Optional[str] = None,
+    ) -> FutureStockReport:
+        """
+        Synchronously execute full research pipeline and return verified report.
+        """
+        if isinstance(horizon, str):
+            horizon = ForecastHorizon(horizon)
+        gen = self.run_research_pipeline(
+            query=query, horizon=horizon, is_beginner_mode=is_beginner_mode, country=country
+        )
+        try:
+            while True:
+                next(gen)
+        except StopIteration as e:
+            return e.value
