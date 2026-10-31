@@ -8,13 +8,16 @@ import { FutureStockStudio } from "../components/FutureStockStudio";
 import { QuantStudio } from "../components/QuantStudio";
 import { CaseStudies } from "../components/CaseStudies";
 import { TokenEconomyMatrix } from "../components/TokenEconomyMatrix";
+import { ApiDocsExplorer } from "../components/ApiDocsExplorer";
 import { PreAcceleratorRoadmap } from "../components/PreAcceleratorRoadmap";
+import { CommandPalette } from "../components/CommandPalette";
 import { Footer } from "../components/Footer";
 
 export default function Home() {
   const [activeModule, setActiveModule] = useState<"FUTURESTOCK" | "CATALYST">("FUTURESTOCK");
   const [activePrompt, setActivePrompt] = useState<string>("");
   const [activePresetId, setActivePresetId] = useState<string>("biogen_fda");
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
 
   const handleHeroSelect = (promptText: string, presetId?: string) => {
     setActivePrompt(promptText);
@@ -25,6 +28,14 @@ export default function Home() {
     const studioEl = document.getElementById("studio");
     if (studioEl) {
       studioEl.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleFutureStockHeroTicker = (ticker: string) => {
+    setActiveModule("FUTURESTOCK");
+    const futureEl = document.getElementById("futurestock");
+    if (futureEl) {
+      futureEl.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -46,10 +57,30 @@ export default function Home() {
     }
   };
 
+  const handleNavigateSection = (sectionId: string) => {
+    if (sectionId === "futurestock") {
+      setActiveModule("FUTURESTOCK");
+    } else if (sectionId === "studio") {
+      setActiveModule("CATALYST");
+    }
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col bg-[#090D12] text-[#E6EDF3]">
-      <Header activeModule={activeModule} onSelectModule={handleModuleChange} />
-      <Hero onSelectPrompt={handleHeroSelect} />
+      <Header
+        activeModule={activeModule}
+        onSelectModule={handleModuleChange}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+      />
+
+      <Hero
+        onSelectPrompt={handleHeroSelect}
+        onSelectFutureStockTicker={handleFutureStockHeroTicker}
+      />
 
       {/* Module Selector Banner */}
       <section className="border-b border-[#1E2C3D] bg-[#0A1017] py-4 px-4 sm:px-6">
@@ -95,11 +126,33 @@ export default function Home() {
       {/* Catalyst Quant Studio */}
       <QuantStudio initialPrompt={activePrompt} initialPresetId={activePresetId} />
 
-      {/* Case Studies, Token Economy, Roadmap, Footer */}
+      {/* Benchmark Case Studies */}
       <CaseStudies onLoadCase={handleLoadCase} />
+
+      {/* Token Economy ROI Matrix */}
       <TokenEconomyMatrix />
+
+      {/* Interactive Developer API & SDK Explorer */}
+      <ApiDocsExplorer />
+
+      {/* Pre-Accelerator Roadmap */}
       <PreAcceleratorRoadmap />
+
+      {/* Footer */}
       <Footer />
+
+      {/* Global Command Palette (Cmd+K) */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onSelectTicker={(ticker) => {
+          handleFutureStockHeroTicker(ticker);
+        }}
+        onSelectCase={(caseId) => {
+          handleLoadCase(caseId);
+        }}
+        onNavigateSection={handleNavigateSection}
+      />
     </main>
   );
 }

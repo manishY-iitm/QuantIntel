@@ -1,16 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import { Terminal, ExternalLink, Activity, Layers, Play, Sparkles } from "lucide-react";
+import { Terminal, ExternalLink, Activity, Search } from "lucide-react";
 
 interface HeaderProps {
   activeModule?: "FUTURESTOCK" | "CATALYST";
   onSelectModule?: (module: "FUTURESTOCK" | "CATALYST") => void;
+  onOpenCommandPalette?: () => void;
 }
 
-export function Header({ activeModule = "FUTURESTOCK", onSelectModule }: HeaderProps) {
+export function Header({
+  activeModule = "FUTURESTOCK",
+  onSelectModule,
+  onOpenCommandPalette,
+}: HeaderProps) {
   return (
-    <header className="sticky top-0 z-50 border-b border-[#1E2C3D] bg-[#090D12]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-[#1E2C3D] bg-[#090D12]/95 backdrop-blur-md">
       {/* Telemetry Status Strip */}
       <div className="border-b border-[#1E2C3D]/60 bg-[#0B111A] px-4 py-1 text-xs text-[#8B949E]">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -103,15 +108,31 @@ export function Header({ activeModule = "FUTURESTOCK", onSelectModule }: HeaderP
             Cases
           </a>
           <a href="#token-economy" className="hover:text-[#00C4CC] transition-colors">
-            Token Savings
+            Token ROI
+          </a>
+          <a href="#api-docs" className="hover:text-[#00C4CC] transition-colors">
+            API &amp; SDK
           </a>
           <a href="#roadmap" className="hover:text-[#00C4CC] transition-colors">
             Roadmap
           </a>
         </nav>
 
-        {/* CTA & GitHub */}
-        <div className="flex items-center space-x-2.5">
+        {/* Search, CTA & GitHub */}
+        <div className="flex items-center space-x-2">
+          {/* Command Palette Trigger */}
+          {onOpenCommandPalette && (
+            <button
+              onClick={onOpenCommandPalette}
+              className="hidden sm:flex items-center space-x-2 rounded-lg border border-[#1E2C3D] bg-[#0E1520] px-2.5 py-1.5 text-xs font-mono text-[#8B949E] hover:border-[#2A3F58] hover:text-white transition-all"
+              title="Search tickers and cases (Cmd+K)"
+            >
+              <Search className="h-3.5 w-3.5 text-[#00C4CC]" />
+              <span className="hidden lg:inline text-[11px]">Quick Search</span>
+              <kbd className="rounded border border-[#1E2C3D] bg-[#080C12] px-1 py-0.2 text-[9px]">⌘K</kbd>
+            </button>
+          )}
+
           <a
             href="https://github.com/manishY-iitm/QuantIntel"
             target="_blank"
