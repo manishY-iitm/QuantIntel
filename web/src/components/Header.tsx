@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Terminal, ShieldCheck, ExternalLink, Activity, Layers, Play } from "lucide-react";
+import { Terminal, ExternalLink, Activity, Layers, Play, Sparkles } from "lucide-react";
 
-export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+interface HeaderProps {
+  activeModule?: "FUTURESTOCK" | "CATALYST";
+  onSelectModule?: (module: "FUTURESTOCK" | "CATALYST") => void;
+}
 
+export function Header({ activeModule = "FUTURESTOCK", onSelectModule }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-50 border-b border-[#1E2C3D] bg-[#090D12]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-[#1E2C3D] bg-[#090D12]/95 backdrop-blur-md">
       {/* Telemetry Status Strip */}
       <div className="border-b border-[#1E2C3D]/60 bg-[#0B111A] px-4 py-1 text-xs text-[#8B949E]">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -17,7 +20,7 @@ export function Header() {
               <span className="font-mono font-medium">TINYFISH CHROMIUM FLEET: ACTIVE</span>
             </span>
             <span className="hidden sm:inline text-[#30363D]">|</span>
-            <span className="hidden sm:inline font-mono text-[#8B949E]">SANDBOX: DETERMINISTIC PYTHON OLS</span>
+            <span className="hidden sm:inline font-mono text-[#8B949E]">SANDBOX: 8-AGENT QUANT ENGINE</span>
           </div>
           <div className="flex items-center space-x-3 font-mono">
             <span className="text-[#00C4CC] font-semibold">SWIM WITH TINYFISH HACKATHON</span>
@@ -29,39 +32,78 @@ export function Header() {
       </div>
 
       {/* Main Navigation */}
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        <div className="flex items-center space-x-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#00C4CC] to-[#0A84FF] shadow-lg shadow-[#00C4CC]/20">
-            <Terminal className="h-5 w-5 text-[#090D12] stroke-[2.5]" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-lg font-bold tracking-tight text-white">QuantIntel</span>
-              <span className="rounded border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-[#00C4CC]">
-                v1.0 DUAL-ENGINE
-              </span>
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#00C4CC] to-[#0A84FF] shadow-lg shadow-[#00C4CC]/20">
+              <Terminal className="h-5 w-5 text-[#090D12] stroke-[2.5]" />
             </div>
-            <p className="text-[11px] text-[#8B949E] hidden sm:block">
-              Autonomous Agentic Quant Research Lab
-            </p>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-bold tracking-tight text-white">QuantIntel</span>
+                <span className="rounded border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-[#00C4CC]">
+                  v1.0 FUTURESTOCK
+                </span>
+              </div>
+              <p className="text-[11px] text-[#8B949E] hidden sm:block">
+                Autonomous Agentic Quant Research Lab
+              </p>
+            </div>
           </div>
+
+          {/* Module Switcher Pills */}
+          {onSelectModule && (
+            <div className="hidden lg:flex items-center rounded-lg border border-[#1E2C3D] bg-[#0E1520] p-1 ml-4">
+              <button
+                onClick={() => onSelectModule("FUTURESTOCK")}
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-1 text-xs font-mono font-semibold transition-all ${
+                  activeModule === "FUTURESTOCK"
+                    ? "bg-[#00C4CC] text-[#070B10] shadow-sm"
+                    : "text-[#8B949E] hover:text-white"
+                }`}
+              >
+                <span>🔮</span>
+                <span>FutureStock Terminal</span>
+              </button>
+              <button
+                onClick={() => onSelectModule("CATALYST")}
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-1 text-xs font-mono font-semibold transition-all ${
+                  activeModule === "CATALYST"
+                    ? "bg-[#00C4CC] text-[#070B10] shadow-sm"
+                    : "text-[#8B949E] hover:text-white"
+                }`}
+              >
+                <span>📈</span>
+                <span>Catalyst Event Studies</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-[#C9D1D9]">
-          <a href="#studio" className="flex items-center space-x-1.5 hover:text-[#00C4CC] transition-colors">
-            <Play className="h-3.5 w-3.5 text-[#00C4CC]" />
-            <span>Quant Studio</span>
+        <nav className="hidden md:flex items-center space-x-5 text-xs font-medium text-[#C9D1D9]">
+          <a
+            href="#futurestock"
+            onClick={() => onSelectModule && onSelectModule("FUTURESTOCK")}
+            className="flex items-center space-x-1 hover:text-[#00C4CC] transition-colors"
+          >
+            <span>FutureStock</span>
           </a>
-          <a href="#architecture" className="flex items-center space-x-1.5 hover:text-[#00C4CC] transition-colors">
-            <Layers className="h-3.5 w-3.5" />
-            <span>Dual-Engine</span>
+          <a
+            href="#studio"
+            onClick={() => onSelectModule && onSelectModule("CATALYST")}
+            className="flex items-center space-x-1 hover:text-[#00C4CC] transition-colors"
+          >
+            <span>Event Studies</span>
+          </a>
+          <a href="#architecture" className="hover:text-[#00C4CC] transition-colors">
+            Architecture
           </a>
           <a href="#case-studies" className="hover:text-[#00C4CC] transition-colors">
-            Case Studies
+            Cases
           </a>
           <a href="#token-economy" className="hover:text-[#00C4CC] transition-colors">
-            Token Economy
+            Token Savings
           </a>
           <a href="#roadmap" className="hover:text-[#00C4CC] transition-colors">
             Roadmap
@@ -69,12 +111,12 @@ export function Header() {
         </nav>
 
         {/* CTA & GitHub */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           <a
             href="https://github.com/manishY-iitm/QuantIntel"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex items-center space-x-1.5 rounded-lg border border-[#1E2C3D] bg-[#0F1722] px-3 py-1.5 text-xs font-medium text-[#C9D1D9] hover:border-[#2A3F58] hover:text-white transition-all"
+            className="hidden sm:flex items-center space-x-1.5 rounded-lg border border-[#1E2C3D] bg-[#0F1722] px-2.5 py-1.5 text-xs font-medium text-[#C9D1D9] hover:border-[#2A3F58] hover:text-white transition-all"
           >
             <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
@@ -84,7 +126,7 @@ export function Header() {
           </a>
 
           <a
-            href="#studio"
+            href={activeModule === "FUTURESTOCK" ? "#futurestock" : "#studio"}
             className="flex items-center space-x-1.5 rounded-lg bg-gradient-to-r from-[#00C4CC] to-[#00A3AA] px-3.5 py-1.5 text-xs font-semibold text-[#090D12] shadow-sm shadow-[#00C4CC]/30 hover:brightness-110 transition-all"
           >
             <Activity className="h-3.5 w-3.5" />

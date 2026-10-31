@@ -27,6 +27,7 @@ from quantintel.config import (
 from quantintel.presets.data import PRESET_CASES, get_preset_by_id
 from quantintel.core.agent import QuantAgent
 from quantintel.core.dossier import generate_markdown_dossier, generate_pdf_dossier
+from quantintel.ui.futurestock_view import render_futurestock_view
 
 
 # Configure Streamlit Page
@@ -497,6 +498,21 @@ def render_verdict_and_dossier(res):
 
 
 def main():
+    st.sidebar.markdown("### 🧭 Platform Navigation")
+    platform_module = st.sidebar.radio(
+        "Active Research Engine:",
+        [
+            "🔮 FutureStock: Autonomous AI Stock Forecasting",
+            "📈 Catalyst Event Studies (QuantIntel Core)",
+        ],
+        index=0,
+    )
+    st.sidebar.divider()
+
+    if platform_module.startswith("🔮 FutureStock"):
+        render_futurestock_view()
+        return
+
     render_header()
     params = render_sidebar()
 
