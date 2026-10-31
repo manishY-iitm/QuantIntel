@@ -146,7 +146,7 @@ export default function Home() {
       {/* Interactive Developer API & SDK Explorer */}
       <ApiDocsExplorer />
 
-      {/* Pre-Accelerator Roadmap */}
+      {/* Product & Scaling Roadmap */}
       <PreAcceleratorRoadmap />
 
       {/* Footer */}

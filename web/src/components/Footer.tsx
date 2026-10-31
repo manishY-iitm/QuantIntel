@@ -20,7 +20,7 @@ export function Footer() {
               Autonomous Agentic Quantitative Research Laboratory. Powered by TinyFish Web Agents and Deterministic Python Backtesting.
             </p>
             <div className="font-mono text-[10px] text-[#00C4CC]">
-              SWIM WITH TINYFISH HACKATHON ENTRY
+              INSTITUTIONAL QUANTITATIVE SUITE
             </div>
           </div>
 
@@ -31,8 +31,13 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-[11px]">
               <li>
+                <a href="#futurestock" className="hover:text-white transition-colors">
+                  FutureStock Intelligence Terminal
+                </a>
+              </li>
+              <li>
                 <a href="#studio" className="hover:text-white transition-colors">
-                  Web Quant Studio (Terminal)
+                  Catalyst Event Studies
                 </a>
               </li>
               <li>
@@ -52,7 +57,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#roadmap" className="hover:text-white transition-colors">
-                  $2M Pre-Accelerator Roadmap
+                  Product Roadmap
                 </a>
               </li>
             </ul>
@@ -61,29 +66,29 @@ export function Footer() {
           {/* Competition Artifacts */}
           <div>
             <h4 className="font-bold text-white uppercase text-[11px] tracking-wider font-mono mb-3">
-              Presentation & Pitch
+              Research & Whitepapers
             </h4>
             <ul className="space-y-2 text-[11px]">
               <li>
                 <a
-                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Hackathon_Proposal.pdf"
+                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Whitepaper.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#00C4CC] transition-colors inline-flex items-center space-x-1"
                 >
                   <FileText className="h-3 w-3" />
-                  <span>10-Slide Pitch Deck (PDF)</span>
+                  <span>Architecture Whitepaper (PDF)</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Hackathon_Proposal.pptx"
+                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Architecture_Overview.pptx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#00C4CC] transition-colors inline-flex items-center space-x-1"
                 >
                   <FileText className="h-3 w-3" />
-                  <span>PowerPoint Presentation (.pptx)</span>
+                  <span>Technical Overview (.pptx)</span>
                 </a>
               </li>
               <li>

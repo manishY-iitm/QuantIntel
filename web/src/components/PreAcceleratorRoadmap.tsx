@@ -22,17 +22,17 @@ export function PreAcceleratorRoadmap() {
 
   const acceleratorMilestones = [
     {
-      quarter: "Sprint Phase (Weeks 1-4)",
-      title: "Pre-Accelerator Launch",
+      quarter: "Phase 1 (Weeks 1-4)",
+      title: "Enterprise Pilot Launch",
       description: "Close first 5 pilot boutique hedge fund design partners and integrate full SEC EDGAR Form 10-K/10-Q filing feeds.",
     },
     {
-      quarter: "Scale Phase (Weeks 5-8)",
+      quarter: "Phase 2 (Weeks 5-8)",
       title: "Intraday & Tick-Level Event Studies",
       description: "Extend Campbell-Lo-MacKinlay models to intraday 1-minute and 5-minute bars for immediate post-earnings reactions.",
     },
     {
-      quarter: "Enterprise Phase (Weeks 9-12)",
+      quarter: "Phase 3 (Weeks 9-12)",
       title: "Institutional API & B2B SaaS Rollout",
       description: "Deploy SOC2 Type II compliant multi-tenant cloud with tiered monthly subscriptions and TinyFish agent execution credits.",
     },
@@ -43,25 +43,25 @@ export function PreAcceleratorRoadmap() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center space-x-1.5 rounded-full border border-[#FFBE5C]/30 bg-[#FFBE5C]/10 px-3 py-1 text-xs font-mono text-[#FFBE5C] mb-3">
+          <div className="inline-flex items-center space-x-1.5 rounded-full border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-3 py-1 text-xs font-mono text-[#00C4CC] mb-3">
             <Award className="h-3.5 w-3.5" />
-            <span>TINYFISH $2M PRE-ACCELERATOR TRACK</span>
+            <span>ENTERPRISE ROADMAP</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Sprint Roadmap & Commercialization
+            Production Roadmap &amp; Scaling
           </h2>
           <p className="mt-4 text-sm sm:text-base text-[#8B949E]">
-            A disciplined, production-ready framework transitioning from 48-hour hackathon MVP to enterprise institutional SaaS.
+            A disciplined, production-ready framework transitioning from quantitative research lab to boutique institutional SaaS.
           </p>
         </div>
 
-        {/* 48-Hour Scope vs Disciplined Boundaries */}
+        {/* Scope vs Disciplined Boundaries */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          {/* Delivered in 48-Hour Sprint */}
+          {/* Delivered Platform Capabilities */}
           <div className="rounded-2xl border border-[#10B981]/30 bg-[#0F1722] p-6 lg:p-8">
             <div className="flex items-center space-x-2 text-[#10B981] font-mono text-xs font-bold mb-4">
               <CheckCircle2 className="h-4 w-4" />
-              <span>DELIVERED IN 48-HOUR HACKATHON MVP (100% COMPLETE)</span>
+              <span>DELIVERED CORE PLATFORM CAPABILITIES (100% COMPLETE)</span>
             </div>
             <ul className="space-y-3 text-xs sm:text-sm text-[#C9D1D9]">
               {mvpDelivered.map((item, idx) => (
@@ -93,15 +93,15 @@ export function PreAcceleratorRoadmap() {
           </div>
         </div>
 
-        {/* Post-Hackathon $2M Sprint Milestones */}
+        {/* Commercialization Milestones */}
         <div className="rounded-2xl border border-[#1E2C3D] bg-[#0F1722] p-6 lg:p-8 shadow-2xl">
           <div className="flex items-center justify-between mb-8 flex-wrap gap-2">
             <div>
               <span className="text-xs font-mono text-[#00C4CC] font-bold block">
-                THE $2M PRE-ACCELERATOR COMMERCIALIZATION VISION
+                COMMERCIALIZATION &amp; EXPANSION
               </span>
               <h3 className="text-xl font-bold text-white mt-1">
-                From Hackathon Prototype to Boutique Quant SaaS
+                From Quantitative Lab to Multi-Asset Institutional SaaS
               </h3>
             </div>
             <span className="rounded bg-[#00C4CC]/10 text-[#00C4CC] px-3 py-1 text-xs font-mono font-bold">

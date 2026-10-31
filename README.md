@@ -1,7 +1,7 @@
 # QuantIntel: Autonomous Agentic Quant Research Lab
 
-[![Hackathon](https://img.shields.io/badge/Hackathon-Swim_With_TinyFish-00C4CC?style=for-the-badge)](https://tinyfish.ai)
-[![Pre-Accelerator](https://img.shields.io/badge/Pre--Accelerator-$2M_Sprint_Track-FFBE5C?style=for-the-badge)](https://tinyfish.ai)
+[![Release](https://img.shields.io/badge/Release-v1.0_FutureStock-00C4CC?style=for-the-badge)](https://github.com/manishY-iitm/QuantIntel)
+[![Suite](https://img.shields.io/badge/Suite-Institutional_Grade-FFBE5C?style=for-the-badge)](https://github.com/manishY-iitm/QuantIntel)
 [![Engine](https://img.shields.io/badge/Engine-TinyFish_Search_%26_Fetch-4ADE80?style=for-the-badge)](https://tinyfish.ai)
 [![Backtesting](https://img.shields.io/badge/Validation-Deterministic_Python-3B82F6?style=for-the-badge)](https://python.org)
 
@@ -9,12 +9,12 @@
 
 ---
 
-## 📑 Presentation & Pitch Deck
+## 📑 Architecture & Technical Documentation
 
-The complete 10-slide competition pitch deck is available directly in this repository:
+The complete architecture whitepapers and technical overview are available directly in this repository:
 
-- 📊 **PowerPoint Presentation:** [**`QuantIntel_Hackathon_Proposal.pptx`**](./QuantIntel_Hackathon_Proposal.pptx)
-- 📄 **Direct PDF Presentation:** [**`QuantIntel_Hackathon_Proposal.pdf`**](./QuantIntel_Hackathon_Proposal.pdf) *(Click to view directly in browser)*
+- 📊 **Technical Presentation:** [**`QuantIntel_Architecture_Overview.pptx`**](./QuantIntel_Architecture_Overview.pptx)
+- 📄 **Architecture Whitepaper:** [**`QuantIntel_Whitepaper.pdf`**](./QuantIntel_Whitepaper.pdf) *(Click to view directly in browser)*
 
 ---
 
@@ -233,9 +233,9 @@ pytest -v
 
 ---
 
-## 🎯 Hackathon Scope & Disciplined Boundaries
+## 🎯 Platform Scope & Disciplined Boundaries
 
-### What We Deliver in the 48-Hour MVP:
+### What We Deliver in the Core Platform:
 - [x] **Streamlit Web Dashboard:** Interactive UI for prompt entry with real-time agent status feeds.
 - [x] **Live TinyFish Agent Tracing:** Visual display showing TinyFish searching, fetching, and cleaning DOM context.
 - [x] **Pydantic Evidence Card:** Structured extraction of verified event dates, tickers, and clickable URLs.
@@ -294,15 +294,15 @@ pytest -v
 
 ---
 
-## 🚀 48-Hour Sprint Roadmap & Pre-Accelerator Vision
+## 🚀 Production Roadmap & Scaling Vision
 
-* **Phase 1 (Hours 0–12):** TinyFish API integration (Search & Fetch), prompt decomposition, and Pydantic schema validation.
-* **Phase 2 (Hours 12–24):** Sandboxed Python event-study engine, historical data integration (`yfinance`), and CAR statistical computation.
-* **Phase 3 (Hours 24–36):** Streamlit analyst dashboard with real-time browser traces, interactive Plotly charts, and brief export.
-* **Phase 4 (Hours 36–48):** Edge-case testing, SEC & FDA docket validation, 3-minute video pitch recording, and submission.
+* **Phase 1 (Core Web Ingestion):** TinyFish API integration (Search & Fetch), prompt decomposition, and Pydantic schema validation.
+* **Phase 2 (Quantitative Engine):** Sandboxed Python event-study engine, historical data integration, and CAR statistical computation.
+* **Phase 3 (Next.js & Streamlit Terminals):** Interactive analyst dashboards with real-time browser traces, Plotly charts, and brief export.
+* **Phase 4 (FutureStock 8-Agent Collective):** 2,000-path Monte Carlo simulations, 3-stage DCF valuation, and historical analog cycle matching.
 
-### The TinyFish Pre-Accelerator Vision:
-Our goal is to secure the **TinyFish $2M Pre-Accelerator Golden Ticket**. Post-hackathon, QuantIntel will commercialize as a B2B SaaS research copilot for boutique hedge funds, family offices, and university quant societies, monetized via tiered subscriptions and TinyFish agent execution credits.
+### Enterprise Scaling Vision:
+QuantIntel provides an institutional-grade B2B SaaS research copilot for boutique hedge funds, family offices, and university quant research labs, monetized via tiered subscriptions and TinyFish agent execution credits.
 
 ---
 
@@ -310,5 +310,5 @@ Our goal is to secure the **TinyFish $2M Pre-Accelerator Golden Ticket**. Post-h
 
 - **Proposed & Built by:** **Manish Yadav** ([@manishY-iitm](https://github.com/manishY-iitm))
 - **Institution:** Scaler School of Technology
-- **Hackathon Track:** AI Web Agents & Financial Intelligence Track (Swim With TinyFish Hackathon)
-- **Special Thanks:** The TinyFish engineering team for building the live-web infrastructure for AI agents.
+- **Domain:** AI Web Agents & Quantitative Financial Intelligence
+- **Special Thanks:** The TinyFish engineering team for building high-speed serverless web scraping infrastructure for AI agents.

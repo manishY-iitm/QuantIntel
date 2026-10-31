@@ -75,7 +75,7 @@ export function CommandPalette({
     { id: "case-studies", name: "🏛️ Verified Case Studies", desc: "FDA adcom, outages & SEC 8-K filings" },
     { id: "token-economy", name: "💰 Token Economy Calculator", desc: "86%+ DOM reduction and cost ROI" },
     { id: "api-docs", name: "💻 Developer API & SDK Explorer", desc: "Python, cURL & TypeScript integrations" },
-    { id: "roadmap", name: "🚀 Pre-Accelerator Roadmap", desc: "48-hour sprint & $2M track roadmap" },
+    { id: "roadmap", name: "🚀 Product Roadmap", desc: "Enterprise architecture & institutional milestones" },
   ].filter(
     (s) =>
       s.name.toLowerCase().includes(query.toLowerCase()) ||

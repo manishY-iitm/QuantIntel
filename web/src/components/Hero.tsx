@@ -47,11 +47,11 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
       <div className="absolute top-1/3 left-1/4 w-[350px] h-[250px] bg-[#0A84FF]/10 blur-[110px] pointer-events-none rounded-full" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 text-center">
-        {/* Track Badge */}
+        {/* Platform Badge */}
         <div className="inline-flex items-center space-x-2 rounded-full border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-4 py-1.5 text-xs text-[#00C4CC] font-mono mb-6 shadow-sm">
           <Sparkles className="h-3.5 w-3.5 animate-pulse text-[#00C4CC]" />
           <span className="font-semibold tracking-wide">
-            Swim With TinyFish Hackathon &bull; $2M Pre-Accelerator Track
+            Autonomous Multi-Agent Equity Intelligence &bull; Deterministic Quantitative Lab
           </span>
         </div>
 

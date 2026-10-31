@@ -139,8 +139,8 @@ def render_header():
         st.markdown(
             """
             <div style="text-align: right; padding-top: 10px;">
-                <span style="background: #00C4CC; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">Swim With TinyFish Hackathon</span><br>
-                <span style="background: #FFBE5C; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-top: 4px; display: inline-block;">$2M Pre-Accelerator Track</span>
+                <span style="background: #00C4CC; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">Deterministic Quant Engine</span><br>
+                <span style="background: #10B981; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-top: 4px; display: inline-block;">Institutional Suite</span>
             </div>
             """,
             unsafe_allow_html=True,

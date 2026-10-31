@@ -93,7 +93,7 @@ class PDFDossier(FPDF):
         self.set_y(-15)
         self.set_font("Helvetica", "I", 8)
         self.set_text_color(140, 140, 140)
-        self.cell(0, 10, f"Page {self.page_no()} | Swim With TinyFish Hackathon | Reproducible Event Study", align="C")
+        self.cell(0, 10, f"Page {self.page_no()} | QuantIntel Research Lab | Reproducible Quantitative Event Study", align="C")
 
 
 def generate_pdf_dossier(result: EventStudyResult) -> bytes:

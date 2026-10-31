@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Terminal, ExternalLink, Activity, Search, Menu, X, Play, Layers } from "lucide-react";
+import { Terminal, ExternalLink, Activity, Search, Menu, X, Play, Layers, Key } from "lucide-react";
 
 interface HeaderProps {
   activeModule?: "FUTURESTOCK" | "CATALYST";
@@ -41,9 +41,9 @@ export function Header({
             <span className="hidden sm:inline font-mono text-[#8B949E]">SANDBOX: 8-AGENT QUANT ENGINE</span>
           </div>
           <div className="flex items-center space-x-3 font-mono">
-            <span className="hidden md:inline text-[#00C4CC] font-medium">SWIM WITH TINYFISH HACKATHON</span>
-            <span className="rounded bg-[#FFBE5C]/15 px-2 py-0.5 text-[10px] font-bold text-[#FFBE5C] border border-[#FFBE5C]/30">
-              $2M SPRINT TRACK
+            <span className="hidden md:inline text-[#00C4CC] font-medium">DETERMINISTIC RESEARCH ENGINE</span>
+            <span className="rounded bg-[#10B981]/15 px-2 py-0.5 text-[10px] font-bold text-[#10B981] border border-[#10B981]/30">
+              INSTITUTIONAL GRADE
             </span>
           </div>
         </div>
@@ -141,6 +141,24 @@ export function Header({
             </button>
           )}
 
+          {/* API Keys Configuration Button */}
+          <button
+            onClick={() => {
+              const el = document.getElementById("api-keys-section");
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" });
+              }
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("open-api-keys"));
+              }
+            }}
+            className="flex items-center space-x-1.5 rounded-lg border border-[#FFBE5C]/30 bg-[#FFBE5C]/10 px-2.5 py-1.5 text-xs font-mono text-[#FFBE5C] hover:border-[#FFBE5C]/60 hover:bg-[#FFBE5C]/20 transition-all shadow-sm"
+            title="Configure API Keys (TinyFish, LLM, Market Data)"
+          >
+            <Key className="h-3.5 w-3.5 text-[#FFBE5C]" />
+            <span className="hidden sm:inline text-[11px] font-bold">API Keys</span>
+          </button>
+
           {/* GitHub Link */}
           <a
             href="https://github.com/manishY-iitm/QuantIntel"
@@ -205,7 +223,7 @@ export function Header({
               { id: "case-studies", label: "Historical Case Studies" },
               { id: "token-economy", label: "Token ROI Calculator" },
               { id: "api-docs", label: "Developer API & SDK" },
-              { id: "roadmap", label: "Pre-Accelerator Roadmap" },
+              { id: "roadmap", label: "Product Roadmap" },
             ].map((item) => (
               <button
                 key={item.id}
