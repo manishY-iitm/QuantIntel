@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, ArrowRight, ShieldCheck, Database, Cpu, CheckCircle2, TrendingUp, Activity, Terminal } from "lucide-react";
+import { Sparkles, ArrowRight, ShieldCheck, Database, Cpu, CheckCircle2, TrendingUp, Activity } from "lucide-react";
 import { POPULAR_TICKERS } from "../lib/futurestock-data";
 
 interface HeroProps {
@@ -24,8 +24,9 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (customInput.toUpperCase().includes("NVDA") || customInput.toUpperCase().includes("ZOMATO") || customInput.toUpperCase().includes("AAPL")) {
-      const match = POPULAR_TICKERS.find((t) => customInput.toUpperCase().includes(t.ticker));
+    const query = customInput.toUpperCase();
+    if (query.includes("NVDA") || query.includes("ZOMATO") || query.includes("AAPL") || query.includes("RELIANCE") || query.includes("ARM")) {
+      const match = POPULAR_TICKERS.find((t) => query.includes(t.ticker));
       if (match && onSelectFutureStockTicker) {
         onSelectFutureStockTicker(match.ticker);
       }
@@ -39,37 +40,22 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
   };
 
   return (
-    <section className="relative overflow-hidden pt-10 pb-14 md:pt-16 md:pb-20 border-b border-[#1E2C3D]">
+    <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-20 border-b border-[#1E2C3D] bg-[#070B10]">
       {/* Background glow orbs */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#00C4CC]/10 blur-[140px] pointer-events-none rounded-full" />
       <div className="absolute top-1/3 left-1/4 w-[350px] h-[250px] bg-[#0A84FF]/10 blur-[110px] pointer-events-none rounded-full" />
 
-      {/* Live Market Ticker Ribbon */}
-      <div className="mb-6 overflow-hidden border-y border-[#1E2C3D]/60 bg-[#070B10]/80 py-2">
-        <div className="flex items-center space-x-6 text-xs font-mono animate-none overflow-x-auto px-4 justify-start sm:justify-center">
-          <span className="text-[#8B949E] uppercase font-bold text-[10px] tracking-wider whitespace-nowrap">
-            LIVE BENCHMARKS:
-          </span>
-          {POPULAR_TICKERS.slice(0, 6).map((item) => (
-            <div key={item.ticker} className="flex items-center space-x-1.5 whitespace-nowrap">
-              <span className="font-bold text-white">{item.ticker}</span>
-              <span className="text-[#8B949E]">({item.currency})</span>
-              <span className="text-[#00C4CC] font-semibold">{item.price}</span>
-              <span className="text-[10px] text-[#10B981]">Vol: {(item.volatility * 100).toFixed(0)}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 text-center">
         {/* Track Badge */}
-        <div className="inline-flex items-center space-x-2 rounded-full border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-3.5 py-1 text-xs text-[#00C4CC] font-mono mb-5 shadow-sm">
-          <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-          <span>Swim With TinyFish Hackathon &bull; $2M Pre-Accelerator Track &bull; Dual-Engine Quant Lab</span>
+        <div className="inline-flex items-center space-x-2 rounded-full border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-4 py-1.5 text-xs text-[#00C4CC] font-mono mb-6 shadow-sm">
+          <Sparkles className="h-3.5 w-3.5 animate-pulse text-[#00C4CC]" />
+          <span className="font-semibold tracking-wide">
+            Swim With TinyFish Hackathon &bull; $2M Pre-Accelerator Track
+          </span>
         </div>
 
         {/* Primary Heading */}
-        <h1 className="mx-auto max-w-5xl text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.12]">
+        <h1 className="mx-auto max-w-5xl text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.14]">
           Autonomous AI Stock Intelligence &amp;{" "}
           <span className="bg-gradient-to-r from-[#00C4CC] via-[#38BDF8] to-[#818CF8] bg-clip-text text-transparent">
             Deterministic Quantitative
@@ -79,7 +65,7 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
 
         {/* Subtitle */}
         <p className="mx-auto mt-5 max-w-3xl text-sm sm:text-base md:text-lg text-[#8B949E] leading-relaxed">
-          TinyFish serverless web agents scrape primary investor filings with <strong className="text-white font-semibold">85%+ token compression</strong>;
+          TinyFish serverless web agents scrape primary investor disclosures with <strong className="text-white font-semibold">85%+ token compression</strong>;
           deterministic Python &amp; WebAssembly execute <strong className="text-white font-semibold">2,000-path Monte Carlo simulations, 3-stage DCF, and statistical event studies</strong>.
           Zero look-ahead drift. Zero mathematical hallucinations.
         </p>
@@ -102,7 +88,7 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
             </div>
             <button
               type="submit"
-              className="w-full sm:w-auto whitespace-nowrap flex items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-[#00C4CC] to-[#00A3AA] px-5 py-2.5 text-xs font-bold text-[#090D12] hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-[#00C4CC]/20"
+              className="w-full sm:w-auto whitespace-nowrap flex items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-[#00C4CC] to-[#00A3AA] px-5 py-2.5 text-xs font-bold text-[#070B10] hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-[#00C4CC]/20"
             >
               <span>Dispatch Research</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -134,11 +120,55 @@ export function Hero({ onSelectPrompt, onSelectFutureStockTicker }: HeroProps) {
           </div>
         </div>
 
+        {/* Sleek Live Benchmark Strip */}
+        <div className="mx-auto mt-8 max-w-4xl rounded-xl border border-[#1E2C3D] bg-[#0B111A]/80 p-3 shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1E2C3D]/60 pb-2 mb-2 text-left">
+            <div className="flex items-center space-x-2 text-xs font-mono text-[#8B949E]">
+              <span className="h-2 w-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span className="font-bold text-white uppercase text-[10px] tracking-wider">
+                Active Benchmark Feeds (US &amp; India):
+              </span>
+            </div>
+            <span className="text-[10px] font-mono text-[#00C4CC]">
+              Deterministic GBM Ready
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs font-mono">
+            {POPULAR_TICKERS.slice(0, 6).map((item) => (
+              <button
+                key={item.ticker}
+                onClick={() => {
+                  if (onSelectFutureStockTicker) {
+                    onSelectFutureStockTicker(item.ticker);
+                    const el = document.getElementById("futurestock");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="flex flex-col items-start rounded-lg border border-[#1E2C3D] bg-[#070B10] p-2 hover:border-[#00C4CC]/50 hover:bg-[#0E1520] transition-all text-left group"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-white group-hover:text-[#00C4CC] text-[11px]">
+                    {item.ticker}
+                  </span>
+                  <span className="text-[9px] text-[#6E7681]">{item.region}</span>
+                </div>
+                <div className="mt-0.5 text-xs font-bold text-[#00C4CC]">
+                  {item.currency === "INR" ? "₹" : "$"}{item.price.toFixed(1)}
+                </div>
+                <div className="text-[9px] text-[#8B949E]">
+                  Vol: {(item.volatility * 100).toFixed(0)}%
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Dual Engine CTA Buttons */}
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <a
             href="#futurestock"
-            className="flex items-center space-x-2 rounded-lg bg-[#00C4CC] px-4 py-2 text-xs font-bold text-[#090D12] hover:brightness-110 transition-all shadow-md shadow-[#00C4CC]/20"
+            className="flex items-center space-x-2 rounded-lg bg-[#00C4CC] px-4 py-2 text-xs font-bold text-[#070B10] hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-[#00C4CC]/20"
           >
             <span>🔮 Launch FutureStock Terminal</span>
             <ArrowRight className="h-3.5 w-3.5" />

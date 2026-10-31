@@ -70,7 +70,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-[#090D12] text-[#E6EDF3]">
+    <main className="flex min-h-screen flex-col bg-[#070B10] text-[#E6EDF3]">
       <Header
         activeModule={activeModule}
         onSelectModule={handleModuleChange}
@@ -82,36 +82,47 @@ export default function Home() {
         onSelectFutureStockTicker={handleFutureStockHeroTicker}
       />
 
-      {/* Module Selector Banner */}
-      <section className="border-b border-[#1E2C3D] bg-[#0A1017] py-4 px-4 sm:px-6">
+      {/* Sleek Active Workspace Segmented Bar */}
+      <section className="sticky top-[75px] z-30 border-b border-[#1E2C3D] bg-[#070B10]/95 backdrop-blur-md py-2.5 px-4 sm:px-6 shadow-lg shadow-black/40">
         <div className="mx-auto flex max-w-7xl flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center space-x-2 text-xs font-mono text-[#8B949E]">
-            <span className="text-white font-bold">PLATFORM RESEARCH SUITE:</span>
-            <span>Switch active execution environment below</span>
+          <div className="flex items-center space-x-2.5 text-xs font-mono text-[#8B949E]">
+            <span className="flex h-2 w-2 rounded-full bg-[#00C4CC] animate-pulse"></span>
+            <span className="text-white font-bold tracking-wide">ACTIVE ENGINE:</span>
+            <span className="text-[#C9D1D9]">
+              {activeModule === "FUTURESTOCK"
+                ? "Autonomous Multi-Agent Forecasting & Monte Carlo Simulation"
+                : "Event-Study Abnormal Returns (CAR) & OLS Backtesting"}
+            </span>
           </div>
-          <div className="flex items-center space-x-2">
+
+          <div className="flex items-center rounded-xl border border-[#1E2C3D] bg-[#0E1520] p-1 shadow-sm">
             <button
               onClick={() => handleModuleChange("FUTURESTOCK")}
               className={`flex items-center space-x-2 rounded-lg px-3.5 py-1.5 text-xs font-mono font-bold transition-all ${
                 activeModule === "FUTURESTOCK"
-                  ? "bg-[#00C4CC] text-[#070B10] shadow-md shadow-[#00C4CC]/20"
-                  : "border border-[#1E2C3D] bg-[#0F1722] text-[#8B949E] hover:text-white"
+                  ? "bg-[#00C4CC] text-[#070B10] shadow-sm shadow-[#00C4CC]/30"
+                  : "text-[#8B949E] hover:text-white"
               }`}
             >
               <span>🔮</span>
               <span>FutureStock Terminal</span>
-              <span className="rounded bg-black/20 px-1 py-0.2 text-[9px]">NEW</span>
+              <span className="rounded bg-black/25 px-1.5 py-0.2 text-[9px] font-sans font-semibold">
+                8 AGENTS
+              </span>
             </button>
             <button
               onClick={() => handleModuleChange("CATALYST")}
               className={`flex items-center space-x-2 rounded-lg px-3.5 py-1.5 text-xs font-mono font-bold transition-all ${
                 activeModule === "CATALYST"
-                  ? "bg-[#00C4CC] text-[#070B10] shadow-md shadow-[#00C4CC]/20"
-                  : "border border-[#1E2C3D] bg-[#0F1722] text-[#8B949E] hover:text-white"
+                  ? "bg-[#00C4CC] text-[#070B10] shadow-sm shadow-[#00C4CC]/30"
+                  : "text-[#8B949E] hover:text-white"
               }`}
             >
               <span>📈</span>
               <span>Catalyst Event Studies</span>
+              <span className="rounded bg-black/25 px-1.5 py-0.2 text-[9px] font-sans font-semibold">
+                CAR / OLS
+              </span>
             </button>
           </div>
         </div>
