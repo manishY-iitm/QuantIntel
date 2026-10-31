@@ -212,3 +212,46 @@ def test_random_equities_india_and_us_live_quotes():
         expected = round(((s.target_price / s.reference_price) - 1.0) * 100, 2)
         assert abs(s.potential_return_pct - expected) < 0.05
 
+
+def test_adani_group_equities_live_pricing_and_resolution():
+    """
+    Test Adani Group equities live market spot prices and multi-entity resolution.
+    Validates Adani Enterprises, Adani Ports, Adani Power, and Adani Green.
+    """
+    service = MarketDataService()
+    orchestrator = FutureStockOrchestrator()
+
+    adani_entities = [
+        ("ADANIENT", "ADANIENT.NS", 2000.0, 3500.0),      # Adani Enterprises (~₹2,579)
+        ("Adani Ports", "ADANIPORTS.NS", 1400.0, 2200.0),  # Adani Ports (~₹1,850)
+        ("ADANIPOWER", "ADANIPOWER.NS", 120.0, 300.0),     # Adani Power (~₹189)
+        ("ADANIGREEN", "ADANIGREEN.NS", 900.0, 1600.0),   # Adani Green Energy (~₹1,298)
+    ]
+
+    for query, expected_ticker, min_price, max_price in adani_entities:
+        ticker, region, _ = service.resolve_ticker(query, country="India")
+        assert ticker == expected_ticker, f"Expected {expected_ticker} for query {query}"
+        assert region == MarketRegion.INDIA
+
+        prof, fin, df = service.get_company_data(query, country="India")
+        assert prof.ticker == expected_ticker
+        assert prof.currency == "INR"
+        assert min_price <= prof.current_price <= max_price, (
+            f"{prof.company_name} ({ticker}) price {prof.current_price} outside expected range [{min_price}, {max_price}]"
+        )
+        assert prof.fifty_two_week_high >= prof.fifty_two_week_low
+        assert not df.empty
+        assert "Close" in df.columns
+
+    # End-to-end Adani Enterprises Forecast Dossier
+    report = orchestrator.research("Adani Enterprises", horizon=ForecastHorizon.ONE_YEAR, country="India")
+    assert report.company_profile.ticker == "ADANIENT.NS"
+    assert report.company_profile.currency == "INR"
+    assert report.company_profile.current_price > 2000.0
+    assert report.verification_audit.is_audit_passed is True
+    assert len(report.scenarios) == 3
+    for s in report.scenarios:
+        expected = round(((s.target_price / s.reference_price) - 1.0) * 100, 2)
+        assert abs(s.potential_return_pct - expected) < 0.05
+
+

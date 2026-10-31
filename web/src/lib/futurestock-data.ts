@@ -480,6 +480,49 @@ export function resolveQueryToPreset(query: string, country?: string): PresetSto
   }
 
   // Common aliases
+  if (q.includes("ADANI")) {
+    let adaniTicker = "ADANIENT.NS";
+    let adaniName = "Adani Enterprises Limited";
+    let spotPrice = 2579.4;
+    if (q.includes("PORT")) {
+      adaniTicker = "ADANIPORTS.NS";
+      adaniName = "Adani Ports and Special Economic Zone Limited";
+      spotPrice = 1850.0;
+    } else if (q.includes("GREEN")) {
+      adaniTicker = "ADANIGREEN.NS";
+      adaniName = "Adani Green Energy Limited";
+      spotPrice = 1298.7;
+    } else if (q.includes("POWER")) {
+      adaniTicker = "ADANIPOWER.NS";
+      adaniName = "Adani Power Limited";
+      spotPrice = 189.0;
+    } else if (q.includes("GAS") || q.includes("TOTAL")) {
+      adaniTicker = "ATGL.NS";
+      adaniName = "Adani Total Gas Limited";
+      spotPrice = 582.0;
+    } else if (q.includes("WILMAR")) {
+      adaniTicker = "AWL.NS";
+      adaniName = "Adani Wilmar Limited";
+      spotPrice = 312.0;
+    } else if (q.includes("ENERGY") || q.includes("TRANS")) {
+      adaniTicker = "ADANIENSOL.NS";
+      adaniName = "Adani Energy Solutions Limited";
+      spotPrice = 880.0;
+    }
+    return {
+      ticker: adaniTicker,
+      name: adaniName,
+      region: "INDIA",
+      exchange: "NSE / BSE",
+      currency: "INR",
+      sector: "Infrastructure, Energy & Commodities",
+      category: "GROWTH",
+      price: spotPrice,
+      marketCapStr: "₹2.9L Cr",
+      volatility: 0.38,
+      highlight: `Real-time equity model for ${adaniName} on NSE.`,
+    };
+  }
   if (q.includes("RELIANCE") || q === "RIL") {
     return POPULAR_TICKERS.find((t) => t.ticker === "RELIANCE.NS")!;
   }

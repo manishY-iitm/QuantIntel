@@ -1,10 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
+import dns from "node:dns";
+
+// Ensure Node uses IPv4 first to avoid unreachable IPv6 hangs
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch {
+  // ignore if not supported
+}
 
 interface TickerMapping {
   [key: string]: string;
 }
 
 const COMMON_INDIAN_STOCKS: TickerMapping = {
+  // Adani Group Equities
+  ADANI: "ADANIENT.NS",
+  "ADANI GROUP": "ADANIENT.NS",
+  "ADANI ENTERPRISES": "ADANIENT.NS",
+  ADANIENT: "ADANIENT.NS",
+  "ADANIENT.NS": "ADANIENT.NS",
+  "ADANI PORTS": "ADANIPORTS.NS",
+  ADANIPORTS: "ADANIPORTS.NS",
+  "ADANIPORTS.NS": "ADANIPORTS.NS",
+  "ADANI GREEN": "ADANIGREEN.NS",
+  ADANIGREEN: "ADANIGREEN.NS",
+  "ADANIGREEN.NS": "ADANIGREEN.NS",
+  "ADANI POWER": "ADANIPOWER.NS",
+  ADANIPOWER: "ADANIPOWER.NS",
+  "ADANIPOWER.NS": "ADANIPOWER.NS",
+  "ADANI TOTAL GAS": "ATGL.NS",
+  ATGL: "ATGL.NS",
+  "ATGL.NS": "ATGL.NS",
+  "ADANI WILMAR": "AWL.NS",
+  AWL: "AWL.NS",
+  "AWL.NS": "AWL.NS",
+  "ADANI ENERGY": "ADANIENSOL.NS",
+  "ADANI ENERGY SOLUTIONS": "ADANIENSOL.NS",
+  ADANIENSOL: "ADANIENSOL.NS",
+  "ADANIENSOL.NS": "ADANIENSOL.NS",
+  "AMBUJA CEMENTS": "AMBUJACEM.NS",
+  AMBUJA: "AMBUJACEM.NS",
+  AMBUJACEM: "AMBUJACEM.NS",
+  ACC: "ACC.NS",
+  "ACC.NS": "ACC.NS",
+  NDTV: "NDTV.NS",
+  "NDTV.NS": "NDTV.NS",
+
+  // Telecom & Tech
   JIO: "JPL.NS",
   JPL: "JPL.NS",
   "JIO PLATFORMS": "JPL.NS",
@@ -85,28 +127,49 @@ const COMMON_US_STOCKS: TickerMapping = {
 };
 
 function resolveSymbol(query: string, country?: string | null): { symbol: string; isIndia: boolean } {
-  const q = query.trim().toUpperCase().replace("$", "");
+  const raw = query.trim().toUpperCase().replace("$", "");
   const c = (country || "").trim().toUpperCase();
   const isIndiaFilter = c === "INDIA" || c === "IN" || c === "NSE" || c === "BSE";
 
-  if (COMMON_INDIAN_STOCKS[q]) {
-    return { symbol: COMMON_INDIAN_STOCKS[q], isIndia: true };
+  if (COMMON_INDIAN_STOCKS[raw]) {
+    return { symbol: COMMON_INDIAN_STOCKS[raw], isIndia: true };
   }
 
-  if (COMMON_US_STOCKS[q] && !isIndiaFilter) {
-    return { symbol: COMMON_US_STOCKS[q], isIndia: false };
+  // Handle generic Adani searches
+  if (raw.includes("ADANI")) {
+    if (raw.includes("PORT")) return { symbol: "ADANIPORTS.NS", isIndia: true };
+    if (raw.includes("GREEN")) return { symbol: "ADANIGREEN.NS", isIndia: true };
+    if (raw.includes("POWER")) return { symbol: "ADANIPOWER.NS", isIndia: true };
+    if (raw.includes("GAS") || raw.includes("TOTAL")) return { symbol: "ATGL.NS", isIndia: true };
+    if (raw.includes("WILMAR")) return { symbol: "AWL.NS", isIndia: true };
+    if (raw.includes("ENERGY") || raw.includes("TRANS")) return { symbol: "ADANIENSOL.NS", isIndia: true };
+    return { symbol: "ADANIENT.NS", isIndia: true };
   }
+
+  // Handle Tata searches
+  if (raw.includes("TATA")) {
+    if (raw.includes("MOTOR")) return { symbol: "TATAMOTORS.NS", isIndia: true };
+    if (raw.includes("POWER")) return { symbol: "TATAPOWER.NS", isIndia: true };
+    if (raw.includes("STEEL")) return { symbol: "TATASTEEL.NS", isIndia: true };
+    if (raw.includes("CONSULT") || raw.includes("TCS")) return { symbol: "TCS.NS", isIndia: true };
+  }
+
+  if (COMMON_US_STOCKS[raw] && !isIndiaFilter) {
+    return { symbol: COMMON_US_STOCKS[raw], isIndia: false };
+  }
+
+  const cleanTicker = raw.replace(/\s+/g, "");
 
   if (isIndiaFilter) {
-    const symbol = q.endsWith(".NS") || q.endsWith(".BO") ? q : `${q}.NS`;
+    const symbol = cleanTicker.endsWith(".NS") || cleanTicker.endsWith(".BO") ? cleanTicker : `${cleanTicker}.NS`;
     return { symbol, isIndia: true };
   }
 
-  if (q.endsWith(".NS") || q.endsWith(".BO")) {
-    return { symbol: q, isIndia: true };
+  if (cleanTicker.endsWith(".NS") || cleanTicker.endsWith(".BO")) {
+    return { symbol: cleanTicker, isIndia: true };
   }
 
-  return { symbol: q, isIndia: false };
+  return { symbol: cleanTicker, isIndia: false };
 }
 
 function calculateAnnualizedVolatility(prices: number[]): number {

@@ -574,5 +574,77 @@
     "model_version": "FutureStock-v1.0-CLM-GBM",
     "realized_outcome_price": null,
     "evaluation": null
+  },
+  {
+    "record_id": "fs_ADANI PORTS_1793465698",
+    "ticker": "ADANI PORTS",
+    "company_name": "ADANI PORTS Corporation",
+    "exchange": "NASDAQ",
+    "currency": "USD",
+    "timestamp_utc": "2026-10-31T16:54:58.669811+00:00",
+    "reference_price": 204.6,
+    "horizon": "1y",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 164.13,
+        "potential_return_pct": -19.78,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 269.64,
+        "potential_return_pct": 31.79,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 434.24,
+        "potential_return_pct": 112.24,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 164.13,
+    "monte_carlo_p50": 269.64,
+    "monte_carlo_p95": 434.24,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
+  },
+  {
+    "record_id": "fs_NVDA_1793466226",
+    "ticker": "NVDA",
+    "company_name": "NVIDIA Corporation",
+    "exchange": "NMS",
+    "currency": "USD",
+    "timestamp_utc": "2026-10-31T17:03:46.073852+00:00",
+    "reference_price": 204.64,
+    "horizon": "1y",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 121.86,
+        "potential_return_pct": -40.45,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 255.4,
+        "potential_return_pct": 24.8,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 519.64,
+        "potential_return_pct": 153.93,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 121.86,
+    "monte_carlo_p50": 255.4,
+    "monte_carlo_p95": 519.64,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
   }
 ]
