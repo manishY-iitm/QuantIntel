@@ -13,8 +13,8 @@
 
 The complete architecture whitepapers and technical overview are available directly in this repository:
 
-- 📊 **Technical Presentation:** [**`QuantIntel_Architecture_Overview.pptx`**](./QuantIntel_Architecture_Overview.pptx)
-- 📄 **Architecture Whitepaper:** [**`QuantIntel_Whitepaper.pdf`**](./QuantIntel_Whitepaper.pdf) *(Click to view directly in browser)*
+- 📊 **Technical Presentation (16:9 PPTX):** [**`QuantIntel_Finale_Presentation.pptx`**](./QuantIntel_Finale_Presentation.pptx)
+- 📄 **Executive Presentation (PDF):** [**`QuantIntel_Finale_Presentation.pdf`**](./QuantIntel_Finale_Presentation.pdf) *(Click to view directly in browser)*
 
 ---
 

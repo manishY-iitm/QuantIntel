@@ -71,24 +71,24 @@ export function Footer() {
             <ul className="space-y-2 text-[11px]">
               <li>
                 <a
-                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Whitepaper.pdf"
+                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Finale_Presentation.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#00C4CC] transition-colors inline-flex items-center space-x-1"
                 >
                   <FileText className="h-3 w-3" />
-                  <span>Architecture Whitepaper (PDF)</span>
+                  <span>Executive Presentation (PDF)</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Architecture_Overview.pptx"
+                  href="https://github.com/manishY-iitm/QuantIntel/blob/main/QuantIntel_Finale_Presentation.pptx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#00C4CC] transition-colors inline-flex items-center space-x-1"
                 >
                   <FileText className="h-3 w-3" />
-                  <span>Technical Overview (.pptx)</span>
+                  <span>Finale Showcase Deck (.pptx)</span>
                 </a>
               </li>
               <li>
