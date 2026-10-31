@@ -206,7 +206,19 @@ cp .env.example .env
 ```
 *(Note: QuantIntel features seamless live web fallback and simulation presets, so you can test and explore immediately even without an external API key!)*
 
-### 4. Launch the Streamlit Research Dashboard
+### 4. Launch the Applications
+
+#### Option A: Next.js Institutional Platform & Web Quant Studio (Port 3000)
+```bash
+cd web
+npm install
+npm run dev   # Development
+# or
+npm run build && npm start  # Production
+```
+Open **`http://localhost:3000`** in your browser.
+
+#### Option B: Streamlit Research Dashboard (Port 8501)
 ```bash
 python run.py
 # or
