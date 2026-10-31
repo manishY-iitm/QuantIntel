@@ -250,6 +250,41 @@ pytest -v
 
 ---
 
+## 🔮 FutureStock: Autonomous AI Stock Intelligence & Quantitative Forecasting Engine
+
+**FutureStock** is QuantIntel's integrated multi-agent quantitative intelligence module, bridging corporate fundamental research, automated web filings, and rigorous probabilistic forecasting.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                      FUTURESTOCK 8-AGENT RESEARCH COLLECTIVE                           │
+├─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬──────────────────┤
+│  Agent A    │  Agent B    │  Agent C    │  Agent D    │  Agent E    │  Agents F, G, H  │
+│ Chief Quant │ TinyFish Web│ Financial   │ Monte Carlo │ 3-Stage DCF │ Analogs, Risk    │
+│ Orchestrator│ DOM Cleaner │ Statement   │ 2,000 GBM   │ & Valuation │ & Fact Audit     │
+└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴──────────────────┘
+```
+
+### Core Capabilities:
+1. **8-Agent Multi-Agent Collective:**
+   - **Chief Orchestrator (A):** Directs inquiry decomposition, asset resolution, and evidence collation.
+   - **TinyFish Web Researcher (B):** Fetches primary investor relations filings, SEC Form 10-K/8-K disclosures, and BSE/NSE announcements with **85%+ DOM token savings**.
+   - **Financial Statement Analyst (C):** Audits revenue growth, gross margins, free cash flow, ROE, net debt, and capital dilution.
+   - **Quantitative Research Engine (D):** Executes a 2,000-path Geometric Brownian Motion (GBM) simulation computing 5th, 25th, Median, 75th, and 95th price quantiles, plus 95% single-tail Value at Risk (VaR) and Conditional VaR (CVaR).
+   - **Valuation Specialist (E):** Computes 3-stage Discounted Cash Flow (DCF) fair values alongside P/E, forward P/E, P/S, and EV/EBITDA multiples.
+   - **Historical Analog Agent (F):** Matches companies with historical cycles (e.g., CSCO 1999, MSFT 2014) with explicit **survivorship-bias evaluation**.
+   - **Risk & Adversarial Auditor (G):** Formulates rigorous bear arguments and identifies thesis invalidation triggers.
+   - **Deterministic Verifier (H):** Strictly validates mathematical target returns:
+     $$\text{Return (\%)} = \left(\frac{\text{Target Price}}{\text{Reference Price}} - 1\right) \times 100$$
+2. **Global & Indian Market Coverage:** Full native data feeds for both US Equities (`NVDA`, `AAPL`, `TSLA`, `ARM`, `CRWD`) in **USD ($)** and Indian Equities (`RELIANCE.NS`, `TCS.NS`, `ZOMATO.NS`, `SWIGGY.NS`) in **INR (₹)**.
+3. **Dual Presentation Architecture:**
+   - **Beginner Mode:** Plain-language synthesis explaining scenarios, operating margins, and risks without jargon.
+   - **Advanced Quant Mode:** Institutional-grade statistics including Sharpe/Sortino ratios, interquartile spreads, DCF WACC discount rates, and terminal growth assumptions.
+4. **Portfolio Intelligence & Macro Stress Testing:** Interactive portfolio weight allocator testing macroeconomic shocks (Global Liquidity Shock -20%, Stagflation -14%, Hawkish Rate Hike -10%, Tech De-Rating -16%, AI Melt-Up +15%).
+5. **Immutable Track Record Ledger:** Persists historical forecast targets and evaluates accuracy (MAE, RMSE, directional hit rate) in `quantintel/data/forecast_ledger.json`.
+6. **Multi-Format Institutional Dossiers:** Instant generation and export of structured Markdown, JSON, and professional PDF reports.
+
+---
+
 ## ⚖️ Responsible AI & Ethical Governance
 
 * **100% Sourced Citations:** Every single factual statement, event date, and metric is explicitly anchored to an audited source URL.
