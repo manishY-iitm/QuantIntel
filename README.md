@@ -181,6 +181,46 @@ flowchart TD
 
 ---
 
+## ⚡ Quickstart & Local Installation
+
+### 1. Prerequisites
+- Python 3.9+
+- Linux / macOS / Windows WSL
+
+### 2. Setup Virtual Environment
+```bash
+git clone https://github.com/manishY-iitm/QuantIntel.git
+cd QuantIntel
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+### 3. Configure Environment Variables (Optional)
+```bash
+cp .env.example .env
+# Add your TinyFish API Key if available:
+# TINYFISH_API_KEY=your_key_here
+```
+*(Note: QuantIntel features seamless live web fallback and simulation presets, so you can test and explore immediately even without an external API key!)*
+
+### 4. Launch the Streamlit Research Dashboard
+```bash
+python run.py
+# or
+streamlit run quantintel/ui/app.py
+```
+Open **`http://localhost:8501`** in your browser.
+
+### 5. Run the Automated Test Suite
+```bash
+pytest -v
+```
+
+---
+
 ## 🎯 Hackathon Scope & Disciplined Boundaries
 
 ### What We Deliver in the 48-Hour MVP:
