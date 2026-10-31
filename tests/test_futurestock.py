@@ -170,3 +170,45 @@ def test_jio_ipo_and_country_aware_resolution():
     for s in report.scenarios:
         expected = round(((s.target_price / s.reference_price) - 1.0) * 100, 2)
         assert abs(s.potential_return_pct - expected) < 0.05
+
+
+def test_random_equities_india_and_us_live_quotes():
+    """
+    Test random stocks from India and US that are not in the default presets.
+    Verifies real market spot prices, correct currencies, exchange detection, and mathematical validity.
+    """
+    service = MarketDataService()
+    orchestrator = FutureStockOrchestrator()
+
+    # 1. Random Indian Stock: TCS (Tata Consultancy Services)
+    tcs_ticker, tcs_reg, _ = service.resolve_ticker("TCS", country="India")
+    assert tcs_ticker == "TCS.NS"
+    assert tcs_reg == MarketRegion.INDIA
+    tcs_prof, tcs_fin, tcs_df = service.get_company_data("TCS", country="India")
+    assert tcs_prof.ticker == "TCS.NS"
+    assert tcs_prof.currency == "INR"
+    assert tcs_prof.current_price > 1000.0  # Real spot price ~₹2,500+
+    assert tcs_prof.fifty_two_week_high >= tcs_prof.fifty_two_week_low
+    assert not tcs_df.empty
+
+    # 2. Random US Stock: Microsoft (MSFT)
+    msft_ticker, msft_reg, _ = service.resolve_ticker("Microsoft", country="US")
+    assert msft_ticker == "MSFT"
+    assert msft_reg == MarketRegion.US
+    msft_prof, msft_fin, msft_df = service.get_company_data("Microsoft", country="US")
+    assert msft_prof.ticker == "MSFT"
+    assert msft_prof.currency == "USD"
+    assert msft_prof.current_price > 250.0  # Real spot price ~$500+
+    assert msft_prof.fifty_two_week_high >= msft_prof.fifty_two_week_low
+    assert not msft_df.empty
+
+    # 3. End-to-end Orchestration for random stock TCS
+    tcs_report = orchestrator.research("TCS", horizon=ForecastHorizon.SIX_MONTHS, country="India")
+    assert tcs_report.company_profile.ticker == "TCS.NS"
+    assert tcs_report.company_profile.currency == "INR"
+    assert tcs_report.verification_audit.is_audit_passed is True
+    assert len(tcs_report.scenarios) == 3
+    for s in tcs_report.scenarios:
+        expected = round(((s.target_price / s.reference_price) - 1.0) * 100, 2)
+        assert abs(s.potential_return_pct - expected) < 0.05
+

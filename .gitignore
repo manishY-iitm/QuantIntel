@@ -47,6 +47,7 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+*.tsbuildinfo
 
 # QuantIntel outputs
 *.pdf_export.pdf

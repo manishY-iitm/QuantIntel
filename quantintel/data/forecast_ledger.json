@@ -466,5 +466,113 @@
     "model_version": "FutureStock-v1.0-CLM-GBM",
     "realized_outcome_price": null,
     "evaluation": null
+  },
+  {
+    "record_id": "fs_TCS.NS_1793440951",
+    "ticker": "TCS.NS",
+    "company_name": "Tata Consultancy Services Limited",
+    "exchange": "NSI",
+    "currency": "INR",
+    "timestamp_utc": "2026-10-31T10:02:31.210060+00:00",
+    "reference_price": 2502.6,
+    "horizon": "1y",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 1344.76,
+        "potential_return_pct": -46.27,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 2085.11,
+        "potential_return_pct": -16.68,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 3176.62,
+        "potential_return_pct": 26.93,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 1344.76,
+    "monte_carlo_p50": 2085.11,
+    "monte_carlo_p95": 3176.62,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
+  },
+  {
+    "record_id": "fs_NVDA_1793463341",
+    "ticker": "NVDA",
+    "company_name": "NVIDIA Corporation",
+    "exchange": "NMS",
+    "currency": "USD",
+    "timestamp_utc": "2026-10-31T16:15:41.546038+00:00",
+    "reference_price": 204.64,
+    "horizon": "1y",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 121.86,
+        "potential_return_pct": -40.45,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 255.4,
+        "potential_return_pct": 24.8,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 519.64,
+        "potential_return_pct": 153.93,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 121.86,
+    "monte_carlo_p50": 255.4,
+    "monte_carlo_p95": 519.64,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
+  },
+  {
+    "record_id": "fs_NVDA_1793464962",
+    "ticker": "NVDA",
+    "company_name": "NVIDIA Corporation",
+    "exchange": "NMS",
+    "currency": "USD",
+    "timestamp_utc": "2026-10-31T16:42:42.276392+00:00",
+    "reference_price": 204.64,
+    "horizon": "1y",
+    "scenarios": [
+      {
+        "scenario_type": "BEARISH",
+        "target_price": 121.86,
+        "potential_return_pct": -40.45,
+        "methodology": "5th Percentile Monte Carlo + Macro Downside Multiple Compression"
+      },
+      {
+        "scenario_type": "BASE",
+        "target_price": 255.4,
+        "potential_return_pct": 24.8,
+        "methodology": "50th Percentile (Median) GBM Path + Consensus Margin Maintenance"
+      },
+      {
+        "scenario_type": "BULLISH",
+        "target_price": 519.64,
+        "potential_return_pct": 153.93,
+        "methodology": "95th Percentile Monte Carlo + Premium Multiple Expansion"
+      }
+    ],
+    "monte_carlo_p5": 121.86,
+    "monte_carlo_p50": 255.4,
+    "monte_carlo_p95": 519.64,
+    "model_version": "FutureStock-v1.0-CLM-GBM",
+    "realized_outcome_price": null,
+    "evaluation": null
   }
 ]
