@@ -48,6 +48,7 @@ env/
 .coverage
 htmlcov/
 *.tsbuildinfo
+.~lock*
 
 # QuantIntel outputs
 *.pdf_export.pdf
