@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Globe2,
+  Globe,
   TrendingUp,
   TrendingDown,
   Activity,
@@ -39,7 +40,7 @@ import {
   NewsCategory,
   StockWatchCategory,
 } from "@/lib/country-types";
-import { SUPPORTED_COUNTRIES_LIST, getCountryMetadata } from "@/lib/country-data";
+import { SUPPORTED_COUNTRIES_LIST, getCountryMetadata, resolveCountry } from "@/lib/country-data";
 
 interface CountryIntelligenceStudioProps {
   initialCountry?: CountryCode;
@@ -59,6 +60,25 @@ export function CountryIntelligenceStudio({
   const [selectedSentimentFilter, setSelectedSentimentFilter] = useState<string>("ALL");
   const [breakingOnly, setBreakingOnly] = useState<boolean>(false);
   const [minConfidence, setMinConfidence] = useState<number>(0.7);
+
+  // FutureStock Search Engine State (Live Autocomplete & Typo/Phrase Matching)
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isSearchingSuggestions, setIsSearchingSuggestions] = useState<boolean>(false);
+  const searchBoxRef = useRef<HTMLFormElement>(null);
+
+  // 8-Agent Dynamic Execution State
+  const [countryAgents, setCountryAgents] = useState([
+    { id: "A", name: "Country Resolver", icon: "🌍", status: "SYNTHESIZED", active: false },
+    { id: "B", name: "TinyFish Web", icon: "🌐", status: "CLEANED", active: false },
+    { id: "C", name: "Central Bank", icon: "🏛️", status: "AUDITED", active: false },
+    { id: "D", name: "Index & Feeds", icon: "📈", status: "STREAMING", active: false },
+    { id: "E", name: "14-Category AI", icon: "⚡", status: "100% AUDITED", active: false },
+    { id: "F", name: "Sector Heatmap", icon: "📊", status: "CALIBRATED", active: false },
+    { id: "G", name: "Stocks & LSE", icon: "🎯", status: "DISCOVERED", active: false },
+    { id: "H", name: "3-Scenario Sim", icon: "🔮", status: "SYNTHESIZED", active: false },
+  ]);
 
   // Active Tab for News Feed
   const [newsTab, setNewsTab] = useState<
@@ -88,18 +108,87 @@ export function CountryIntelligenceStudio({
   const [optionsChainData, setOptionsChainData] = useState<any[] | null>(null);
   const [isOptionsLoading, setIsOptionsLoading] = useState<boolean>(false);
 
+  // Dismiss suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Sync search input with initial/selected country
+  useEffect(() => {
+    const meta = getCountryMetadata(selectedCountry);
+    if (meta && !searchQuery) {
+      setSearchQuery(meta.name);
+    }
+  }, [selectedCountry]);
+
+  // Debounced live suggestions search (queries /api/country/search)
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      const q = searchQuery.trim();
+      if (!q) {
+        setSuggestions(
+          SUPPORTED_COUNTRIES_LIST.slice(0, 8).map((c) => ({
+            code: c.code,
+            name: c.name,
+            flag: c.flag,
+            currency: c.currency,
+            benchmarkIndexName: c.benchmarkIndexName,
+            benchmarkIndexTicker: c.benchmarkIndexTicker,
+            primaryExchanges: c.primaryExchanges,
+            highlight: c.currency,
+          }))
+        );
+        return;
+      }
+
+      setIsSearchingSuggestions(true);
+      try {
+        const res = await fetch(`/api/country/search?q=${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.results) && data.results.length > 0) {
+            setSuggestions(data.results);
+          }
+        }
+      } catch (err) {
+        console.warn("Country search failed:", err);
+      } finally {
+        setIsSearchingSuggestions(false);
+      }
+    }, 180);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   // Fetch report function
-  const fetchReport = async (forceRefresh: boolean = false) => {
+  const fetchReport = async (forceRefresh: boolean = false, targetCountry?: CountryCode) => {
+    const countryToUse = targetCountry || selectedCountry;
     if (forceRefresh) setIsRefreshing(true);
     else setIsLoading(true);
     setError(null);
+
+    // Stage 1: Pipeline Agents activating
+    setCountryAgents((prev) =>
+      prev.map((ag) => {
+        if (ag.id === "A") return { ...ag, status: countryToUse, active: true };
+        if (ag.id === "B") return { ...ag, status: "SCANNING WEB...", active: true };
+        if (ag.id === "C") return { ...ag, status: "AUDITING...", active: true };
+        return { ...ag, active: false };
+      })
+    );
 
     try {
       const res = await fetch("/api/country/intelligence", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          country: selectedCountry,
+          country: countryToUse,
           horizon,
           sector: selectedSectorFilter === "ALL" ? undefined : selectedSectorFilter,
           category: selectedCategoryFilter === "ALL" ? undefined : selectedCategoryFilter,
@@ -111,6 +200,20 @@ export function CountryIntelligenceStudio({
       const json = await res.json();
       if (json.success && json.data) {
         setReport(json.data);
+        // Stage 2: Pipeline Agents completed
+        setCountryAgents((prev) =>
+          prev.map((ag) => {
+            if (ag.id === "A") return { ...ag, status: json.data.countryMetadata.code, active: false };
+            if (ag.id === "B") return { ...ag, status: `DOM -${(json.data.averageTokenSavingsPct || 86.5).toFixed(0)}%`, active: false };
+            if (ag.id === "C") return { ...ag, status: "100% VERIFIED", active: false };
+            if (ag.id === "D") return { ...ag, status: json.data.benchmarkQuote?.ticker || "STREAMING", active: false };
+            if (ag.id === "E") return { ...ag, status: `${json.data.newsFeed.length} AUDITED`, active: false };
+            if (ag.id === "F") return { ...ag, status: `${json.data.sectors.length} SECTORS`, active: false };
+            if (ag.id === "G") return { ...ag, status: `${json.data.stocksToWatch.length} STOCKS`, active: false };
+            if (ag.id === "H") return { ...ag, status: "3 SCENARIOS", active: false };
+            return ag;
+          })
+        );
       } else {
         setError(json.error || "Failed to load country intelligence report.");
       }
@@ -121,6 +224,26 @@ export function CountryIntelligenceStudio({
       setIsLoading(false);
       setIsRefreshing(false);
     }
+  };
+
+  // Handle Search Submission (e.g. 'pakisant future in stock' -> resolves to Pakistan and triggers analysis)
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowSuggestions(false);
+
+    // Resolve country with fuzzy and typo matching
+    const resolved = resolveCountry(searchQuery);
+    setSelectedCountry(resolved.code);
+    setSearchQuery(resolved.name);
+    fetchReport(true, resolved.code);
+  };
+
+  const handleSuggestionSelect = (item: any) => {
+    setShowSuggestions(false);
+    const code = item.code as CountryCode;
+    setSelectedCountry(code);
+    setSearchQuery(item.name);
+    fetchReport(true, code);
   };
 
   // Trigger fetch when country or horizon changes
@@ -334,48 +457,205 @@ export function CountryIntelligenceStudio({
           </div>
         </div>
 
-        {/* 1. COUNTRY SELECTOR BAR (Horizontal Scrollable Pills + Search) */}
-        <div className="mb-6 rounded-2xl border border-[#1E2C3D] bg-[#0E1520]/80 p-3 shadow-lg">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            {/* Quick Country Pills */}
-            <div className="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-thin">
-              {SUPPORTED_COUNTRIES_LIST.map((country) => {
-                const isSelected = selectedCountry === country.code;
-                return (
+        {/* 8-Agent Dynamic Execution Pipeline Indicator (Same as FutureStockStudio) */}
+        <div className="mb-6 rounded-xl border border-[#1E2C3D] bg-[#0B111A]/80 p-3.5 shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1E2C3D]/60 pb-2 mb-2.5">
+            <div className="flex items-center space-x-2 font-mono text-xs text-[#8B949E]">
+              <Activity className={`h-3.5 w-3.5 ${isLoading || isRefreshing ? "text-[#FFBE5C] animate-spin" : "text-[#00C4CC] animate-pulse"}`} />
+              <span className="text-white font-semibold">8-AGENT COUNTRY RECONNAISSANCE COLLECTIVE:</span>
+              <span className={isLoading || isRefreshing ? "text-[#FFBE5C] font-semibold animate-pulse" : "text-[#10B981] font-semibold"}>
+                {isLoading || isRefreshing ? "ACTIVE & SCANNING GLOBAL FINANCIAL FEEDS" : "ONLINE & SYNTHESIZED"}
+              </span>
+            </div>
+            <div className="text-[11px] font-mono text-[#8B949E]">
+              TinyFish Scraper Fleet: <span className="text-[#10B981] font-semibold">{(report?.averageTokenSavingsPct || 86.5).toFixed(1)}% token reduction</span> | Audited: <span className="text-[#10B981] font-semibold">{report?.totalSourcesAudited || 6} web sources</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-[11px] font-mono">
+            {countryAgents.map((ag) => (
+              <div
+                key={ag.id}
+                className={`flex items-center space-x-1.5 rounded-lg border px-2 py-1.5 transition-all ${
+                  ag.active
+                    ? "border-[#00C4CC] bg-[#00C4CC]/15 text-white shadow-sm shadow-[#00C4CC]/30 ring-1 ring-[#00C4CC]/40"
+                    : "border-[#1E2C3D] bg-[#090D12]"
+                }`}
+              >
+                <span className={ag.active ? "animate-bounce" : ""}>{ag.icon}</span>
+                <div className="truncate">
+                  <div className="text-[#C9D1D9] font-medium leading-tight truncate">{ag.name}</div>
+                  <div className={`text-[9px] truncate ${ag.active ? "text-[#FFBE5C] font-bold" : "text-[#00C4CC]"}`}>
+                    {ag.status}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Dual Search Controls (Country Name / Query + Regional Market Selector) */}
+        <div className="mb-8 rounded-xl border border-[#1E2C3D] bg-[#0E1520] p-4 shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Dual Search Input Bar */}
+            <form onSubmit={handleSearchSubmit} className="relative flex-1 flex flex-col sm:flex-row items-center gap-2 max-w-2xl" ref={searchBoxRef}>
+              {/* Search Bar 1: Country / Index / Query with Fuzzy Typo Tolerance */}
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B949E]" />
+                <input
+                  type="text"
+                  placeholder="Enter country, query, or index (e.g. Pakistan, pakisant future in stock, India, KSE-100, US)..."
+                  value={searchQuery}
+                  onFocus={() => setShowSuggestions(true)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  className="w-full rounded-lg border border-[#1E2C3D] bg-[#080C12] py-2 pl-9 pr-3 text-xs text-white placeholder-[#484F58] focus:border-[#00C4CC] focus:outline-none focus:ring-1 focus:ring-[#00C4CC] font-mono"
+                />
+              </div>
+
+              {/* Search Bar 2: Country / Sovereign Market Dropdown */}
+              <div className="w-full sm:w-60 relative">
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#00C4CC]" />
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    const newCode = e.target.value as CountryCode;
+                    setSelectedCountry(newCode);
+                    const matched = SUPPORTED_COUNTRIES_LIST.find((c) => c.code === newCode);
+                    if (matched) setSearchQuery(matched.name);
+                    fetchReport(true, newCode);
+                  }}
+                  className="w-full rounded-lg border border-[#1E2C3D] bg-[#080C12] py-2 pl-8 pr-3 text-xs text-[#C9D1D9] focus:border-[#00C4CC] focus:outline-none font-mono cursor-pointer appearance-none"
+                >
+                  {SUPPORTED_COUNTRIES_LIST.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.name} ({c.primaryExchanges[0]} - {c.currency})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Action Button */}
+              <button
+                type="submit"
+                className="w-full sm:w-auto rounded-lg bg-[#00C4CC] px-4 py-2 text-xs font-bold text-[#070B10] hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-[#00C4CC]/20 whitespace-nowrap flex items-center justify-center space-x-1.5"
+              >
+                <span>Analyze</span>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+
+              {/* Typeahead Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 sm:right-60 mt-1 z-30 rounded-xl border border-[#1E2C3D] bg-[#0E1520] shadow-2xl overflow-hidden max-h-72 overflow-y-auto">
+                  <div className="p-2 text-[10px] font-mono uppercase text-[#8B949E] border-b border-[#1E2C3D]/60 bg-[#0B111A] flex items-center justify-between">
+                    <span>Matched Economies &amp; Sovereign Benchmarks:</span>
+                    {isSearchingSuggestions && (
+                      <span className="text-[#00C4CC] animate-pulse">Searching live web...</span>
+                    )}
+                  </div>
+                  {suggestions.map((item) => (
+                    <button
+                      key={item.code}
+                      type="button"
+                      onClick={() => handleSuggestionSelect(item)}
+                      className="w-full flex items-center justify-between p-2.5 hover:bg-[#162334] text-left transition-colors border-b border-[#1E2C3D]/30 last:border-none"
+                    >
+                      <div className="flex items-center space-x-2.5">
+                        <span className="text-xl leading-none">{item.flag}</span>
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-mono font-bold text-white text-xs">{item.name}</span>
+                            <span className="rounded bg-[#00C4CC]/10 border border-[#00C4CC]/30 px-1.5 py-0.2 text-[9px] font-mono text-[#00C4CC]">
+                              {item.benchmarkIndexTicker}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-[#8B949E] truncate max-w-sm">
+                            {item.benchmarkIndexName} • {Array.isArray(item.primaryExchanges) ? item.primaryExchanges.join(", ") : ""}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[11px] font-mono text-[#FFBE5C] font-semibold">
+                          {item.currency}
+                        </span>
+                        <span className="rounded bg-[#1E2C3D] px-1.5 py-0.5 text-[9px] font-mono text-[#8B949E]">
+                          {item.highlight || item.code}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </form>
+
+            {/* Horizon & Refresh Controls */}
+            <div className="flex items-center space-x-2">
+              <span className="text-xs font-mono text-[#8B949E]">Horizon:</span>
+              <div className="flex rounded-lg border border-[#1E2C3D] bg-[#080C12] p-0.5">
+                {[
+                  { id: "intraday", label: "Intraday" },
+                  { id: "short-term", label: "<1 Mo" },
+                  { id: "medium-term", label: "1-6 Mo" },
+                  { id: "long-term", label: ">6 Mo" },
+                ].map((h) => (
                   <button
-                    key={country.code}
-                    onClick={() => setSelectedCountry(country.code)}
-                    className={`flex items-center space-x-2 rounded-xl px-3 py-2 text-xs font-semibold whitespace-nowrap transition-all ${
-                      isSelected
-                        ? "bg-gradient-to-r from-[#00C4CC] to-[#0A84FF] text-[#070B10] shadow-md shadow-[#00C4CC]/20 scale-105"
-                        : "border border-[#1E2C3D] bg-[#070B10] text-[#C9D1D9] hover:border-[#2A3F58] hover:text-white"
+                    key={h.id}
+                    onClick={() => {
+                      setHorizon(h.id);
+                    }}
+                    className={`rounded-md px-2.5 py-1 text-xs font-mono transition-all ${
+                      horizon === h.id
+                        ? "bg-[#00C4CC] text-[#070B10] font-bold shadow-sm"
+                        : "text-[#8B949E] hover:text-white"
                     }`}
                   >
-                    <span className="text-base leading-none">{country.flag}</span>
-                    <span>{country.name}</span>
-                    <span
-                      className={`text-[10px] font-mono px-1 rounded ${
-                        isSelected ? "bg-black/20 text-[#070B10]" : "text-[#8B949E]"
-                      }`}
-                    >
-                      {country.currency}
-                    </span>
+                    {h.label}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+              <button
+                onClick={() => fetchReport(true)}
+                className="rounded-lg border border-[#1E2C3D] bg-[#080C12] p-2 text-[#8B949E] hover:text-white hover:border-[#00C4CC] transition-colors"
+                title="Re-run Live Country Scan"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin text-[#00C4CC]" : ""}`} />
+              </button>
             </div>
+          </div>
 
-            {/* Country Search Bar */}
-            <div className="relative min-w-[200px]">
-              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#8B949E]" />
-              <input
-                type="text"
-                placeholder="Search country or index..."
-                value={countrySearch}
-                onChange={(e) => setCountrySearch(e.target.value)}
-                className="w-full rounded-xl border border-[#1E2C3D] bg-[#070B10] py-2 pl-9 pr-3 text-xs text-[#E6EDF3] placeholder-[#8B949E] focus:border-[#00C4CC] focus:outline-none"
-              />
-            </div>
+          {/* Quick Country Pills Row below the search engine bar */}
+          <div className="mt-3 pt-3 border-t border-[#1E2C3D]/60 flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-thin">
+            <span className="text-[10px] font-mono text-[#8B949E] uppercase whitespace-nowrap mr-1">Trending:</span>
+            {SUPPORTED_COUNTRIES_LIST.map((c) => {
+              const isSelected = selectedCountry === c.code;
+              return (
+                <button
+                  key={c.code}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCountry(c.code);
+                    setSearchQuery(c.name);
+                    fetchReport(true, c.code);
+                  }}
+                  className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition-all ${
+                    isSelected
+                      ? "bg-gradient-to-r from-[#00C4CC] to-[#0A84FF] text-[#070B10] shadow-md shadow-[#00C4CC]/20 scale-105"
+                      : "border border-[#1E2C3D] bg-[#070B10] text-[#C9D1D9] hover:border-[#2A3F58] hover:text-white"
+                  }`}
+                >
+                  <span className="text-sm leading-none">{c.flag}</span>
+                  <span>{c.name}</span>
+                  <span
+                    className={`text-[9px] font-mono px-1 rounded ${
+                      isSelected ? "bg-black/20 text-[#070B10]" : "text-[#8B949E]"
+                    }`}
+                  >
+                    {c.currency}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

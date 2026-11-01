@@ -17,6 +17,7 @@ from .schemas import (
     CountryMacroSummary,
     CountryIntelligenceReport,
     SUPPORTED_COUNTRIES,
+    resolve_country,
 )
 from .market_service import CountryMarketService
 from .country_researcher import TinyFishCountryResearcher
@@ -35,6 +36,7 @@ __all__ = [
     "CountryMacroSummary",
     "CountryIntelligenceReport",
     "SUPPORTED_COUNTRIES",
+    "resolve_country",
     "CountryMarketService",
     "TinyFishCountryResearcher",
     "CountryIntelligenceClassifier",

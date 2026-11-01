@@ -7,7 +7,12 @@ export type CountryCode =
   | "DE"
   | "AU"
   | "CA"
-  | "SG";
+  | "SG"
+  | "PK"
+  | "SA"
+  | "BR"
+  | "KR"
+  | "AE";
 
 export type NewsCategory =
   | "GOVERNMENT_POLICY"

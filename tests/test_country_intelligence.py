@@ -13,6 +13,7 @@ from quantintel.country.schemas import (
     StockWatchCategory,
     CountryNewsItem,
     SUPPORTED_COUNTRIES,
+    resolve_country,
 )
 from quantintel.country.market_service import CountryMarketService
 from quantintel.country.country_researcher import TinyFishCountryResearcher
@@ -93,3 +94,52 @@ def test_country_classifier_end_to_end():
     stock = report.stocks_to_watch[0]
     assert stock.category in StockWatchCategory
     assert len(stock.relevance_reasoning) > 0
+
+
+def test_fuzzy_country_resolver():
+    """Verify natural language queries and typos resolve accurately to countries."""
+    # Typos and multi-word queries
+    pak_meta = resolve_country("pakisant future in stock")
+    assert pak_meta.code == CountryCode.PAKISTAN
+    assert pak_meta.name == "Pakistan"
+    assert pak_meta.benchmark_index_ticker == "^KSE"
+    assert pak_meta.currency == "PKR"
+
+    pak_meta2 = resolve_country("pakisant")
+    assert pak_meta2.code == CountryCode.PAKISTAN
+
+    pak_meta3 = resolve_country("Pakistan")
+    assert pak_meta3.code == CountryCode.PAKISTAN
+
+    pak_meta4 = resolve_country("kse-100")
+    assert pak_meta4.code == CountryCode.PAKISTAN
+
+    ind_meta = resolve_country("nifty 50")
+    assert ind_meta.code == CountryCode.INDIA
+
+    us_meta = resolve_country("sp500")
+    assert us_meta.code == CountryCode.UNITED_STATES
+
+
+def test_pakistan_country_intelligence_pipeline():
+    """Verify full end-to-end country intelligence for Pakistan."""
+    researcher = TinyFishCountryResearcher()
+    classifier = CountryIntelligenceClassifier()
+
+    news_items = researcher.research_country(CountryCode.PAKISTAN, max_results=5)
+    assert len(news_items) >= 3
+
+    report = classifier.generate_report(CountryCode.PAKISTAN, news_items)
+    assert report.country_metadata.code == CountryCode.PAKISTAN
+    assert report.country_metadata.name == "Pakistan"
+    assert report.country_metadata.flag == "🇵🇰"
+    assert report.country_metadata.currency == "PKR"
+    assert report.benchmark_quote is not None
+    assert report.benchmark_quote.ticker == "^KSE"
+    assert len(report.sectors) >= 5
+    assert len(report.stocks_to_watch) >= 3
+
+    # Check anchor stocks include prominent Pakistani equities
+    tickers = [s.ticker for s in report.stocks_to_watch]
+    assert any("KA" in t or t in ["OGDC.KA", "MCB.KA", "LUCK.KA", "ENGRO.KA"] for t in tickers)
+

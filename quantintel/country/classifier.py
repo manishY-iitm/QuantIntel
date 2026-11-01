@@ -313,6 +313,16 @@ class CountryIntelligenceClassifier:
                 ("Siemens AG", "SIE.DE", "Industrial Machinery & Siemens", "Digital industries software orders, smart infrastructure electrification, and rail mobility."),
                 ("BMW AG", "BMW.DE", "Automotive Engineering", "Premium EV vehicle segment expansion, pricing discipline, and high return on capital employed."),
             ],
+            CountryCode.PAKISTAN: [
+                ("Oil & Gas Development Company", "OGDC.KA", "Oil & Gas Exploration & Production", "Dominant sovereign exploration and production company with major gas field reserves, robust cash margins, and energy circular debt resolution upside."),
+                ("MCB Bank Limited", "MCB.KA", "Commercial Banking", "Premier commercial banking franchise characterized by superior asset quality, strong capital adequacy, and steady dividend yields."),
+                ("Lucky Cement Limited", "LUCK.KA", "Cement & Construction Materials", "Largest cement producer and infrastructure exporter with integrated operations in clinker, overseas milling, and power generation."),
+                ("Engro Corporation Limited", "ENGRO.KA", "Fertilizers & Agriculture", "Diversified conglomerate leader spanning specialized fertilizers, LNG terminal infrastructure, petrochemicals, and energy."),
+            ],
+            CountryCode.SAUDI_ARABIA: [
+                ("Saudi Arabian Oil Company (Aramco)", "2222.SR", "Energy & Oil (Aramco)", "World largest crude exporter with low lifting costs, sustainable free cash flow, and high dividend distributions."),
+                ("Al Rajhi Bank", "1120.SR", "Banking & Financial Services", "Largest Islamic banking group globally, pivotal to Vision 2030 retail and corporate lending."),
+            ],
         }
 
         anchors = country_anchors.get(country_code, [

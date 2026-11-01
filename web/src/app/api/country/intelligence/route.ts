@@ -12,7 +12,7 @@ import {
   NewsCategory,
   StockWatchCategory,
 } from "@/lib/country-types";
-import { SUPPORTED_COUNTRIES_LIST, getCountryMetadata } from "@/lib/country-data";
+import { SUPPORTED_COUNTRIES_LIST, getCountryMetadata, resolveCountry } from "@/lib/country-data";
 
 try {
   dns.setDefaultResultOrder("ipv4first");
@@ -30,7 +30,9 @@ const CACHE_TTL_MS = 90 * 1000; // 90 seconds
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const country = (searchParams.get("country") || "IN").toUpperCase() as CountryCode;
+  const rawCountry = searchParams.get("country") || searchParams.get("q") || "IN";
+  const meta = resolveCountry(rawCountry);
+  const country = meta.code;
   const horizon = searchParams.get("horizon") || "short-term";
   const forceRefresh = searchParams.get("refresh") === "true";
 
@@ -44,7 +46,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
-    const country = (body.country || "IN").toUpperCase() as CountryCode;
+    const rawCountry = body.country || body.query || body.q || "IN";
+    const meta = resolveCountry(rawCountry);
+    const country = meta.code;
     const horizon = body.horizon || "short-term";
     const sector = body.sector;
     const category = body.category;
@@ -234,6 +238,11 @@ async function fetchIndexQuote(
     AU: [8125.0, 0.15],
     CA: [24480.0, 0.25],
     SG: [3565.0, 0.18],
+    PK: [88920.0, 0.52],
+    SA: [11980.5, 0.15],
+    BR: [131250.0, -0.25],
+    KR: [2590.2, 0.35],
+    AE: [9280.4, 0.1],
   };
   const [p, c] = fallbackPrices[country] || [1000, 0];
 
@@ -273,6 +282,14 @@ function isMarketOpen(country: CountryCode): boolean {
       return hour >= 13 && hour < 20;
     case "SG":
       return hour >= 1 && hour < 9;
+    case "PK":
+      return hour >= 4 && hour < 11;
+    case "SA":
+      return hour >= 7 && hour < 12;
+    case "BR":
+      return hour >= 13 && hour < 20;
+    case "KR":
+      return hour >= 0 && hour < 7;
     default:
       return false;
   }
@@ -311,6 +328,11 @@ async function fetchCountryNews(
     AU: { hl: "en-AU", gl: "AU", ceid: "AU:en" },
     CA: { hl: "en-CA", gl: "CA", ceid: "CA:en" },
     SG: { hl: "en-SG", gl: "SG", ceid: "SG:en" },
+    PK: { hl: "en-PK", gl: "PK", ceid: "PK:en" },
+    SA: { hl: "en-SA", gl: "SA", ceid: "SA:en" },
+    BR: { hl: "pt-BR", gl: "BR", ceid: "BR:pt-419" },
+    KR: { hl: "en-KR", gl: "KR", ceid: "KR:en" },
+    AE: { hl: "en-AE", gl: "AE", ceid: "AE:en" },
   };
   const { hl, gl, ceid } = locales[country] || locales.US;
 
@@ -569,6 +591,16 @@ function resolveCompany(
     if (hl.includes("SAP")) return { name: "SAP SE", ticker: "SAP.DE" };
     if (hl.includes("SIEMENS")) return { name: "Siemens AG", ticker: "SIE.DE" };
     if (hl.includes("BMW")) return { name: "BMW AG", ticker: "BMW.DE" };
+  } else if (country === "PK") {
+    if (hl.includes("OGDC") || hl.includes("OIL & GAS DEV")) return { name: "Oil & Gas Development Co", ticker: "OGDC.KA" };
+    if (hl.includes("MCB") || hl.includes("MCB BANK")) return { name: "MCB Bank Limited", ticker: "MCB.KA" };
+    if (hl.includes("LUCKY") || hl.includes("LUCK")) return { name: "Lucky Cement Limited", ticker: "LUCK.KA" };
+    if (hl.includes("ENGRO")) return { name: "Engro Corporation Limited", ticker: "ENGRO.KA" };
+    if (hl.includes("HUBCO") || hl.includes("HUB POWER") || hl.includes("HUBC")) return { name: "Hub Power Company", ticker: "HUBC.KA" };
+    if (hl.includes("HBL") || hl.includes("HABIB BANK")) return { name: "Habib Bank Limited", ticker: "HBL.KA" };
+    if (hl.includes("UBL") || hl.includes("UNITED BANK")) return { name: "United Bank Limited", ticker: "UBL.KA" };
+    if (hl.includes("FFC") || hl.includes("FAUJI FERTILIZER")) return { name: "Fauji Fertilizer Company", ticker: "FFC.KA" };
+    if (hl.includes("SYSTEMS")) return { name: "Systems Limited", ticker: "SYS.KA" };
   }
   return null;
 }
@@ -798,6 +830,17 @@ function getCountryAnchorStocks(country: CountryCode, metadata: any): StockToWat
     DE: [
       { name: "SAP SE", ticker: "SAP.DE", sector: "Software & Cloud (SAP)", reason: "Cloud enterprise ERP software transition driving high gross margin ARR expansion." },
       { name: "Siemens AG", ticker: "SIE.DE", sector: "Industrial Machinery & Siemens", reason: "Smart infrastructure automation, grid digitalization, and electrification orders." },
+    ],
+    PK: [
+      { name: "Oil & Gas Development Co", ticker: "OGDC.KA", sector: "Oil & Gas Exploration & Production", reason: "Sovereign exploration and production leader with massive reserves and circular debt clearance upside." },
+      { name: "MCB Bank Limited", ticker: "MCB.KA", sector: "Commercial Banking", reason: "Tier-1 commercial bank with industry-leading capital adequacy, high ROE, and strong dividend yields." },
+      { name: "Lucky Cement Limited", ticker: "LUCK.KA", sector: "Cement & Construction Materials", reason: "Market leading cement producer and infrastructure exporter with integrated power generation." },
+      { name: "Engro Corporation", ticker: "ENGRO.KA", sector: "Fertilizers & Agriculture", reason: "Diversified industrial conglomerate with key assets in agricultural fertilizers, LNG terminals, and petrochemicals." },
+      { name: "Hub Power Company", ticker: "HUBC.KA", sector: "Power Generation & Utilities", reason: "Largest independent power producer with thermal and renewable energy power purchase agreements." },
+    ],
+    SA: [
+      { name: "Saudi Aramco", ticker: "2222.SR", sector: "Energy & Oil (Aramco)", reason: "Global oil production titan with low lifting costs and sustainable cash generation." },
+      { name: "Al Rajhi Bank", ticker: "1120.SR", sector: "Banking & Financial Services", reason: "Largest Islamic retail and corporate bank underpinning Vision 2030 initiatives." },
     ],
   };
 

@@ -192,6 +192,22 @@ class TinyFishCountryResearcher:
             CountryCode.SINGAPORE: [
                 "mas.gov.sg", "sgx.com", "businesstimes.com.sg", "straitstimes.com", "reuters.com"
             ],
+            CountryCode.PAKISTAN: [
+                "psx.com.pk", "sbp.org.pk", "secp.gov.pk", "dawn.com", "brecorder.com",
+                "tribune.com.pk", "thenews.com.pk", "reuters.com", "bloomberg.com"
+            ],
+            CountryCode.SAUDI_ARABIA: [
+                "sama.gov.sa", "saudiexchange.sa", "cma.org.sa", "arabnews.com", "argaam.com", "reuters.com"
+            ],
+            CountryCode.BRAZIL: [
+                "bcb.gov.br", "b3.com.br", "cvm.gov.br", "valor.globo.com", "infomoney.com.br", "reuters.com"
+            ],
+            CountryCode.SOUTH_KOREA: [
+                "bok.or.kr", "krx.co.kr", "fsc.go.kr", "kedglobal.com", "koreatimes.co.kr", "reuters.com"
+            ],
+            CountryCode.UAE: [
+                "centralbank.ae", "adx.ae", "dfm.ae", "gulfnews.com", "thenationalnews.com", "reuters.com"
+            ],
         }
         return domain_map.get(country_code, ["reuters.com", "bloomberg.com"])
 
@@ -215,6 +231,11 @@ class TinyFishCountryResearcher:
             CountryCode.AUSTRALIA: ("en-AU", "AU", "AU:en"),
             CountryCode.CANADA: ("en-CA", "CA", "CA:en"),
             CountryCode.SINGAPORE: ("en-SG", "SG", "SG:en"),
+            CountryCode.PAKISTAN: ("en-PK", "PK", "PK:en"),
+            CountryCode.SAUDI_ARABIA: ("en-SA", "SA", "SA:en"),
+            CountryCode.BRAZIL: ("pt-BR", "BR", "BR:pt-419"),
+            CountryCode.SOUTH_KOREA: ("en-KR", "KR", "KR:en"),
+            CountryCode.UAE: ("en-AE", "AE", "AE:en"),
         }
         hl, gl, ceid = locales.get(country_code, ("en-US", "US", "US:en"))
 
@@ -441,6 +462,25 @@ class TinyFishCountryResearcher:
                 return ("Volkswagen AG", "VOW3.DE")
             if "BMW" in hl:
                 return ("Bayerische Motoren Werke AG", "BMW.DE")
+        elif country_code == CountryCode.PAKISTAN:
+            if "OGDC" in hl or "OIL & GAS DEV" in hl:
+                return ("Oil & Gas Development Company", "OGDC.KA")
+            if "MCB" in hl or "MCB BANK" in hl:
+                return ("MCB Bank Limited", "MCB.KA")
+            if "LUCKY" in hl or "LUCK" in hl:
+                return ("Lucky Cement Limited", "LUCK.KA")
+            if "ENGRO" in hl:
+                return ("Engro Corporation Limited", "ENGRO.KA")
+            if "HUBCO" in hl or "HUB POWER" in hl or "HUBC" in hl:
+                return ("Hub Power Company Limited", "HUBC.KA")
+            if "HBL" in hl or "HABIB BANK" in hl:
+                return ("Habib Bank Limited", "HBL.KA")
+            if "UBL" in hl or "UNITED BANK" in hl:
+                return ("United Bank Limited", "UBL.KA")
+            if "FFC" in hl or "FAUJI FERTILIZER" in hl:
+                return ("Fauji Fertilizer Company", "FFC.KA")
+            if "SYSTEMS" in hl:
+                return ("Systems Limited", "SYS.KA")
 
         return None
 
@@ -549,6 +589,41 @@ class TinyFishCountryResearcher:
                     SentimentClassification.POSITIVE,
                     "Microsoft Corporation",
                     "MSFT",
+                ),
+            ],
+            CountryCode.PAKISTAN: [
+                (
+                    "State Bank of Pakistan (SBP) Monetary Policy Committee Decides Policy Rate Amid Disinflation",
+                    "sbp.org.pk",
+                    "https://www.sbp.org.pk",
+                    NewsCategory.CENTRAL_BANK,
+                    "Commercial Banking",
+                    "State Bank of Pakistan notes downward inflation trajectory, comfortable external account buffers, and projected real economic growth.",
+                    SentimentClassification.POSITIVE,
+                    "MCB Bank Limited",
+                    "MCB.KA",
+                ),
+                (
+                    "Energy Ministry and ECC Finalize Gas Circular Debt Settlement and E&P Concession Plan",
+                    "brecorder.com",
+                    "https://www.brecorder.com",
+                    NewsCategory.ENERGY_COMMODITIES,
+                    "Oil & Gas Exploration & Production",
+                    "Economic Coordination Committee approves dividend and sovereign bond mechanism to clear circular debt for exploration and production firms.",
+                    SentimentClassification.POSITIVE,
+                    "Oil & Gas Development Company",
+                    "OGDC.KA",
+                ),
+                (
+                    "Pakistan Stock Exchange KSE-100 Benchmark Records Robust Foreign Institutional Capital Inflows",
+                    "psx.com.pk",
+                    "https://www.psx.com.pk",
+                    NewsCategory.FOREIGN_INVESTMENT,
+                    "Fertilizers & Agriculture",
+                    "PSX sees surging turnover and foreign institutional interest in large-cap dividend-yielding fertilizer and cement leaders.",
+                    SentimentClassification.POSITIVE,
+                    "Engro Corporation Limited",
+                    "ENGRO.KA",
                 ),
             ],
         }

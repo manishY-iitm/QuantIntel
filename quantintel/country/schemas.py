@@ -18,6 +18,11 @@ class CountryCode(str, Enum):
     AUSTRALIA = "AU"
     CANADA = "CA"
     SINGAPORE = "SG"
+    PAKISTAN = "PK"
+    SAUDI_ARABIA = "SA"
+    BRAZIL = "BR"
+    SOUTH_KOREA = "KR"
+    UAE = "AE"
 
 
 class NewsCategory(str, Enum):
@@ -402,4 +407,277 @@ SUPPORTED_COUNTRIES: Dict[CountryCode, CountryMetadata] = {
             "Aviation & Logistics",
         ],
     ),
+    CountryCode.PAKISTAN: CountryMetadata(
+        code=CountryCode.PAKISTAN,
+        name="Pakistan",
+        flag="🇵🇰",
+        currency="PKR",
+        currency_symbol="₨",
+        primary_exchanges=["PSX"],
+        benchmark_index_name="KSE 100 Index",
+        benchmark_index_ticker="^KSE",
+        secondary_index_ticker="KSE30.KA",
+        timezone_name="Asia/Karachi",
+        trading_hours="09:15 - 15:30 PKT (Mon-Fri)",
+        key_sectors=[
+            "Commercial Banking",
+            "Oil & Gas Exploration & Production",
+            "Fertilizers & Agriculture",
+            "Cement & Construction Materials",
+            "Textiles & Apparel",
+            "Power Generation & Utilities",
+            "Technology & IT Services",
+            "Automotive Assembly",
+            "Pharmaceuticals",
+            "Chemicals",
+        ],
+    ),
+    CountryCode.SAUDI_ARABIA: CountryMetadata(
+        code=CountryCode.SAUDI_ARABIA,
+        name="Saudi Arabia",
+        flag="🇸🇦",
+        currency="SAR",
+        currency_symbol="﷼",
+        primary_exchanges=["Tadawul"],
+        benchmark_index_name="Tadawul All Share Index (TASI)",
+        benchmark_index_ticker="^TASI.SR",
+        secondary_index_ticker="2222.SR",
+        timezone_name="Asia/Riyadh",
+        trading_hours="10:00 - 15:00 AST (Sun-Thu)",
+        key_sectors=[
+            "Energy & Oil (Aramco)",
+            "Banking & Financial Services",
+            "Petrochemicals & Materials (SABIC)",
+            "Telecommunications (STC)",
+            "Mining & Metals (Ma'aden)",
+            "Utilities & Power",
+        ],
+    ),
+    CountryCode.BRAZIL: CountryMetadata(
+        code=CountryCode.BRAZIL,
+        name="Brazil",
+        flag="🇧🇷",
+        currency="BRL",
+        currency_symbol="R$",
+        primary_exchanges=["B3"],
+        benchmark_index_name="Ibovespa",
+        benchmark_index_ticker="^BVSP",
+        secondary_index_ticker="PETR4.SA",
+        timezone_name="America/Sao_Paulo",
+        trading_hours="10:00 - 17:00 BRT (Mon-Fri)",
+        key_sectors=[
+            "Energy & Petrobras",
+            "Mining & Iron Ore (Vale)",
+            "Banking & Financial Services",
+            "Agriculture & Food Processing",
+            "Pulp & Paper",
+            "Utilities",
+        ],
+    ),
+    CountryCode.SOUTH_KOREA: CountryMetadata(
+        code=CountryCode.SOUTH_KOREA,
+        name="South Korea",
+        flag="🇰🇷",
+        currency="KRW",
+        currency_symbol="₩",
+        primary_exchanges=["KRX"],
+        benchmark_index_name="KOSPI",
+        benchmark_index_ticker="^KS11",
+        secondary_index_ticker="005930.KS",
+        timezone_name="Asia/Seoul",
+        trading_hours="09:00 - 15:30 KST (Mon-Fri)",
+        key_sectors=[
+            "Semiconductors & Memory (Samsung, SK Hynix)",
+            "Automotive & Batteries (Hyundai)",
+            "Consumer Electronics & Appliances",
+            "Biopharmaceuticals & Healthcare",
+            "Shipbuilding & Heavy Equipment",
+            "Internet & Gaming",
+        ],
+    ),
+    CountryCode.UAE: CountryMetadata(
+        code=CountryCode.UAE,
+        name="United Arab Emirates",
+        flag="🇦🇪",
+        currency="AED",
+        currency_symbol="د.إ",
+        primary_exchanges=["ADX", "DFM"],
+        benchmark_index_name="FTSE ADX General Index",
+        benchmark_index_ticker="^FADGI",
+        secondary_index_ticker="DFMGI.AE",
+        timezone_name="Asia/Dubai",
+        trading_hours="10:00 - 15:00 GST (Mon-Fri)",
+        key_sectors=[
+            "Banking & Wealth Management",
+            "Real Estate & Development (Emaar)",
+            "Energy & Infrastructure",
+            "Aviation & Logistics",
+            "Telecommunications (e&)",
+        ],
+    ),
 }
+
+
+def resolve_country(query: str) -> CountryMetadata:
+    """
+    Fuzzy Country Search Engine Resolver.
+    Resolves natural language queries, country names, typos, and phrases like:
+    'pakisant future in stock' -> Pakistan (PK)
+    'pakistan' -> Pakistan (PK)
+    'kse 100' -> Pakistan (PK)
+    'india stock' -> India (IN)
+    'nifty' -> India (IN)
+    'saudi arabia' -> Saudi Arabia (SA)
+    """
+    if not query or not query.strip():
+        return SUPPORTED_COUNTRIES[CountryCode.INDIA]
+
+    raw = query.strip()
+    upper = raw.upper()
+
+    # 1. Direct CountryCode enum match
+    for code, meta in SUPPORTED_COUNTRIES.items():
+        if upper == code.value or upper == code.name:
+            return meta
+
+    # 2. Normalize and strip generic financial filler words
+    cleaned = raw.lower()
+    fillers = [
+        "future in stock", "future stock", "future in", "future",
+        "in stock", "stock market", "stocks", "stock", "shares",
+        "market", "economy", "outlook", "intelligence", "forecast",
+        "investing", "investment", "analysis", "what is happening in",
+        "how is", "growth in", "trend in"
+    ]
+    for f in fillers:
+        cleaned = cleaned.replace(f, " ")
+    cleaned = " ".join(cleaned.split()).strip()
+
+    # Common aliases & typo map (e.g. 'pakisant' -> Pakistan)
+    alias_map = {
+        "pakisant": CountryCode.PAKISTAN,
+        "pakistan": CountryCode.PAKISTAN,
+        "pakistn": CountryCode.PAKISTAN,
+        "pak": CountryCode.PAKISTAN,
+        "pk": CountryCode.PAKISTAN,
+        "pkr": CountryCode.PAKISTAN,
+        "kse": CountryCode.PAKISTAN,
+        "kse100": CountryCode.PAKISTAN,
+        "kse-100": CountryCode.PAKISTAN,
+        "psx": CountryCode.PAKISTAN,
+        "karachi": CountryCode.PAKISTAN,
+        "islamabad": CountryCode.PAKISTAN,
+        "lahore": CountryCode.PAKISTAN,
+        
+        "india": CountryCode.INDIA,
+        "bharat": CountryCode.INDIA,
+        "ind": CountryCode.INDIA,
+        "in": CountryCode.INDIA,
+        "nifty": CountryCode.INDIA,
+        "sensex": CountryCode.INDIA,
+        "nse": CountryCode.INDIA,
+        "bse": CountryCode.INDIA,
+
+        "us": CountryCode.UNITED_STATES,
+        "usa": CountryCode.UNITED_STATES,
+        "united states": CountryCode.UNITED_STATES,
+        "america": CountryCode.UNITED_STATES,
+        "sp500": CountryCode.UNITED_STATES,
+        "s&p": CountryCode.UNITED_STATES,
+        "nasdaq": CountryCode.UNITED_STATES,
+        "nyse": CountryCode.UNITED_STATES,
+
+        "uk": CountryCode.UNITED_KINGDOM,
+        "united kingdom": CountryCode.UNITED_KINGDOM,
+        "britain": CountryCode.UNITED_KINGDOM,
+        "england": CountryCode.UNITED_KINGDOM,
+        "ftse": CountryCode.UNITED_KINGDOM,
+        "lse": CountryCode.UNITED_KINGDOM,
+
+        "japan": CountryCode.JAPAN,
+        "jp": CountryCode.JAPAN,
+        "tokyo": CountryCode.JAPAN,
+        "nikkei": CountryCode.JAPAN,
+        "tse": CountryCode.JAPAN,
+
+        "germany": CountryCode.GERMANY,
+        "deutschland": CountryCode.GERMANY,
+        "de": CountryCode.GERMANY,
+        "dax": CountryCode.GERMANY,
+        "frankfurt": CountryCode.GERMANY,
+
+        "china": CountryCode.CHINA,
+        "prc": CountryCode.CHINA,
+        "cn": CountryCode.CHINA,
+        "shanghai": CountryCode.CHINA,
+        "sse": CountryCode.CHINA,
+        "shenzhen": CountryCode.CHINA,
+
+        "australia": CountryCode.AUSTRALIA,
+        "aussie": CountryCode.AUSTRALIA,
+        "au": CountryCode.AUSTRALIA,
+        "asx": CountryCode.AUSTRALIA,
+        "sydney": CountryCode.AUSTRALIA,
+
+        "canada": CountryCode.CANADA,
+        "ca": CountryCode.CANADA,
+        "tsx": CountryCode.CANADA,
+        "toronto": CountryCode.CANADA,
+
+        "singapore": CountryCode.SINGAPORE,
+        "sg": CountryCode.SINGAPORE,
+        "sgx": CountryCode.SINGAPORE,
+        "sti": CountryCode.SINGAPORE,
+
+        "saudi": CountryCode.SAUDI_ARABIA,
+        "saudi arabia": CountryCode.SAUDI_ARABIA,
+        "ksa": CountryCode.SAUDI_ARABIA,
+        "tasi": CountryCode.SAUDI_ARABIA,
+        "tadawul": CountryCode.SAUDI_ARABIA,
+
+        "brazil": CountryCode.BRAZIL,
+        "brasil": CountryCode.BRAZIL,
+        "b3": CountryCode.BRAZIL,
+        "ibovespa": CountryCode.BRAZIL,
+
+        "korea": CountryCode.SOUTH_KOREA,
+        "south korea": CountryCode.SOUTH_KOREA,
+        "kospi": CountryCode.SOUTH_KOREA,
+        "krx": CountryCode.SOUTH_KOREA,
+
+        "uae": CountryCode.UAE,
+        "dubai": CountryCode.UAE,
+        "abu dhabi": CountryCode.UAE,
+        "adx": CountryCode.UAE,
+        "dfm": CountryCode.UAE,
+    }
+
+    if cleaned in alias_map:
+        return SUPPORTED_COUNTRIES[alias_map[cleaned]]
+
+    # 3. Substring / Token search in alias map or raw query
+    for token in (cleaned.split() + raw.lower().split()):
+        if token in alias_map:
+            return SUPPORTED_COUNTRIES[alias_map[token]]
+
+    # 4. Partial name / benchmark matching
+    for code, meta in SUPPORTED_COUNTRIES.items():
+        if (
+            cleaned in meta.name.lower()
+            or meta.name.lower() in cleaned
+            or cleaned in meta.benchmark_index_name.lower()
+            or cleaned in meta.benchmark_index_ticker.lower()
+            or any(ex.lower() in cleaned for ex in meta.primary_exchanges)
+        ):
+            return meta
+
+    # 5. Fuzzy character similarity fallback (e.g. 'pakisant' vs 'pakistan')
+    for code, meta in SUPPORTED_COUNTRIES.items():
+        name_lower = meta.name.lower()
+        if len(cleaned) >= 4 and len(name_lower) >= 4:
+            # Check character overlap ratio
+            overlap = sum(1 for ch in set(cleaned) if ch in set(name_lower))
+            if overlap / max(len(set(cleaned)), len(set(name_lower))) > 0.75:
+                return meta
+
+    return SUPPORTED_COUNTRIES[CountryCode.INDIA]

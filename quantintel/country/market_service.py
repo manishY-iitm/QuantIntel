@@ -206,6 +206,18 @@ class CountryMarketService:
         # Singapore (01:00 to 09:00 UTC)
         if country_code == CountryCode.SINGAPORE:
             return 1 <= now_utc.hour < 9
+        # Pakistan (04:15 to 10:30 UTC)
+        if country_code == CountryCode.PAKISTAN:
+            return 4 <= now_utc.hour < 11
+        # Saudi Arabia (07:00 to 12:00 UTC)
+        if country_code == CountryCode.SAUDI_ARABIA:
+            return 7 <= now_utc.hour < 12
+        # Brazil (13:00 to 20:00 UTC)
+        if country_code == CountryCode.BRAZIL:
+            return 13 <= now_utc.hour < 20
+        # South Korea (00:00 to 06:30 UTC)
+        if country_code == CountryCode.SOUTH_KOREA:
+            return 0 <= now_utc.hour < 7
 
         return False
 
@@ -225,6 +237,11 @@ class CountryMarketService:
             CountryCode.AUSTRALIA: (8118.80, 0.12),
             CountryCode.CANADA: (24471.20, 0.22),
             CountryCode.SINGAPORE: (3559.40, 0.18),
+            CountryCode.PAKISTAN: (88920.00, 0.52),
+            CountryCode.SAUDI_ARABIA: (11980.50, 0.15),
+            CountryCode.BRAZIL: (131250.00, -0.25),
+            CountryCode.SOUTH_KOREA: (2590.20, 0.35),
+            CountryCode.UAE: (9280.40, 0.10),
         }
         price, change = defaults.get(country_code, (1000.0, 0.0))
         return IndexQuote(
