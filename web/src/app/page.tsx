@@ -83,7 +83,7 @@ export default function Home() {
       />
 
       {/* Sleek Active Workspace Segmented Bar */}
-      <section className="sticky top-[75px] z-30 border-b border-[#1E2C3D] bg-[#070B10]/95 backdrop-blur-md py-2.5 px-4 sm:px-6 shadow-lg shadow-black/40">
+      <section className="border-b border-[#1E2C3D] bg-[#070B10] py-3 px-4 sm:px-6 shadow-sm">
         <div className="mx-auto flex max-w-7xl flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-2.5 text-xs font-mono text-[#8B949E]">
             <span className="flex h-2 w-2 rounded-full bg-[#00C4CC] animate-pulse"></span>

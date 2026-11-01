@@ -13,6 +13,9 @@ import {
   PieChart,
   Download,
   AlertCircle,
+  AlertTriangle,
+  ShieldAlert,
+  Cpu,
   CheckCircle2,
   HelpCircle,
   Info,
@@ -586,17 +589,37 @@ ${report.scenarios
 
   // Monte Carlo SVG Visualizer calculations
   const mc = report.monteCarlo;
-  const svgWidth = 640;
-  const svgHeight = 220;
-  const padLeft = 55;
-  const padRight = 30;
-  const padTop = 20;
-  const padBottom = 30;
+  const svgWidth = 1000;
+  const svgHeight = 380;
+  const padLeft = 80;
+  const padRight = 145;
+  const padTop = 36;
+  const padBottom = 45;
   const plotW = svgWidth - padLeft - padRight;
   const plotH = svgHeight - padTop - padBottom;
 
-  const minVal = Math.min(mc.p5Price * 0.9, mc.initialPrice * 0.85);
-  const maxVal = Math.max(mc.p95Price * 1.08, mc.initialPrice * 1.15);
+  // Compute safe bounding box ensuring all paths and percentiles breathe comfortably
+  const { minVal, maxVal } = useMemo(() => {
+    let allMin = Math.min(mc.p5Price * 0.94, mc.initialPrice * 0.9);
+    let allMax = Math.max(mc.p95Price * 1.06, mc.initialPrice * 1.1);
+    if (mc.samplePaths && mc.samplePaths.length > 0) {
+      for (const path of mc.samplePaths) {
+        for (const val of path) {
+          if (val < allMin) allMin = val;
+          if (val > allMax) allMax = val;
+        }
+      }
+    }
+    return {
+      minVal: allMin * 0.98,
+      maxVal: allMax * 1.02,
+    };
+  }, [mc]);
+
+  const maxBinPct = useMemo(() => {
+    if (!mc.distributionBins || mc.distributionBins.length === 0) return 1;
+    return Math.max(...mc.distributionBins.map((b) => b.pct), 1);
+  }, [mc.distributionBins]);
 
   const getY = (val: number) => {
     const norm = (val - minVal) / (maxVal - minVal || 1);
@@ -608,7 +631,7 @@ ${report.scenarios
   };
 
   return (
-    <section id="futurestock" className="relative border-b border-[#1E2C3D] bg-[#070B10] py-12 px-4 sm:px-6">
+    <section id="futurestock" className="relative border-b border-[#1E2C3D] bg-[#070B10] py-12 px-4 sm:px-6 scroll-mt-16">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-[#00C4CC]/10 via-[#0A84FF]/10 to-transparent blur-[120px] pointer-events-none" />
 
@@ -1424,33 +1447,76 @@ ${report.scenarios
               </div>
             </div>
 
-            {/* Monte Carlo Visualizer & Histogram */}
-            <div className="rounded-xl border border-[#1E2C3D] bg-[#0E1520] p-6 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b border-[#1E2C3D] pb-3">
+            {/* Quantitative Simulation Cockpit: Monte Carlo Visualizer, Risk Metrics & Histogram */}
+            <div className="rounded-2xl border border-[#1E2C3D] bg-[#0E1520] p-5 sm:p-7 shadow-2xl">
+              {/* Cockpit Top Header */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#1E2C3D]">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                    <Activity className="h-4 w-4 text-[#00C4CC]" />
-                    <span>Monte Carlo Probabilistic Fan Chart</span>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="flex h-2 w-2 rounded-full bg-[#00C4CC] animate-pulse" />
+                    <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#00C4CC]">
+                      Stochastic Simulation Suite • 2,000 Paths
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-white flex items-center space-x-2.5">
+                    <Activity className="h-5 w-5 text-[#00C4CC]" />
+                    <span>Monte Carlo Price Trajectory &amp; Confidence Fan</span>
                   </h3>
-                  <p className="text-xs text-[#8B949E]">
-                    Geometric Brownian Motion (2,000 iterations over {mc.tradingDays} trading days) with stationary log-normal returns.
+                  <p className="text-xs text-[#8B949E] mt-0.5 max-w-2xl">
+                    Stationary Geometric Brownian Motion (2,000 iterations over {mc.tradingDays} trading days) with calibrated drift and empirical volatility.
                   </p>
                 </div>
-                <div className="flex items-center space-x-3 text-xs font-mono">
-                  <span className="text-[#FF7B72]">P5: {currencySymbol}{mc.p5Price}</span>
-                  <span className="text-[#00C4CC]">Median: {currencySymbol}{mc.medianFinalPrice}</span>
-                  <span className="text-[#10B981]">P95: {currencySymbol}{mc.p95Price}</span>
+
+                {/* Key Percentile Summary Pills */}
+                <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                  <div className="flex items-center space-x-1.5 rounded-lg border border-[#F87171]/40 bg-[#F87171]/10 px-2.5 py-1.5 text-[#F87171]">
+                    <span className="h-2 w-2 rounded-full bg-[#F87171]" />
+                    <span className="text-[11px] font-medium text-[#8B949E]">P5 (Bear):</span>
+                    <span className="font-bold text-white">{currencySymbol}{mc.p5Price.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 rounded-lg border border-[#00C4CC]/40 bg-[#00C4CC]/10 px-2.5 py-1.5 text-[#00C4CC]">
+                    <span className="h-2 w-2 rounded-full bg-[#00C4CC]" />
+                    <span className="text-[11px] font-medium text-[#8B949E]">Median (P50):</span>
+                    <span className="font-bold text-white">{currencySymbol}{mc.medianFinalPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 rounded-lg border border-[#10B981]/40 bg-[#10B981]/10 px-2.5 py-1.5 text-[#10B981]">
+                    <span className="h-2 w-2 rounded-full bg-[#10B981]" />
+                    <span className="text-[11px] font-medium text-[#8B949E]">P95 (Bull):</span>
+                    <span className="font-bold text-white">{currencySymbol}{mc.p95Price.toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* SVG Fan Chart */}
-              <div className="w-full overflow-x-auto">
+              {/* SVG Fan Chart Canvas */}
+              <div className="w-full overflow-x-auto rounded-xl border border-[#1E2C3D] bg-[#080C12] p-3 sm:p-5 shadow-inner">
                 <svg
                   viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                  className="w-full h-auto min-w-[500px]"
+                  className="w-full h-auto min-w-[640px]"
+                  preserveAspectRatio="xMidYMid meet"
                 >
-                  {/* Grid Lines */}
-                  {[0.2, 0.4, 0.6, 0.8].map((pct, i) => {
+                  <defs>
+                    <linearGradient id="mcFan90" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#00C4CC" stopOpacity="0.04" />
+                      <stop offset="100%" stopColor="#00C4CC" stopOpacity="0.12" />
+                    </linearGradient>
+                    <linearGradient id="mcFan50" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#00C4CC" stopOpacity="0.10" />
+                      <stop offset="100%" stopColor="#00C4CC" stopOpacity="0.25" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Dark Plot Background Canvas */}
+                  <rect
+                    x={padLeft}
+                    y={padTop}
+                    width={plotW}
+                    height={plotH}
+                    fill="#0A0F16"
+                    rx="4"
+                  />
+
+                  {/* Horizontal Grid Lines & Left Y-Axis Price Labels */}
+                  {[0.0, 0.25, 0.5, 0.75, 1.0].map((pct, i) => {
                     const y = padTop + plotH * pct;
                     const val = Math.round(maxVal - pct * (maxVal - minVal));
                     return (
@@ -1460,46 +1526,45 @@ ${report.scenarios
                           y1={y}
                           x2={svgWidth - padRight}
                           y2={y}
-                          stroke="#1E2C3D"
-                          strokeDasharray="3 3"
+                          stroke="#1B2838"
+                          strokeDasharray="4 4"
+                          strokeWidth="1"
                         />
                         <text
-                          x={padLeft - 6}
-                          y={y + 3}
-                          fill="#484F58"
-                          fontSize="9"
+                          x={padLeft - 10}
+                          y={y + 4}
+                          fill="#8B949E"
+                          fontSize="11"
                           fontFamily="monospace"
                           textAnchor="end"
                         >
-                          {currencySymbol}{val}
+                          {currencySymbol}{val.toLocaleString()}
                         </text>
                       </g>
                     );
                   })}
 
-                  {/* 5th to 95th Percentile Fan Fill */}
+                  {/* 5th to 95th Percentile Fan Fill (90% Confidence Corridor) */}
                   <polygon
                     points={`
                       ${getX(0, 2)},${getY(mc.initialPrice)}
                       ${getX(1, 2)},${getY(mc.p95Price)}
                       ${getX(1, 2)},${getY(mc.p5Price)}
                     `}
-                    fill="#00C4CC"
-                    fillOpacity="0.08"
+                    fill="url(#mcFan90)"
                   />
 
-                  {/* 25th to 75th Percentile Fan Fill */}
+                  {/* 25th to 75th Percentile Fan Fill (50% Interquartile Corridor) */}
                   <polygon
                     points={`
                       ${getX(0, 2)},${getY(mc.initialPrice)}
                       ${getX(1, 2)},${getY(mc.p75Price)}
                       ${getX(1, 2)},${getY(mc.p25Price)}
                     `}
-                    fill="#00C4CC"
-                    fillOpacity="0.18"
+                    fill="url(#mcFan50)"
                   />
 
-                  {/* Sample Random Paths */}
+                  {/* Sample Stochastic Simulation Paths */}
                   {mc.samplePaths.map((path, pIdx) => {
                     const pts = path
                       .map((val, idx) => `${getX(idx, path.length)},${getY(val)}`)
@@ -1510,13 +1575,13 @@ ${report.scenarios
                         points={pts}
                         fill="none"
                         stroke="#00C4CC"
-                        strokeWidth="1"
-                        strokeOpacity="0.25"
+                        strokeWidth="1.2"
+                        strokeOpacity="0.30"
                       />
                     );
                   })}
 
-                  {/* Key Percentile Horizontal Markers */}
+                  {/* P95 Bull Tail Marker */}
                   <line
                     x1={padLeft}
                     y1={getY(mc.p95Price)}
@@ -1524,135 +1589,367 @@ ${report.scenarios
                     y2={getY(mc.p95Price)}
                     stroke="#10B981"
                     strokeWidth="1.5"
-                    strokeDasharray="4 2"
+                    strokeDasharray="5 3"
                   />
+                  <g>
+                    <rect
+                      x={svgWidth - padRight + 8}
+                      y={getY(mc.p95Price) - 13}
+                      width="132"
+                      height="26"
+                      rx="5"
+                      fill="#0C1B16"
+                      stroke="#10B981"
+                      strokeWidth="0.8"
+                    />
+                    <text
+                      x={svgWidth - padRight + 16}
+                      y={getY(mc.p95Price) - 1}
+                      fill="#10B981"
+                      fontSize="9"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      95th %ile (Bull)
+                    </text>
+                    <text
+                      x={svgWidth - padRight + 16}
+                      y={getY(mc.p95Price) + 9}
+                      fill="#FFFFFF"
+                      fontSize="11"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {currencySymbol}{mc.p95Price.toLocaleString()}
+                    </text>
+                  </g>
+
+                  {/* Median Expected Marker (P50) */}
                   <line
                     x1={padLeft}
                     y1={getY(mc.medianFinalPrice)}
                     x2={svgWidth - padRight}
                     y2={getY(mc.medianFinalPrice)}
                     stroke="#00C4CC"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                   />
+                  <g>
+                    <rect
+                      x={svgWidth - padRight + 8}
+                      y={getY(mc.medianFinalPrice) - 13}
+                      width="132"
+                      height="26"
+                      rx="5"
+                      fill="#091A20"
+                      stroke="#00C4CC"
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={svgWidth - padRight + 16}
+                      y={getY(mc.medianFinalPrice) - 1}
+                      fill="#00C4CC"
+                      fontSize="9"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      Median (P50)
+                    </text>
+                    <text
+                      x={svgWidth - padRight + 16}
+                      y={getY(mc.medianFinalPrice) + 9}
+                      fill="#FFFFFF"
+                      fontSize="11"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {currencySymbol}{mc.medianFinalPrice.toLocaleString()}
+                    </text>
+                  </g>
+
+                  {/* P5 Bear Tail Marker */}
                   <line
                     x1={padLeft}
                     y1={getY(mc.p5Price)}
                     x2={svgWidth - padRight}
                     y2={getY(mc.p5Price)}
-                    stroke="#FF7B72"
+                    stroke="#F87171"
                     strokeWidth="1.5"
-                    strokeDasharray="4 2"
+                    strokeDasharray="5 3"
                   />
+                  <g>
+                    <rect
+                      x={svgWidth - padRight + 8}
+                      y={getY(mc.p5Price) - 13}
+                      width="132"
+                      height="26"
+                      rx="5"
+                      fill="#1E1113"
+                      stroke="#F87171"
+                      strokeWidth="0.8"
+                    />
+                    <text
+                      x={svgWidth - padRight + 16}
+                      y={getY(mc.p5Price) - 1}
+                      fill="#F87171"
+                      fontSize="9"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      5th %ile (Bear)
+                    </text>
+                    <text
+                      x={svgWidth - padRight + 16}
+                      y={getY(mc.p5Price) + 9}
+                      fill="#FFFFFF"
+                      fontSize="11"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {currencySymbol}{mc.p5Price.toLocaleString()}
+                    </text>
+                  </g>
 
-                  {/* Labels on Right */}
-                  <text
-                    x={svgWidth - padRight + 4}
-                    y={getY(mc.p95Price) + 3}
-                    fill="#10B981"
-                    fontSize="9"
-                    fontFamily="monospace"
-                  >
-                    95%: {currencySymbol}{mc.p95Price}
-                  </text>
-                  <text
-                    x={svgWidth - padRight + 4}
-                    y={getY(mc.medianFinalPrice) + 3}
-                    fill="#00C4CC"
-                    fontSize="9"
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                  >
-                    Med: {currencySymbol}{mc.medianFinalPrice}
-                  </text>
-                  <text
-                    x={svgWidth - padRight + 4}
-                    y={getY(mc.p5Price) + 3}
-                    fill="#FF7B72"
-                    fontSize="9"
-                    fontFamily="monospace"
-                  >
-                    5%: {currencySymbol}{mc.p5Price}
-                  </text>
-
-                  {/* X Axis Base Line */}
+                  {/* X-Axis Baseline & Ticks */}
                   <line
                     x1={padLeft}
                     y1={padTop + plotH}
                     x2={svgWidth - padRight}
                     y2={padTop + plotH}
                     stroke="#30363D"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1={padLeft}
+                    y1={padTop + plotH}
+                    x2={padLeft}
+                    y2={padTop + plotH + 6}
+                    stroke="#8B949E"
+                    strokeWidth="1.2"
                   />
                   <text
                     x={padLeft}
-                    y={svgHeight - 10}
-                    fill="#8B949E"
-                    fontSize="10"
+                    y={padTop + plotH + 22}
+                    fill="#C9D1D9"
+                    fontSize="11"
                     fontFamily="monospace"
                   >
-                    Day 0 ({currencySymbol}{mc.initialPrice})
+                    Day 0 (Entry: {currencySymbol}{mc.initialPrice.toLocaleString()})
                   </text>
+
+                  <text
+                    x={padLeft + plotW / 2}
+                    y={padTop + plotH + 22}
+                    fill="#6E7681"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                  >
+                    Day {Math.round(mc.tradingDays / 2)} • Mid-Horizon
+                  </text>
+
+                  <line
+                    x1={svgWidth - padRight}
+                    y1={padTop + plotH}
+                    x2={svgWidth - padRight}
+                    y2={padTop + plotH + 6}
+                    stroke="#8B949E"
+                    strokeWidth="1.2"
+                  />
                   <text
                     x={svgWidth - padRight}
-                    y={svgHeight - 10}
-                    fill="#8B949E"
-                    fontSize="10"
+                    y={padTop + plotH + 22}
+                    fill="#C9D1D9"
+                    fontSize="11"
                     fontFamily="monospace"
                     textAnchor="end"
                   >
-                    Day {mc.tradingDays} ({horizon})
+                    Day {mc.tradingDays} • Terminal Target ({horizon})
                   </text>
                 </svg>
               </div>
 
               {/* Quant Distribution Statistics Bar */}
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#1E2C3D] font-mono text-xs">
-                <div className="rounded-lg bg-[#080C12] p-2.5 border border-[#1E2C3D]">
-                  <div className="text-[10px] text-[#8B949E]">95% Value at Risk (VaR)</div>
-                  <div className="text-base font-bold text-[#FF7B72]">-{mc.var95Pct}%</div>
+              <div className="mt-8 pt-6 border-t border-[#1E2C3D]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-4">
+                  <h4 className="text-xs font-mono font-semibold uppercase tracking-wider text-[#8B949E] flex items-center space-x-2">
+                    <ShieldAlert className="h-4 w-4 text-[#00C4CC]" />
+                    <span>Portfolio Risk &amp; Capital Preservation Metrics</span>
+                  </h4>
+                  <span className="text-[11px] font-mono text-[#6E7681]">
+                    Parametric tail estimation at 95% confidence interval
+                  </span>
                 </div>
-                <div className="rounded-lg bg-[#080C12] p-2.5 border border-[#1E2C3D]">
-                  <div className="text-[10px] text-[#8B949E]">95% Conditional VaR (CVaR)</div>
-                  <div className="text-base font-bold text-[#FF7B72]">-{mc.cvar95Pct}%</div>
-                </div>
-                <div className="rounded-lg bg-[#080C12] p-2.5 border border-[#1E2C3D]">
-                  <div className="text-[10px] text-[#8B949E]">Interquartile Spread (P25-P75)</div>
-                  <div className="text-base font-bold text-[#00C4CC]">
-                    {currencySymbol}{mc.p25Price} - {currencySymbol}{mc.p75Price}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  {/* 1. VaR */}
+                  <div className="rounded-xl border border-[#1E2C3D] bg-[#0B1017] p-4 sm:p-4.5 hover:border-[#F87171]/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-[#8B949E]">95% Value at Risk (VaR)</span>
+                        <span className="rounded bg-[#F87171]/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-[#F87171] border border-[#F87171]/20">
+                          Tail Loss
+                        </span>
+                      </div>
+                      <div className="text-2xl font-bold font-mono text-[#F87171] tracking-tight">
+                        -{mc.var95Pct}%
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[11px] text-[#8B949E] leading-relaxed border-t border-[#1E2C3D]/40 pt-2">
+                      Max expected drawdown at 95% confidence over {horizon}
+                    </p>
                   </div>
-                </div>
-                <div className="rounded-lg bg-[#080C12] p-2.5 border border-[#1E2C3D]">
-                  <div className="text-[10px] text-[#8B949E]">Model Seed &amp; Assumptions</div>
-                  <div className="text-[11px] text-[#C9D1D9] truncate">
-                    Stationary Log-Normal GBM
+
+                  {/* 2. CVaR */}
+                  <div className="rounded-xl border border-[#1E2C3D] bg-[#0B1017] p-4 sm:p-4.5 hover:border-[#F87171]/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-[#8B949E]">95% Conditional VaR</span>
+                        <span className="rounded bg-[#F87171]/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-[#F87171] border border-[#F87171]/20">
+                          Expected Shortfall
+                        </span>
+                      </div>
+                      <div className="text-2xl font-bold font-mono text-[#F87171] tracking-tight">
+                        -{mc.cvar95Pct}%
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[11px] text-[#8B949E] leading-relaxed border-t border-[#1E2C3D]/40 pt-2">
+                      Mean loss across the worst 5% tail trajectories
+                    </p>
+                  </div>
+
+                  {/* 3. IQR Spread */}
+                  <div className="rounded-xl border border-[#1E2C3D] bg-[#0B1017] p-4 sm:p-4.5 hover:border-[#00C4CC]/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-[#8B949E]">Interquartile Spread</span>
+                        <span className="rounded bg-[#00C4CC]/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-[#00C4CC] border border-[#00C4CC]/20">
+                          P25 – P75
+                        </span>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-bold font-mono text-[#00C4CC] tracking-tight truncate">
+                        {currencySymbol}{mc.p25Price.toLocaleString()} – {currencySymbol}{mc.p75Price.toLocaleString()}
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[11px] text-[#8B949E] leading-relaxed border-t border-[#1E2C3D]/40 pt-2">
+                      Central 50% cluster of simulated terminal prices
+                    </p>
+                  </div>
+
+                  {/* 4. Model Assumptions */}
+                  <div className="rounded-xl border border-[#1E2C3D] bg-[#0B1017] p-4 sm:p-4.5 hover:border-[#10B981]/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-[#8B949E]">Model Seed &amp; Engine</span>
+                        <span className="rounded bg-[#10B981]/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-[#10B981] border border-[#10B981]/20">
+                          GBM Engine
+                        </span>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight truncate">
+                        Stationary GBM
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[11px] text-[#8B949E] leading-relaxed border-t border-[#1E2C3D]/40 pt-2">
+                      Log-normal returns with empirical drift &amp; volatility
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Distribution Histogram */}
-              <div className="mt-6 pt-4 border-t border-[#1E2C3D]">
-                <h4 className="text-xs font-mono font-semibold uppercase text-[#8B949E] mb-3">
-                  Terminal Price Probability Distribution
-                </h4>
-                <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 items-end h-28 bg-[#080C12] p-3 rounded-lg border border-[#1E2C3D]">
-                  {mc.distributionBins.map((bin, bIdx) => {
-                    const heightPct = Math.min(100, Math.max(8, bin.pct * 4.5));
-                    return (
-                      <div key={bIdx} className="flex flex-col items-center h-full justify-end group relative">
-                        <div
-                          style={{ height: `${heightPct}%` }}
-                          className="w-full bg-[#00C4CC]/70 group-hover:bg-[#00C4CC] rounded-t transition-all"
-                        />
-                        <span className="text-[8px] font-mono text-[#8B949E] mt-1 truncate max-w-full">
-                          {currencySymbol}{Math.round(bin.rangeLow)}
-                        </span>
-                        {/* Tooltip */}
-                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-center bg-[#0F1722] border border-[#1E2C3D] px-2 py-1 rounded shadow-lg text-[9px] font-mono text-white whitespace-nowrap z-10">
-                          <span>{bin.pct}% prob</span>
-                          <span>{currencySymbol}{bin.rangeLow}-{bin.rangeHigh}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+              {/* Terminal Price Probability Distribution */}
+              <div className="mt-8 pt-6 border-t border-[#1E2C3D]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center space-x-2">
+                      <BarChart3 className="h-4 w-4 text-[#00C4CC]" />
+                      <span>Terminal Price Probability Distribution</span>
+                    </h4>
+                    <p className="text-xs text-[#8B949E] mt-0.5">
+                      Probability density across 12 discrete price brackets at {horizon} horizon (2,000 paths).
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 text-xs font-mono text-[#8B949E]">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="h-2.5 w-2.5 rounded bg-[#00C4CC]/80" />
+                      <span>Simulated Bins</span>
+                    </span>
+                    <span className="flex items-center space-x-1.5">
+                      <span className="h-2.5 w-2.5 rounded bg-[#10B981]" />
+                      <span>Peak Mode</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-[#1E2C3D] bg-[#0A0F16] p-4 sm:p-5">
+                  {/* Histogram Bars Container */}
+                  <div className="overflow-x-auto pb-2">
+                    <div className="h-44 sm:h-52 min-w-[560px] flex items-end gap-1.5 sm:gap-2.5">
+                      {mc.distributionBins.map((bin, bIdx) => {
+                        const isMax = bin.pct === maxBinPct;
+                        const heightPct = Math.min(100, Math.max(12, (bin.pct / maxBinPct) * 100));
+                        return (
+                          <div
+                            key={bIdx}
+                            className="flex-1 flex flex-col items-center h-full justify-end group relative"
+                          >
+                            {/* Value on top of bar */}
+                            <span
+                              className={`text-[10px] sm:text-[11px] font-mono mb-1.5 font-semibold transition-colors ${
+                                isMax ? "text-[#10B981]" : "text-[#8B949E] group-hover:text-white"
+                              }`}
+                            >
+                              {bin.pct}%
+                            </span>
+
+                            {/* Bar */}
+                            <div
+                              style={{ height: `${heightPct * 0.72}%` }}
+                              className={`w-full rounded-t-md transition-all duration-300 relative ${
+                                isMax
+                                  ? "bg-gradient-to-t from-[#00C4CC]/40 via-[#00C4CC]/80 to-[#10B981] shadow-lg shadow-[#00C4CC]/20 border-t-2 border-[#10B981]"
+                                  : "bg-gradient-to-t from-[#00C4CC]/25 via-[#00C4CC]/55 to-[#00C4CC]/85 group-hover:brightness-125"
+                              }`}
+                            />
+
+                            {/* Bracket Price Label */}
+                            <div className="mt-2 text-center w-full">
+                              <span
+                                className={`block text-[10px] sm:text-xs font-mono truncate px-0.5 ${
+                                  isMax
+                                    ? "text-[#10B981] font-bold"
+                                    : "text-[#8B949E] group-hover:text-[#C9D1D9]"
+                                }`}
+                                title={`${currencySymbol}${Math.round(bin.rangeLow)} - ${currencySymbol}${Math.round(bin.rangeHigh)}`}
+                              >
+                                {currencySymbol}{Math.round(bin.rangeLow).toLocaleString()}
+                              </span>
+                            </div>
+
+                            {/* High Contrast Tooltip */}
+                            <div className="pointer-events-none absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center bg-[#0F1722] border border-[#00C4CC]/40 px-3 py-1.5 rounded-lg shadow-2xl text-xs font-mono text-white whitespace-nowrap z-20">
+                              <div className="flex items-center space-x-1.5 text-[#00C4CC] font-bold">
+                                <span>{bin.pct}% Density</span>
+                                {isMax && (
+                                  <span className="text-[9px] bg-[#10B981]/25 text-[#10B981] px-1 rounded font-mono">
+                                    MODE
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-[#C9D1D9]">
+                                {currencySymbol}{bin.rangeLow.toLocaleString()} – {currencySymbol}{bin.rangeHigh.toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Bottom Context Footnote */}
+                  <div className="mt-3 flex items-center justify-between border-t border-[#1E2C3D]/60 pt-2.5 text-[11px] font-mono text-[#6E7681]">
+                    <span>Min Bracket: {currencySymbol}{Math.round(mc.distributionBins[0]?.rangeLow || 0).toLocaleString()}</span>
+                    <span className="hidden sm:inline">2,000 Discrete Path Outcomes</span>
+                    <span>Max Bracket: {currencySymbol}{Math.round(mc.distributionBins[mc.distributionBins.length - 1]?.rangeHigh || 0).toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
             </div>

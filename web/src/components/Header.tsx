@@ -28,9 +28,9 @@ export function Header({
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#1E2C3D] bg-[#070B10]/95 backdrop-blur-md">
-      {/* Telemetry Status Strip */}
-      <div className="border-b border-[#1E2C3D]/60 bg-[#090D12] px-4 py-1 text-[11px] text-[#8B949E]">
+    <>
+      {/* Telemetry Status Strip - scrolls naturally with page to preserve viewport space */}
+      <div className="border-b border-[#1E2C3D]/60 bg-[#090D12] px-4 py-1.5 text-[11px] text-[#8B949E]">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center space-x-3">
             <span className="flex items-center space-x-1.5 text-[#10B981]">
@@ -49,8 +49,9 @@ export function Header({
         </div>
       </div>
 
-      {/* Main Navigation Bar */}
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+      {/* Main Navigation Bar - Sleek, low-profile sticky header */}
+      <header className="sticky top-0 z-40 border-b border-[#1E2C3D] bg-[#070B10]/95 backdrop-blur-md shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6">
         {/* Brand Logo */}
         <div className="flex items-center space-x-3">
           <a href="#" className="flex items-center space-x-2.5 group">
@@ -237,5 +238,6 @@ export function Header({
         </div>
       )}
     </header>
+  </>
   );
 }

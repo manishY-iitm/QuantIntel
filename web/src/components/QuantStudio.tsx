@@ -340,7 +340,7 @@ Verbatim Excerpt: "${result.evidence.verbatimExcerpt}"
   };
 
   return (
-    <section id="studio" className="py-16 md:py-24 border-b border-[#1E2C3D] bg-[#090D12]">
+    <section id="studio" className="py-16 md:py-24 border-b border-[#1E2C3D] bg-[#090D12] scroll-mt-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
