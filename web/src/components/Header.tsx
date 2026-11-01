@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Terminal, ExternalLink, Activity, Search, Menu, X, Play, Layers, Key } from "lucide-react";
 
 interface HeaderProps {
-  activeModule?: "FUTURESTOCK" | "CATALYST";
-  onSelectModule?: (module: "FUTURESTOCK" | "CATALYST") => void;
+  activeModule?: "FUTURESTOCK" | "CATALYST" | "COUNTRY";
+  onSelectModule?: (module: "FUTURESTOCK" | "CATALYST" | "COUNTRY") => void;
   onOpenCommandPalette?: () => void;
 }
 
@@ -16,7 +16,7 @@ export function Header({
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleNavClick = (sectionId: string, module?: "FUTURESTOCK" | "CATALYST") => {
+  const handleNavClick = (sectionId: string, module?: "FUTURESTOCK" | "CATALYST" | "COUNTRY") => {
     if (module && onSelectModule) {
       onSelectModule(module);
     }
@@ -71,6 +71,17 @@ export function Header({
 
         {/* Clean Desktop Navigation Links (Properly Spaced & No Wrapping) */}
         <nav className="hidden xl:flex items-center space-x-7 text-xs font-medium text-[#C9D1D9]">
+          <button
+            onClick={() => handleNavClick("country-intelligence", "COUNTRY")}
+            className={`whitespace-nowrap transition-colors flex items-center space-x-1.5 ${
+              activeModule === "COUNTRY" ? "text-[#00C4CC] font-semibold" : "hover:text-[#00C4CC]"
+            }`}
+          >
+            <span>🌍 Country Intelligence</span>
+            {activeModule === "COUNTRY" && (
+              <span className="h-1 w-1 rounded-full bg-[#00C4CC]"></span>
+            )}
+          </button>
           <button
             onClick={() => handleNavClick("futurestock", "FUTURESTOCK")}
             className={`whitespace-nowrap transition-colors flex items-center space-x-1.5 ${
@@ -196,7 +207,17 @@ export function Header({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="xl:hidden border-t border-[#1E2C3D] bg-[#090D12] px-4 py-4 space-y-3 font-mono text-xs">
-          <div className="grid grid-cols-2 gap-2 pb-3 border-b border-[#1E2C3D]">
+          <div className="grid grid-cols-3 gap-2 pb-3 border-b border-[#1E2C3D]">
+            <button
+              onClick={() => handleNavClick("country-intelligence", "COUNTRY")}
+              className={`rounded-lg p-2 text-center border font-bold ${
+                activeModule === "COUNTRY"
+                  ? "border-[#00C4CC] bg-[#00C4CC]/10 text-[#00C4CC]"
+                  : "border-[#1E2C3D] text-[#8B949E]"
+              }`}
+            >
+              🌍 Country
+            </button>
             <button
               onClick={() => handleNavClick("futurestock", "FUTURESTOCK")}
               className={`rounded-lg p-2 text-center border font-bold ${
@@ -215,7 +236,7 @@ export function Header({
                   : "border-[#1E2C3D] text-[#8B949E]"
               }`}
             >
-              📈 Catalyst Studies
+              📈 Studies
             </button>
           </div>
           <div className="space-y-2">

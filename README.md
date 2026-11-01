@@ -250,6 +250,34 @@ pytest -v
 
 ---
 
+## 🌍 Country Intelligence: Live News, Sector Impact & Stock Analysis
+
+**Country Intelligence** is QuantIntel's macro-to-micro sovereign reconnaissance engine. It enables users to select any supported country and investigate real-time economic developments, central bank decisions, industry sector impacts, and affected publicly traded companies.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                      COUNTRY INTELLIGENCE ARCHITECTURE                                 │
+├─────────────────────┬─────────────────────┬─────────────────────┬──────────────────────┤
+│ 1. Sovereign Macro  │ 2. TinyFish Web     │ 3. AI Classification│ 4. Sector Heatmap &  │
+│    Data Feed        │    Reconnaissance   │    & Reasoning      │    Stocks to Watch   │
+│ Nifty 50, S&P 500,  │ 14 News Categories, │ Multi-tier impact:  │ Benificiaries,       │
+│ FTSE 100, DAX 40... │ Central Banks, RSS  │ POSITIVE, NEGATIVE, │ Exposed competitors, │
+│ Live / Delayed      │ 85%+ DOM Token Save │ MIXED, UNCONFIRMED  │ 1-Click CLM Backtest │
+└─────────────────────┴─────────────────────┴─────────────────────┴──────────────────────┘
+```
+
+### Core Capabilities:
+1. **Multi-Country Coverage:** Full metadata, benchmark indices, currencies, and trading hours for **India** (NSE/BSE, `^NSEI`), **United States** (NYSE/NASDAQ, `^GSPC`), **United Kingdom** (LSE, `^FTSE`), **Japan** (TSE, `^N225`), **Germany** (XETRA, `^GDAXI`), **China** (SSE/SZSE, `000001.SS`), **Australia** (ASX, `^AXJO`), **Canada** (TSX, `^GSPTSE`), and **Singapore** (SGX, `^STI`).
+2. **TinyFish Live Research Engine:** Crawls official central bank bulletins (Fed, RBI, BoE, BoJ, Bundesbank), regulatory portals (SEC EDGAR, SEBI, BSE/NSE), and financial wires across 14 event categories with **85%+ DOM token savings**.
+3. **AI News Classification Engine:** Classifies developments into `POSITIVE`, `NEGATIVE`, `MIXED`, `NEUTRAL`, or `UNCONFIRMED`. Evaluates multi-tier implications for the sovereign economy, national equity market, specific sectors, and individual stocks with explicit reasoning.
+4. **Sector Impact Map:** Dynamically maps country-specific industries (e.g., IT, Banking, Semis, Auto, Energy) with net sentiment badges, news counters, potential beneficiaries, exposed competitors, and estimated sector performance.
+5. **Stocks to Watch Discovery:** Identifies publicly traded companies with verifiable, defensible exposure to reported catalysts. Integrates structured financial market quotes (price, change %, volume, 52-week high/low).
+6. **Integrated 1-Click CLM Event Study:** Run the Campbell, Lo, and MacKinlay (1997) event study directly on any identified stock from the country dashboard to test historical abnormal returns (CAR), $t$-statistics, and $p$-values.
+7. **Forward-Looking Scenario Analysis:** Constructs 3 evidence-grounded scenarios (**Bullish**, **Neutral/Sideways**, **Bearish**) with explicit probabilities, invalidation conditions, and confidence levels.
+8. **Audited Evidence Feed:** Interactive feed with real publication timestamps, retrieval timestamps, source domain attribution, and 1-click evidence inspection modal.
+
+---
+
 ## 🔮 FutureStock: Autonomous AI Stock Intelligence & Quantitative Forecasting Engine
 
 **FutureStock** is QuantIntel's integrated multi-agent quantitative intelligence module, bridging corporate fundamental research, automated web filings, and rigorous probabilistic forecasting.

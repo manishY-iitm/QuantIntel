@@ -69,6 +69,7 @@ export function CommandPalette({
   );
 
   const sections = [
+    { id: "country-intelligence", name: "🌍 Country Intelligence", desc: "Live news, sector impact & stock analysis across 9+ global economies" },
     { id: "futurestock", name: "🔮 FutureStock Research Terminal", desc: "8-agent quant forecasting & Monte Carlo" },
     { id: "studio", name: "📈 Catalyst Event Studies", desc: "Abnormal returns & CAR regression backtesting" },
     { id: "architecture", name: "⚡ Dual-Engine Architecture", desc: "TinyFish web agent + deterministic sandbox" },

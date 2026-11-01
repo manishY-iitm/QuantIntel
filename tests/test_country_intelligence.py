@@ -1,0 +1,95 @@
+"""
+Tests for Country-Level Live Stock Market Intelligence.
+Validates schemas, TinyFish country research parsing, sentiment classification,
+sector aggregation, market data formatting, and forward scenarios.
+"""
+
+import pytest
+from quantintel.country.schemas import (
+    CountryCode,
+    NewsCategory,
+    SentimentClassification,
+    ScenarioType,
+    StockWatchCategory,
+    CountryNewsItem,
+    SUPPORTED_COUNTRIES,
+)
+from quantintel.country.market_service import CountryMarketService
+from quantintel.country.country_researcher import TinyFishCountryResearcher
+from quantintel.country.classifier import CountryIntelligenceClassifier
+
+
+def test_supported_countries_metadata():
+    """Verify all major economies have full exchange and currency metadata."""
+    assert CountryCode.INDIA in SUPPORTED_COUNTRIES
+    assert CountryCode.UNITED_STATES in SUPPORTED_COUNTRIES
+    assert CountryCode.UNITED_KINGDOM in SUPPORTED_COUNTRIES
+    assert CountryCode.JAPAN in SUPPORTED_COUNTRIES
+    assert CountryCode.GERMANY in SUPPORTED_COUNTRIES
+
+    india = SUPPORTED_COUNTRIES[CountryCode.INDIA]
+    assert india.name == "India"
+    assert india.currency == "INR"
+    assert india.benchmark_index_ticker == "^NSEI"
+    assert len(india.key_sectors) > 5
+
+    us = SUPPORTED_COUNTRIES[CountryCode.UNITED_STATES]
+    assert us.currency == "USD"
+    assert us.benchmark_index_ticker == "^GSPC"
+
+
+def test_market_service_index_quotes():
+    """Verify market service returns structured index quotes with market open tracking."""
+    service = CountryMarketService()
+    quote = service.get_index_quote(CountryCode.INDIA)
+
+    assert quote is not None
+    assert quote.ticker == "^NSEI"
+    assert quote.price > 0
+    assert quote.currency == "INR"
+    assert isinstance(quote.is_market_open, bool)
+    assert len(quote.timestamp) > 0
+
+
+def test_country_researcher_offline_resilience():
+    """Verify researcher constructs categorized news items with token savings."""
+    researcher = TinyFishCountryResearcher()
+    items = researcher.research_country(CountryCode.INDIA, max_results=5)
+
+    assert len(items) >= 3
+    first = items[0]
+    assert isinstance(first, CountryNewsItem)
+    assert first.country == "India"
+    assert first.token_savings_pct >= 80.0
+    assert first.sentiment in SentimentClassification
+    assert first.event_category in NewsCategory
+    assert len(first.url) > 0
+
+
+def test_country_classifier_end_to_end():
+    """Verify full report generation: macro summary, sectors, stocks, scenarios."""
+    researcher = TinyFishCountryResearcher()
+    classifier = CountryIntelligenceClassifier()
+
+    news_items = researcher.research_country(CountryCode.UNITED_STATES, max_results=6)
+    report = classifier.generate_report(CountryCode.UNITED_STATES, news_items)
+
+    assert report.country_metadata.code == CountryCode.UNITED_STATES
+    assert len(report.sectors) >= 5
+    assert len(report.stocks_to_watch) >= 3
+    assert len(report.scenarios) == 3
+
+    # Check scenario distribution
+    scenario_types = [s.scenario_type for s in report.scenarios]
+    assert ScenarioType.BULLISH in scenario_types
+    assert ScenarioType.NEUTRAL in scenario_types
+    assert ScenarioType.BEARISH in scenario_types
+
+    # Check macro summary
+    assert len(report.macro_summary.market_context) > 0
+    assert len(report.macro_summary.upcoming_scheduled_events) > 0
+
+    # Check stock watch contract
+    stock = report.stocks_to_watch[0]
+    assert stock.category in StockWatchCategory
+    assert len(stock.relevance_reasoning) > 0

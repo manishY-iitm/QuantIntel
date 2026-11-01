@@ -5,6 +5,7 @@ import { Header } from "../components/Header";
 import { Hero } from "../components/Hero";
 import { ArchitectureVisualizer } from "../components/ArchitectureVisualizer";
 import { FutureStockStudio } from "../components/FutureStockStudio";
+import { CountryIntelligenceStudio } from "../components/CountryIntelligenceStudio";
 import { QuantStudio } from "../components/QuantStudio";
 import { CaseStudies } from "../components/CaseStudies";
 import { TokenEconomyMatrix } from "../components/TokenEconomyMatrix";
@@ -14,7 +15,7 @@ import { CommandPalette } from "../components/CommandPalette";
 import { Footer } from "../components/Footer";
 
 export default function Home() {
-  const [activeModule, setActiveModule] = useState<"FUTURESTOCK" | "CATALYST">("FUTURESTOCK");
+  const [activeModule, setActiveModule] = useState<"FUTURESTOCK" | "CATALYST" | "COUNTRY">("COUNTRY");
   const [activePrompt, setActivePrompt] = useState<string>("");
   const [activePresetId, setActivePresetId] = useState<string>("biogen_fda");
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
@@ -48,9 +49,12 @@ export default function Home() {
     }
   };
 
-  const handleModuleChange = (mod: "FUTURESTOCK" | "CATALYST") => {
+  const handleModuleChange = (mod: "FUTURESTOCK" | "CATALYST" | "COUNTRY") => {
     setActiveModule(mod);
-    const targetId = mod === "FUTURESTOCK" ? "futurestock" : "studio";
+    let targetId = "futurestock";
+    if (mod === "CATALYST") targetId = "studio";
+    else if (mod === "COUNTRY") targetId = "country-intelligence";
+
     const targetEl = document.getElementById(targetId);
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: "smooth" });
@@ -62,6 +66,8 @@ export default function Home() {
       setActiveModule("FUTURESTOCK");
     } else if (sectionId === "studio") {
       setActiveModule("CATALYST");
+    } else if (sectionId === "country-intelligence") {
+      setActiveModule("COUNTRY");
     }
     const el = document.getElementById(sectionId);
     if (el) {
@@ -89,13 +95,29 @@ export default function Home() {
             <span className="flex h-2 w-2 rounded-full bg-[#00C4CC] animate-pulse"></span>
             <span className="text-white font-bold tracking-wide">ACTIVE ENGINE:</span>
             <span className="text-[#C9D1D9]">
-              {activeModule === "FUTURESTOCK"
+              {activeModule === "COUNTRY"
+                ? "Country Intelligence — Live News, Sector Impact & Stock Analysis"
+                : activeModule === "FUTURESTOCK"
                 ? "Autonomous Multi-Agent Forecasting & Monte Carlo Simulation"
                 : "Event-Study Abnormal Returns (CAR) & OLS Backtesting"}
             </span>
           </div>
 
           <div className="flex items-center rounded-xl border border-[#1E2C3D] bg-[#0E1520] p-1 shadow-sm">
+            <button
+              onClick={() => handleModuleChange("COUNTRY")}
+              className={`flex items-center space-x-2 rounded-lg px-3.5 py-1.5 text-xs font-mono font-bold transition-all ${
+                activeModule === "COUNTRY"
+                  ? "bg-[#00C4CC] text-[#070B10] shadow-sm shadow-[#00C4CC]/30"
+                  : "text-[#8B949E] hover:text-white"
+              }`}
+            >
+              <span>🌍</span>
+              <span>Country Intelligence</span>
+              <span className="rounded bg-black/25 px-1.5 py-0.2 text-[9px] font-sans font-semibold">
+                GLOBAL
+              </span>
+            </button>
             <button
               onClick={() => handleModuleChange("FUTURESTOCK")}
               className={`flex items-center space-x-2 rounded-lg px-3.5 py-1.5 text-xs font-mono font-bold transition-all ${
@@ -127,6 +149,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Country Intelligence Studio */}
+      <CountryIntelligenceStudio />
 
       {/* Primary FutureStock Terminal */}
       <FutureStockStudio />
