@@ -40,6 +40,17 @@ export default function Home() {
     }
   };
 
+  const handleCountrySelect = (countryQuery: string) => {
+    setActiveModule("COUNTRY");
+    const el = document.getElementById("country-intelligence");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("search-country", { detail: countryQuery }));
+    }
+  };
+
   const handleLoadCase = (presetId: string) => {
     setActivePresetId(presetId);
     setActiveModule("CATALYST");
@@ -86,6 +97,7 @@ export default function Home() {
       <Hero
         onSelectPrompt={handleHeroSelect}
         onSelectFutureStockTicker={handleFutureStockHeroTicker}
+        onSelectCountry={handleCountrySelect}
       />
 
       {/* Sleek Active Workspace Segmented Bar */}

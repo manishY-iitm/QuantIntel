@@ -127,6 +127,23 @@ export function CountryIntelligenceStudio({
     }
   }, [selectedCountry]);
 
+  // Listen for global country search trigger (e.g. from Hero or Command Palette)
+  useEffect(() => {
+    const handleCustomCountrySearch = (e: Event) => {
+      const customEvt = e as CustomEvent<string>;
+      const q = customEvt.detail;
+      if (typeof q === "string" && q.trim()) {
+        const resolved = resolveCountry(q);
+        if (resolved) {
+          setSelectedCountry(resolved.code);
+          setSearchQuery(resolved.name);
+        }
+      }
+    };
+    window.addEventListener("search-country", handleCustomCountrySearch);
+    return () => window.removeEventListener("search-country", handleCustomCountrySearch);
+  }, []);
+
   // Debounced live suggestions search (queries /api/country/search)
   useEffect(() => {
     const timer = setTimeout(async () => {
