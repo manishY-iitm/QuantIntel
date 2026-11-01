@@ -19,7 +19,8 @@ class CountryMarketService:
     """
 
     def __init__(self):
-        self._quote_cache: Dict[str, Dict[str, Any]] = {}
+        self._index_quote_cache: Dict[str, Dict[str, Any]] = {}
+        self._stock_quote_cache: Dict[str, Dict[str, Any]] = {}
         self._cache_ttl_seconds = 120  # 2 minute cache to avoid rate limits
 
     def get_index_quote(self, country_code: CountryCode) -> Optional[IndexQuote]:
@@ -34,8 +35,8 @@ class CountryMarketService:
         now = time.time()
 
         # Check cache
-        if ticker in self._quote_cache:
-            entry = self._quote_cache[ticker]
+        if ticker in self._index_quote_cache:
+            entry = self._index_quote_cache[ticker]
             if now - entry["cached_at"] < self._cache_ttl_seconds:
                 return entry["data"]
 
@@ -74,7 +75,7 @@ class CountryMarketService:
                     is_market_open=self._is_market_hours(country_code),
                 )
 
-                self._quote_cache[ticker] = {
+                self._index_quote_cache[ticker] = {
                     "cached_at": now,
                     "data": quote,
                 }
@@ -93,8 +94,8 @@ class CountryMarketService:
         Fetch structured financial quotes for an individual stock.
         """
         now = time.time()
-        if ticker in self._quote_cache:
-            entry = self._quote_cache[ticker]
+        if ticker in self._stock_quote_cache:
+            entry = self._stock_quote_cache[ticker]
             if now - entry["cached_at"] < self._cache_ttl_seconds:
                 return entry["data"]
 
@@ -150,7 +151,7 @@ class CountryMarketService:
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "is_delayed": True,
                 }
-                self._quote_cache[ticker] = {"cached_at": now, "data": res}
+                self._stock_quote_cache[ticker] = {"cached_at": now, "data": res}
                 return res
 
         except Exception:

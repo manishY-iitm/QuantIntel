@@ -119,37 +119,38 @@ async function handleIntelligenceRequest(params: {
   // 2. Fetch live web news & disclosures using TinyFish and Google News RSS
   const rawNewsItems = await fetchCountryNews(country, metadata, tinyfishKey, sector, category);
 
-  // 3. Classify news items
-  let newsFeed = rawNewsItems.map((item, idx) =>
+  // 3. Classify all news items
+  const allNewsFeed = rawNewsItems.map((item, idx) =>
     classifyNewsItem(item, country, metadata, idx)
   );
 
-  // Apply filters
+  // 4. Build sector impact heatmap from ALL news items so every single key sector is populated
+  const sectors = buildSectorImpacts(country, metadata, allNewsFeed);
+
+  // 5. Discover and enrich stocks to watch across all developments
+  const stocksToWatch = await buildStocksToWatch(country, metadata, allNewsFeed);
+
+  // 6. Build forward-looking scenarios
+  const scenarios = buildScenarios(country, metadata, allNewsFeed, horizon);
+
+  // 7. Top-level Macro Summary
+  const macroSummary = buildMacroSummary(country, metadata, allNewsFeed, sectors);
+
+  // 8. Apply query filters specifically to the displayed news feed
+  let finalNews = [...allNewsFeed];
   if (sentiment && sentiment !== "ALL") {
-    newsFeed = newsFeed.filter((item) => item.sentiment === sentiment);
+    finalNews = finalNews.filter((item) => item.sentiment === sentiment);
   }
   if (sector && sector !== "ALL") {
-    newsFeed = newsFeed.filter((item) => item.relevantSector.toLowerCase().includes(sector.toLowerCase()));
+    finalNews = finalNews.filter((item) => item.relevantSector.toLowerCase().includes(sector.toLowerCase()));
   }
   if (category && category !== "ALL") {
-    newsFeed = newsFeed.filter((item) => item.eventCategory === category);
+    finalNews = finalNews.filter((item) => item.eventCategory === category);
   }
 
   // Sort breaking news first
-  newsFeed.sort((a, b) => (b.isBreaking ? 1 : 0) - (a.isBreaking ? 1 : 0));
-  const finalNews = newsFeed.slice(0, limit);
-
-  // 4. Build sector impact heatmap
-  const sectors = buildSectorImpacts(country, metadata, finalNews);
-
-  // 5. Discover and enrich stocks to watch with real market data
-  const stocksToWatch = await buildStocksToWatch(country, metadata, finalNews);
-
-  // 6. Build forward-looking scenarios
-  const scenarios = buildScenarios(country, metadata, finalNews, horizon);
-
-  // 7. Top-level Macro Summary
-  const macroSummary = buildMacroSummary(country, metadata, finalNews, sectors);
+  finalNews.sort((a, b) => (b.isBreaking ? 1 : 0) - (a.isBreaking ? 1 : 0));
+  finalNews = finalNews.slice(0, limit);
 
   const totalSources = finalNews.length;
   const avgTokenSavings =

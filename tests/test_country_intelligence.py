@@ -143,3 +143,69 @@ def test_pakistan_country_intelligence_pipeline():
     tickers = [s.ticker for s in report.stocks_to_watch]
     assert any("KA" in t or t in ["OGDC.KA", "MCB.KA", "LUCK.KA", "ENGRO.KA"] for t in tickers)
 
+
+def test_sector_impact_across_united_states():
+    """Verify Sector Impact Across United States generates comprehensive, validated sector matrices."""
+    researcher = TinyFishCountryResearcher()
+    classifier = CountryIntelligenceClassifier()
+
+    news_items = researcher.research_country(CountryCode.UNITED_STATES, max_results=8)
+    report = classifier.generate_report(CountryCode.UNITED_STATES, news_items)
+
+    assert report.country_metadata.code == CountryCode.UNITED_STATES
+    assert report.country_metadata.name == "United States"
+    assert report.country_metadata.currency == "USD"
+    assert len(report.sectors) >= 8
+
+    sector_names = [s.sector_name for s in report.sectors]
+    expected_us_sectors = [
+        "Information Technology",
+        "Artificial Intelligence & Semis",
+        "Banking & Finance",
+        "Healthcare & Biotech",
+        "Energy & Oil",
+        "Aerospace & Defence",
+    ]
+    for expected in expected_us_sectors:
+        assert expected in sector_names, f"Expected US sector '{expected}' missing from sector impact report!"
+
+    for sec in report.sectors:
+        assert sec.country_code == CountryCode.UNITED_STATES
+        assert isinstance(sec.net_sentiment, SentimentClassification)
+        assert sec.positive_count >= 0
+        assert sec.negative_count >= 0
+        assert sec.mixed_count >= 0
+        assert sec.neutral_count >= 0
+        assert len(sec.major_developments) >= 1
+        assert len(sec.supporting_sources) >= 1
+        assert 0.0 < sec.confidence_score <= 1.0
+        assert len(sec.risks) >= 1
+
+
+def test_sector_impact_across_all_supported_countries():
+    """Verify Sector Impact is non-empty and well-structured across all supported countries."""
+    classifier = CountryIntelligenceClassifier()
+
+    for code, meta in SUPPORTED_COUNTRIES.items():
+        report = classifier.generate_report(code, [])
+        assert report.country_metadata.code == code
+        assert len(report.sectors) >= 5, f"Country {code} has fewer than 5 sectors!"
+        
+        for sec in report.sectors:
+            assert sec.country_code == code
+            assert len(sec.sector_name) > 0
+            assert isinstance(sec.net_sentiment, SentimentClassification)
+            assert len(sec.major_developments) >= 1
+
+
+def test_sector_impact_empty_news_resilience():
+    """Verify that even when web reconnaissance returns 0 news items, Sector Impact is fully preserved."""
+    classifier = CountryIntelligenceClassifier()
+    report = classifier.generate_report(CountryCode.UNITED_STATES, [])
+
+    assert len(report.sectors) >= 8
+    for sec in report.sectors:
+        assert len(sec.major_developments) >= 1
+        assert "throughput" in sec.major_developments[0].lower() or "operational" in sec.major_developments[0].lower()
+
+

@@ -323,6 +323,38 @@ class CountryIntelligenceClassifier:
                 ("Saudi Arabian Oil Company (Aramco)", "2222.SR", "Energy & Oil (Aramco)", "World largest crude exporter with low lifting costs, sustainable free cash flow, and high dividend distributions."),
                 ("Al Rajhi Bank", "1120.SR", "Banking & Financial Services", "Largest Islamic banking group globally, pivotal to Vision 2030 retail and corporate lending."),
             ],
+            CountryCode.CHINA: [
+                ("Tencent Holdings Limited", "0700.HK", "Internet Platforms & Gaming", "Dominant digital social network, cloud infrastructure, and fintech payments ecosystem across China."),
+                ("Alibaba Group Holding", "BABA", "E-Commerce & Cloud Infrastructure", "Tier-1 e-commerce commerce platform with enterprise cloud scaling and logistics throughput."),
+                ("BYD Company Limited", "1211.HK", "Electric Vehicles & Battery Tech", "Global electric vehicle manufacturing and battery cell integration leader."),
+            ],
+            CountryCode.CANADA: [
+                ("Royal Bank of Canada", "RY.TO", "Banking & Financial Services", "Largest Canadian banking institution with diversified commercial, wealth, and capital markets revenue."),
+                ("Enbridge Inc.", "ENB.TO", "Energy Infrastructure & Pipelines", "North American energy delivery network with stable utility-like contracted cash flows."),
+                ("Shopify Inc.", "SHOP.TO", "Technology & E-Commerce", "Global commerce platform powering digital merchant GMV expansion and software solutions."),
+            ],
+            CountryCode.AUSTRALIA: [
+                ("BHP Group Limited", "BHP.AX", "Mining & Natural Resources", "World premier diversified natural resource producer spanning copper, iron ore, and potash."),
+                ("Commonwealth Bank of Australia", "CBA.AX", "Retail & Commercial Banking", "Dominant Australian retail deposit franchise and digital mortgage market leader."),
+                ("CSL Limited", "CSL.AX", "Biopharmaceuticals & Healthcare", "Global leader in plasma biotherapies and influenza vaccines with deep R&D pipeline."),
+            ],
+            CountryCode.SINGAPORE: [
+                ("DBS Group Holdings", "D05.SI", "Banking & Wealth Management", "Southeast Asia largest commercial bank by assets with regional institutional wealth management scale."),
+                ("Singapore Telecommunications", "Z74.SI", "Telecommunications & Digital Services", "Regional telecom operator with extensive data center and cross-border digital infrastructure."),
+            ],
+            CountryCode.SOUTH_KOREA: [
+                ("Samsung Electronics Co.", "005930.KS", "Semiconductors & Electronics", "Global leader in advanced memory silicon (DRAM, NAND), display panels, and mobile hardware."),
+                ("SK Hynix Inc.", "000660.KS", "Semiconductors & HBM Memory", "Critical supplier of High Bandwidth Memory (HBM) silicon powering generative AI hyperscalers."),
+                ("Hyundai Motor Company", "005380.KS", "Automotive & Electric Mobility", "Global automotive manufacturer expanding hybrid and dedicated EV vehicle lineups."),
+            ],
+            CountryCode.BRAZIL: [
+                ("Petrobras (Petroleo Brasileiro)", "PETR4.SA", "Energy & Deepwater Exploration", "Pre-salt offshore oil and gas production leader with cost-efficient lifting operations."),
+                ("Vale S.A.", "VALE3.SA", "Iron Ore & Mining", "World major iron ore and nickel producer supplying global industrial steelmakers."),
+            ],
+            CountryCode.UAE: [
+                ("First Abu Dhabi Bank", "FAB.AE", "Banking & Financial Services", "Largest bank in the UAE with premier corporate financing and government sovereign project support."),
+                ("Emaar Properties", "EMAAR.AE", "Real Estate & Infrastructure", "Premier real estate developer in the Middle East with recurring commercial mall and hospitality assets."),
+            ],
         }
 
         anchors = country_anchors.get(country_code, [
@@ -332,6 +364,29 @@ class CountryIntelligenceClassifier:
         res = []
         for cname, ticker, sec, reasoning in anchors:
             quote = self.market_service.get_stock_quote(ticker, country_code)
+            if hasattr(quote, "price"):
+                q_price = quote.price
+                q_change = getattr(quote, "change_pct", None)
+                q_curr = getattr(quote, "currency", metadata.currency)
+                q_vol = getattr(quote, "volume", None)
+                q_hi = getattr(quote, "fifty_two_week_high", None)
+                q_lo = getattr(quote, "fifty_two_week_low", None)
+                q_perf = getattr(quote, "historical_performance_1m_pct", None)
+                q_ts = getattr(quote, "timestamp", None)
+                q_delayed = True
+            elif isinstance(quote, dict):
+                q_price = quote.get("price")
+                q_change = quote.get("change_pct")
+                q_curr = quote.get("currency", metadata.currency)
+                q_vol = quote.get("volume")
+                q_hi = quote.get("fifty_two_week_high")
+                q_lo = quote.get("fifty_two_week_low")
+                q_perf = quote.get("historical_performance_1m_pct")
+                q_ts = quote.get("timestamp")
+                q_delayed = quote.get("is_delayed", True)
+            else:
+                q_price, q_change, q_curr, q_vol, q_hi, q_lo, q_perf, q_ts, q_delayed = None, None, metadata.currency, None, None, None, None, None, True
+
             res.append(
                 StockToWatch(
                     company_name=cname,
@@ -344,17 +399,17 @@ class CountryIntelligenceClassifier:
                     relevance_reasoning=reasoning,
                     potential_positive_catalysts=["Sovereign institutional capital flows", "Sector leadership and defensive operating margins"],
                     potential_negative_catalysts=["Foreign exchange headwinds", "Global macroeconomic demand contraction"],
-                    current_price=quote.get("price"),
-                    price_change_pct=quote.get("change_pct"),
-                    currency=quote.get("currency", metadata.currency),
-                    volume=quote.get("volume"),
-                    fifty_two_week_high=quote.get("fifty_two_week_high"),
-                    fifty_two_week_low=quote.get("fifty_two_week_low"),
-                    historical_performance_1m_pct=quote.get("historical_performance_1m_pct"),
+                    current_price=q_price,
+                    price_change_pct=q_change,
+                    currency=q_curr,
+                    volume=q_vol,
+                    fifty_two_week_high=q_hi,
+                    fifty_two_week_low=q_lo,
+                    historical_performance_1m_pct=q_perf,
                     important_risks=["Cyclical margin compression", "Regulatory compliance requirements"],
                     source_links=[f"https://finance.yahoo.com/quote/{ticker}"],
-                    market_data_timestamp=quote.get("timestamp"),
-                    is_market_data_delayed=True,
+                    market_data_timestamp=q_ts,
+                    is_market_data_delayed=q_delayed,
                 )
             )
 

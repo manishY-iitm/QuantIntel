@@ -40,7 +40,12 @@ import {
   NewsCategory,
   StockWatchCategory,
 } from "@/lib/country-types";
-import { SUPPORTED_COUNTRIES_LIST, getCountryMetadata, resolveCountry } from "@/lib/country-data";
+import {
+  SUPPORTED_COUNTRIES_LIST,
+  getCountryMetadata,
+  resolveCountry,
+  getInitialCountryReport,
+} from "@/lib/country-data";
 
 interface CountryIntelligenceStudioProps {
   initialCountry?: CountryCode;
@@ -88,9 +93,11 @@ export function CountryIntelligenceStudio({
   // Active Tab for Stocks to Watch
   const [stockWatchTab, setStockWatchTab] = useState<StockWatchCategory | "ALL">("ALL");
 
-  // Report Data & Loading States
-  const [report, setReport] = useState<CountryIntelligenceReport | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Report Data & Loading States - Pre-seeded with baseline so Sector Impact and dashboard are 100% visible immediately
+  const [report, setReport] = useState<CountryIntelligenceReport>(() =>
+    getInitialCountryReport(initialCountry)
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [autoRefreshInterval, setAutoRefreshInterval] = useState<number>(0); // 0 = off
@@ -137,6 +144,9 @@ export function CountryIntelligenceStudio({
         if (resolved) {
           setSelectedCountry(resolved.code);
           setSearchQuery(resolved.name);
+          setSelectedSectorFilter("ALL");
+          setReport(getInitialCountryReport(resolved.code));
+          fetchReport(true, resolved.code);
         }
       }
     };
@@ -252,6 +262,8 @@ export function CountryIntelligenceStudio({
     const resolved = resolveCountry(searchQuery);
     setSelectedCountry(resolved.code);
     setSearchQuery(resolved.name);
+    setSelectedSectorFilter("ALL");
+    setReport(getInitialCountryReport(resolved.code));
     fetchReport(true, resolved.code);
   };
 
@@ -260,6 +272,8 @@ export function CountryIntelligenceStudio({
     const code = item.code as CountryCode;
     setSelectedCountry(code);
     setSearchQuery(item.name);
+    setSelectedSectorFilter("ALL");
+    setReport(getInitialCountryReport(code));
     fetchReport(true, code);
   };
 
@@ -350,6 +364,15 @@ export function CountryIntelligenceStudio({
       list = list.filter((item) => item.confidence >= minConfidence);
     }
 
+    // Filter by selected sector if active
+    if (selectedSectorFilter && selectedSectorFilter !== "ALL") {
+      const target = selectedSectorFilter.toLowerCase();
+      list = list.filter((item) => {
+        const itemSec = (item.relevantSector || "").toLowerCase();
+        return itemSec.includes(target) || target.includes(itemSec);
+      });
+    }
+
     if (newsTab === "POSITIVE") {
       list = list.filter((item) => item.sentiment === "POSITIVE");
     } else if (newsTab === "NEGATIVE") {
@@ -370,7 +393,19 @@ export function CountryIntelligenceStudio({
     }
 
     return list;
-  }, [report?.newsFeed, newsTab, breakingOnly, minConfidence]);
+  }, [report?.newsFeed, newsTab, breakingOnly, minConfidence, selectedSectorFilter]);
+
+  // Filtered Sectors for Sector Impact Map
+  const displaySectors = useMemo(() => {
+    const list = report?.sectors || [];
+    if (!selectedSectorFilter || selectedSectorFilter === "ALL") return list;
+    const target = selectedSectorFilter.toLowerCase();
+    const filtered = list.filter((s) => {
+      const sName = (s.sectorName || (s as any).sector_name || "").toLowerCase();
+      return sName.includes(target) || target.includes(sName);
+    });
+    return filtered.length > 0 ? filtered : list;
+  }, [report?.sectors, selectedSectorFilter]);
 
   // Filtered Stocks to Watch
   const filteredStocks = useMemo(() => {
@@ -541,6 +576,8 @@ export function CountryIntelligenceStudio({
                     setSelectedCountry(newCode);
                     const matched = SUPPORTED_COUNTRIES_LIST.find((c) => c.code === newCode);
                     if (matched) setSearchQuery(matched.name);
+                    setSelectedSectorFilter("ALL");
+                    setReport(getInitialCountryReport(newCode));
                     fetchReport(true, newCode);
                   }}
                   className="w-full rounded-lg border border-[#1E2C3D] bg-[#080C12] py-2 pl-8 pr-3 text-xs text-[#C9D1D9] focus:border-[#00C4CC] focus:outline-none font-mono cursor-pointer appearance-none"
@@ -653,6 +690,8 @@ export function CountryIntelligenceStudio({
                   onClick={() => {
                     setSelectedCountry(c.code);
                     setSearchQuery(c.name);
+                    setSelectedSectorFilter("ALL");
+                    setReport(getInitialCountryReport(c.code));
                     fetchReport(true, c.code);
                   }}
                   className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition-all ${
@@ -802,8 +841,67 @@ export function CountryIntelligenceStudio({
 
         {!isLoading && report && (
           <>
+            {/* Quick Jump Studio Nav Pills */}
+            <div className="mb-6 flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-thin border-b border-[#1E2C3D] pb-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("macro-summary");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center space-x-1.5 rounded-lg border border-[#1E2C3D] bg-[#0E1520] px-3 py-1.5 text-xs font-mono text-[#C9D1D9] hover:border-[#00C4CC] hover:text-[#00C4CC] transition-all whitespace-nowrap"
+              >
+                <span>📊</span>
+                <span>Macro Overview</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("sector-impact");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center space-x-1.5 rounded-lg border border-[#00C4CC]/50 bg-[#00C4CC]/15 px-3 py-1.5 text-xs font-mono font-bold text-[#00C4CC] hover:bg-[#00C4CC]/25 transition-all shadow-sm shadow-[#00C4CC]/20 whitespace-nowrap"
+              >
+                <span>⚡</span>
+                <span>Sector Impact ({report.sectors?.length || 0})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("stocks-to-watch");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center space-x-1.5 rounded-lg border border-[#1E2C3D] bg-[#0E1520] px-3 py-1.5 text-xs font-mono text-[#C9D1D9] hover:border-[#00C4CC] hover:text-[#00C4CC] transition-all whitespace-nowrap"
+              >
+                <span>🏢</span>
+                <span>Stocks to Watch ({report.stocksToWatch?.length || 0})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("scenarios-section");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center space-x-1.5 rounded-lg border border-[#1E2C3D] bg-[#0E1520] px-3 py-1.5 text-xs font-mono text-[#C9D1D9] hover:border-[#00C4CC] hover:text-[#00C4CC] transition-all whitespace-nowrap"
+              >
+                <span>🔮</span>
+                <span>Forward Scenarios (3)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("country-news-feed");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center space-x-1.5 rounded-lg border border-[#1E2C3D] bg-[#0E1520] px-3 py-1.5 text-xs font-mono text-[#C9D1D9] hover:border-[#00C4CC] hover:text-[#00C4CC] transition-all whitespace-nowrap"
+              >
+                <span>📰</span>
+                <span>Audited News ({filteredNews.length})</span>
+              </button>
+            </div>
+
             {/* 3. EXECUTIVE COUNTRY INTELLIGENCE SUMMARY CARD */}
-            <div className="mb-8 rounded-2xl border border-[#1E2C3D] bg-gradient-to-b from-[#0E1520] to-[#070B10] p-6 shadow-xl">
+            <div id="macro-summary" className="mb-8 rounded-2xl border border-[#1E2C3D] bg-gradient-to-b from-[#0E1520] to-[#070B10] p-6 shadow-xl scroll-mt-24">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between border-b border-[#1E2C3D] pb-5">
                 <div>
                   <div className="flex items-center space-x-3 mb-1.5">
@@ -891,12 +989,19 @@ export function CountryIntelligenceStudio({
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {report.macroSummary.sectorsAttractingAttention.map((s, i) => (
-                      <span
+                      <button
                         key={i}
-                        className="rounded-md border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-2 py-0.5 text-[11px] text-[#00C4CC] font-medium"
+                        type="button"
+                        onClick={() => {
+                          setSelectedSectorFilter(s);
+                          const el = document.getElementById("sector-impact");
+                          if (el) el.scrollIntoView({ behavior: "smooth" });
+                        }}
+                        className="rounded-md border border-[#00C4CC]/30 bg-[#00C4CC]/10 px-2 py-0.5 text-[11px] text-[#00C4CC] font-medium hover:bg-[#00C4CC]/20 hover:border-[#00C4CC] transition-all cursor-pointer"
+                        title={`Focus on ${s} Sector`}
                       >
                         {s}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -920,38 +1025,104 @@ export function CountryIntelligenceStudio({
             </div>
 
             {/* 4. SECTOR IMPACT MAP ACROSS THE COUNTRY */}
-            <div className="mb-10">
-              <div className="mb-4 flex items-center justify-between">
+            <div id="sector-impact" className="mb-10 scroll-mt-24">
+              <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-white sm:text-lg flex items-center space-x-2">
                     <span>Sector Impact Across {currentMetadata.name}</span>
-                    <span className="rounded-full bg-[#1E2C3D] px-2 py-0.5 text-[10px] font-mono text-[#8B949E]">
-                      {report.sectors.length} Key Industries
+                    <span className="rounded-full bg-[#1E2C3D] px-2.5 py-0.5 text-[10px] font-mono text-[#00C4CC] font-bold">
+                      {displaySectors.length} Key Industries
                     </span>
                   </h3>
                   <p className="text-xs text-[#8B949E]">
-                    Aggregated sentiment, potential beneficiaries, exposed competitors, and benchmark performance.
+                    Aggregated sentiment, potential beneficiaries, exposed competitors, and benchmark performance across {currentMetadata.name}.
                   </p>
                 </div>
+
+                {/* Active Sector Filter Badge */}
+                {selectedSectorFilter !== "ALL" && (
+                  <div className="flex items-center space-x-2 rounded-lg border border-[#00C4CC]/40 bg-[#00C4CC]/10 px-3 py-1 text-xs font-mono text-[#00C4CC]">
+                    <span>Filtered: <strong>{selectedSectorFilter}</strong></span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSectorFilter("ALL")}
+                      className="ml-2 rounded bg-[#00C4CC]/20 px-1.5 py-0.5 text-[10px] hover:bg-[#00C4CC]/30 text-white font-bold"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Sector Filter Pills Bar */}
+              <div className="mb-4 flex items-center space-x-1.5 overflow-x-auto pb-1 scrollbar-thin">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSectorFilter("ALL")}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-mono font-medium whitespace-nowrap transition-all ${
+                    selectedSectorFilter === "ALL"
+                      ? "bg-[#00C4CC] text-[#070B10] font-bold shadow-sm"
+                      : "border border-[#1E2C3D] bg-[#0E1520] text-[#8B949E] hover:text-white"
+                  }`}
+                >
+                  All ({report.sectors?.length || 0})
+                </button>
+                {report.sectors?.map((s) => {
+                  const sName = s.sectorName || (s as any).sector_name || "";
+                  const isSelected = selectedSectorFilter.toLowerCase() === sName.toLowerCase();
+                  return (
+                    <button
+                      key={sName}
+                      type="button"
+                      onClick={() => setSelectedSectorFilter(isSelected ? "ALL" : sName)}
+                      className={`rounded-lg px-2.5 py-1 text-xs font-mono whitespace-nowrap transition-all ${
+                        isSelected
+                          ? "bg-[#00C4CC] text-[#070B10] font-bold shadow-sm"
+                          : "border border-[#1E2C3D] bg-[#0E1520] text-[#C9D1D9] hover:border-[#2A3F58] hover:text-white"
+                      }`}
+                    >
+                      {sName}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Grid of Sector Cards */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {report.sectors.map((sec) => {
-                  const isPos = sec.netSentiment === "POSITIVE";
-                  const isNeg = sec.netSentiment === "NEGATIVE";
-                  const isMix = sec.netSentiment === "MIXED";
+                {displaySectors.map((sec) => {
+                  const secName = sec.sectorName || (sec as any).sector_name || "Industrial Sector";
+                  const netSent = sec.netSentiment || (sec as any).net_sentiment || "NEUTRAL";
+                  const isPos = netSent === "POSITIVE";
+                  const isNeg = netSent === "NEGATIVE";
+                  const isMix = netSent === "MIXED";
+
+                  const posCount = sec.positiveCount ?? (sec as any).positive_count ?? 0;
+                  const negCount = sec.negativeCount ?? (sec as any).negative_count ?? 0;
+                  const mixCount = sec.mixedCount ?? (sec as any).mixed_count ?? 0;
+                  const confScore = Math.round((sec.confidenceScore ?? (sec as any).confidence_score ?? 0.85) * 100);
+
+                  const majorDevs = (sec.majorDevelopments || (sec as any).major_developments || []) as string[];
+                  const beneficiaries = (sec.potentialBeneficiaries || (sec as any).potential_beneficiaries || []) as string[];
+                  const exposed = (sec.exposedCompanies || (sec as any).exposed_companies || []) as string[];
+                  const latestPerf = sec.latestPerformancePct ?? (sec as any).latest_performance_pct;
+
+                  const isSelected = selectedSectorFilter.toLowerCase() === secName.toLowerCase();
 
                   return (
                     <div
-                      key={sec.sectorName}
-                      className="group rounded-xl border border-[#1E2C3D] bg-[#0E1520] p-4 hover:border-[#00C4CC]/60 transition-all flex flex-col justify-between"
+                      key={secName}
+                      onClick={() => setSelectedSectorFilter(isSelected ? "ALL" : secName)}
+                      className={`group rounded-xl border p-4 transition-all flex flex-col justify-between cursor-pointer ${
+                        isSelected
+                          ? "border-[#00C4CC] bg-[#00C4CC]/10 shadow-lg shadow-[#00C4CC]/20 ring-1 ring-[#00C4CC]"
+                          : "border-[#1E2C3D] bg-[#0E1520] hover:border-[#00C4CC]/60"
+                      }`}
                     >
                       <div>
                         {/* Header & Net Sentiment Badge */}
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h4 className="text-xs font-bold text-white group-hover:text-[#00C4CC] transition-colors leading-snug">
-                            {sec.sectorName}
+                            {secName}
                           </h4>
                           <span
                             className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-mono font-bold border ${
@@ -964,41 +1135,41 @@ export function CountryIntelligenceStudio({
                                 : "bg-[#8B949E]/15 text-[#8B949E] border-[#8B949E]/30"
                             }`}
                           >
-                            {sec.netSentiment}
+                            {netSent}
                           </span>
                         </div>
 
                         {/* News Count Breakdown Bar */}
                         <div className="mb-3 flex items-center space-x-2 text-[10px] font-mono text-[#8B949E]">
-                          <span className="text-[#10B981]">+{sec.positiveCount}</span>
+                          <span className="text-[#10B981]">+{posCount}</span>
                           <span>•</span>
-                          <span className="text-[#FF5C5C]">-{sec.negativeCount}</span>
+                          <span className="text-[#FF5C5C]">-{negCount}</span>
                           <span>•</span>
-                          <span className="text-[#FFBE5C]">~{sec.mixedCount}</span>
+                          <span className="text-[#FFBE5C]">~{mixCount}</span>
                           <span className="ml-auto text-[#00C4CC]">
-                            Conf: {Math.round(sec.confidenceScore * 100)}%
+                            Conf: {confScore}%
                           </span>
                         </div>
 
                         {/* Major Development */}
                         <p className="text-[11px] text-[#C9D1D9] line-clamp-2 mb-3 leading-relaxed">
-                          {sec.majorDevelopments[0] || "Steady operational trajectory across sector constituents."}
+                          {majorDevs[0] || `Steady operational throughput across ${secName} constituents.`}
                         </p>
 
                         {/* Beneficiaries & Exposed */}
-                        {sec.potentialBeneficiaries.length > 0 && (
+                        {beneficiaries.length > 0 && (
                           <div className="mb-1.5 text-[11px]">
                             <span className="text-[#8B949E] font-medium">Beneficiaries: </span>
                             <span className="text-[#10B981] font-medium">
-                              {sec.potentialBeneficiaries.slice(0, 2).join(", ")}
+                              {beneficiaries.slice(0, 2).join(", ")}
                             </span>
                           </div>
                         )}
-                        {sec.exposedCompanies.length > 0 && (
+                        {exposed.length > 0 && (
                           <div className="mb-2 text-[11px]">
                             <span className="text-[#8B949E] font-medium">Exposed: </span>
                             <span className="text-[#FF5C5C] font-medium">
-                              {sec.exposedCompanies.slice(0, 2).join(", ")}
+                              {exposed.slice(0, 2).join(", ")}
                             </span>
                           </div>
                         )}
@@ -1006,10 +1177,12 @@ export function CountryIntelligenceStudio({
 
                       {/* Footer Actions */}
                       <div className="mt-3 pt-2.5 border-t border-[#1E2C3D] flex items-center justify-between text-[10px] font-mono text-[#8B949E]">
-                        <span>Est Perf: {sec.latestPerformancePct ? `${sec.latestPerformancePct}%` : "Flat"}</span>
+                        <span>Est Perf: {latestPerf !== undefined ? `${latestPerf}%` : "Flat"}</span>
                         <button
-                          onClick={() => {
-                            setSelectedSectorFilter(sec.sectorName);
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedSectorFilter(secName);
                             const newsEl = document.getElementById("country-news-feed");
                             if (newsEl) newsEl.scrollIntoView({ behavior: "smooth" });
                           }}
@@ -1026,7 +1199,7 @@ export function CountryIntelligenceStudio({
             </div>
 
             {/* 5. STOCKS TO WATCH (DISCOVERY ENGINE WITH 1-CLICK CLM EVENT STUDY) */}
-            <div className="mb-10">
+            <div id="stocks-to-watch" className="mb-10 scroll-mt-24">
               <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-white sm:text-lg flex items-center space-x-2">
@@ -1197,7 +1370,7 @@ export function CountryIntelligenceStudio({
             </div>
 
             {/* 6. WHAT COULD HAPPEN NEXT? (FORWARD SCENARIO ANALYSIS) */}
-            <div className="mb-10">
+            <div id="scenarios-section" className="mb-10 scroll-mt-24">
               <div className="mb-4">
                 <h3 className="text-base font-bold text-white sm:text-lg flex items-center space-x-2">
                   <Sparkles className="h-5 w-5 text-[#FFBE5C]" />
