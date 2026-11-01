@@ -47,44 +47,80 @@ class QuantEngine:
         stock_df = pd.DataFrame()
         bench_df = pd.DataFrame()
 
+        # 1. Attempt LSE Data 3.0 provider if configured
         try:
-            # Download stock data
-            stock_data = yf.download(
-                self.config.ticker,
-                start=start_date.strftime("%Y-%m-%d"),
-                end=end_date.strftime("%Y-%m-%d"),
-                progress=False,
-                auto_adjust=True,
-            )
-            # Download benchmark data
-            bench_data = yf.download(
-                self.config.benchmark_ticker,
-                start=start_date.strftime("%Y-%m-%d"),
-                end=end_date.strftime("%Y-%m-%d"),
-                progress=False,
-                auto_adjust=True,
-            )
-
-            if not stock_data.empty and not bench_data.empty:
-                # Handle MultiIndex if present in newer yfinance
-                if isinstance(stock_data.columns, pd.MultiIndex):
-                    stock_df = pd.DataFrame({
-                        "Close": stock_data["Close"][self.config.ticker],
-                        "Volume": stock_data["Volume"][self.config.ticker],
-                    })
-                else:
-                    stock_df = stock_data[["Close", "Volume"]]
-
-                if isinstance(bench_data.columns, pd.MultiIndex):
-                    bench_df = pd.DataFrame({
-                        "Close": bench_data["Close"][self.config.benchmark_ticker],
-                        "Volume": bench_data["Volume"][self.config.benchmark_ticker],
-                    })
-                else:
-                    bench_df = bench_data[["Close", "Volume"]]
+            from quantintel.market_data import LSEDataProvider, MarketDataSource
+            lse = LSEDataProvider()
+            if lse.is_live_configured():
+                lse_stock = lse.get_historical_ohlcv(
+                    self.config.ticker,
+                    timeframe="1d",
+                    start=start_date.strftime("%Y-%m-%d"),
+                    end=end_date.strftime("%Y-%m-%d"),
+                )
+                lse_bench = lse.get_historical_ohlcv(
+                    self.config.benchmark_ticker,
+                    timeframe="1d",
+                    start=start_date.strftime("%Y-%m-%d"),
+                    end=end_date.strftime("%Y-%m-%d"),
+                )
+                if (
+                    lse_stock.data_source == MarketDataSource.LSE_DATA_3_0
+                    and len(lse_stock.bars) >= 50
+                    and len(lse_bench.bars) >= 50
+                ):
+                    stock_df = pd.DataFrame([
+                        {"Date": pd.to_datetime(b.timestamp), "Close": b.close, "Volume": b.volume}
+                        for b in lse_stock.bars
+                    ]).set_index("Date")
+                    bench_df = pd.DataFrame([
+                        {"Date": pd.to_datetime(b.timestamp), "Close": b.close, "Volume": b.volume}
+                        for b in lse_bench.bars
+                    ]).set_index("Date")
         except Exception:
             stock_df = pd.DataFrame()
             bench_df = pd.DataFrame()
+
+        # 2. Secondary public exchange fallback (yfinance)
+        if len(stock_df) < 50 or len(bench_df) < 50:
+            try:
+                # Download stock data
+                stock_data = yf.download(
+                    self.config.ticker,
+                    start=start_date.strftime("%Y-%m-%d"),
+                    end=end_date.strftime("%Y-%m-%d"),
+                    progress=False,
+                    auto_adjust=True,
+                )
+                # Download benchmark data
+                bench_data = yf.download(
+                    self.config.benchmark_ticker,
+                    start=start_date.strftime("%Y-%m-%d"),
+                    end=end_date.strftime("%Y-%m-%d"),
+                    progress=False,
+                    auto_adjust=True,
+                )
+
+                if not stock_data.empty and not bench_data.empty:
+                    # Handle MultiIndex if present in newer yfinance
+                    if isinstance(stock_data.columns, pd.MultiIndex):
+                        stock_df = pd.DataFrame({
+                            "Close": stock_data["Close"][self.config.ticker],
+                            "Volume": stock_data["Volume"][self.config.ticker],
+                        })
+                    else:
+                        stock_df = stock_data[["Close", "Volume"]]
+
+                    if isinstance(bench_data.columns, pd.MultiIndex):
+                        bench_df = pd.DataFrame({
+                            "Close": bench_data["Close"][self.config.benchmark_ticker],
+                            "Volume": bench_data["Volume"][self.config.benchmark_ticker],
+                        })
+                    else:
+                        bench_df = bench_data[["Close", "Volume"]]
+            except Exception:
+                stock_df = pd.DataFrame()
+                bench_df = pd.DataFrame()
 
         # If download failed or returned insufficient bars, generate synthetic market series
         if len(stock_df) < 50 or len(bench_df) < 50:

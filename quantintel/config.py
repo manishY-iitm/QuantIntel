@@ -16,6 +16,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TINYFISH_API_KEY = os.getenv("TINYFISH_API_KEY", "")
 TINYFISH_BASE_URL = os.getenv("TINYFISH_BASE_URL", "https://api.tinyfish.ai/v1")
 
+# LSE Data 3.0 Configuration (London Strategic Edge)
+LSE_API_KEY = os.getenv("LSE_API_KEY", "")
+LSE_BASE_URL = os.getenv("LSE_BASE_URL", "https://download.londonstrategicedge.com/v3")
+
 # LLM Providers (Optional for enhanced natural language parsing)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")

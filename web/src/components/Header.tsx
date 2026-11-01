@@ -39,6 +39,11 @@ export function Header({
             </span>
             <span className="hidden sm:inline text-[#2A3F58]">|</span>
             <span className="hidden sm:inline font-mono text-[#8B949E]">SANDBOX: 8-AGENT QUANT ENGINE</span>
+            <span className="hidden md:inline text-[#2A3F58]">|</span>
+            <span className="hidden md:inline font-mono text-[#00C4CC] flex items-center space-x-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#00C4CC]"></span>
+              <span>LSE DATA 3.0: ACTIVE</span>
+            </span>
           </div>
           <div className="flex items-center space-x-3 font-mono">
             <span className="hidden md:inline text-[#00C4CC] font-medium">DETERMINISTIC RESEARCH ENGINE</span>

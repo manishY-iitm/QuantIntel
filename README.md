@@ -64,8 +64,9 @@ QuantIntel decouples reasoning from computation through a **Dual-Engine Architec
 | Engine | Technology | Responsibility | Guarantee |
 | :--- | :--- | :--- | :--- |
 | **Agent Reconnaissance Brain** | **TinyFish Search, Fetch & Agent** | Crawls dynamic web, renders JS, cleans DOM to markdown, extracts structured event entities | Full live-web coverage with zero anti-bot friction & 80%+ token savings |
+| **Market Data Layer** | **LSE Data 3.0 + Public Feeds** | Real-time tick streams, OHLCV candles, 11 global markets, OPRA options tape & macro series | Institutional data integrity with 50 GB/mo free archive access |
 | **Pydantic Reasoning Core** | **LLMs + Schema Validator** | Deduplicates events, validates UTC timestamps, anchors citations, formulates falsifiable $H_0/H_1$ | 100% source-grounded provenance; zero hallucinated dates |
-| **Deterministic Quant Engine** | **Sandboxed Python (Pandas, SciPy, yfinance)** | Fetches split-adjusted historical data, computes market model residuals, CAR, and $t$-tests | Zero mathematical hallucination; reproducible empirical statistics |
+| **Deterministic Quant Engine** | **Sandboxed Python (Pandas, SciPy, statsmodels)** | Computes market model residuals, CAR, and $t$-tests over aligned historical data | Zero mathematical hallucination; reproducible empirical statistics |
 
 ---
 
@@ -275,6 +276,36 @@ pytest -v
 6. **Integrated 1-Click CLM Event Study:** Run the Campbell, Lo, and MacKinlay (1997) event study directly on any identified stock from the country dashboard to test historical abnormal returns (CAR), $t$-statistics, and $p$-values.
 7. **Forward-Looking Scenario Analysis:** Constructs 3 evidence-grounded scenarios (**Bullish**, **Neutral/Sideways**, **Bearish**) with explicit probabilities, invalidation conditions, and confidence levels.
 8. **Audited Evidence Feed:** Interactive feed with real publication timestamps, retrieval timestamps, source domain attribution, and 1-click evidence inspection modal.
+
+---
+
+## 🏛️ LSE Data 3.0 Integration: Institutional Market Data Layer
+
+QuantIntel integrates **LSE Data 3.0** ([`londonstrategicedge/lse-data`](https://github.com/londonstrategicedge/lse-data)) as a primary financial market data provider alongside TinyFish:
+
+* **TinyFish:** Web research, regulatory filing reconnaissance, and qualitative disclosure scraping.
+* **LSE Data 3.0:** High-fidelity live tick streaming, historical OHLCV candles, 11 global markets, and US equity options tape.
+* **QuantEngine:** Deterministic backtesting and event-study statistical modeling.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                      QUANTINTEL UNIFIED MARKET DATA PIPELINE                           │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ LSE Data 3.0 Provider         │ Secondary Regional Provider (yfinance / Public Feeds)  │
+│ • US Equities (NYSE, NASDAQ)  │ • Indian Equities (NSE, BSE, .NS, .BO)                 │
+│ • UK Equities (LSE)           │ • Broad International Secondary Indices                │
+│ • Canadian Equities (TSX)     │ • Offline Synthetic Emergency Fallback                 │
+│ • OPRA US Options & Greeks    │ • Zero Mathematical Hallucination Guarantee            │
+│ • Global Forex, Crypto & CME  │                                                        │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+```
+
+### Supported Capabilities:
+1. **Live & Historical OHLCV Candles:** Fetches structured bars across timeframes (`1m`, `5m`, `1h`, `1d`) for statistical backtesting.
+2. **US Equity Options Tape & Greeks:** Implied volatility, Delta, Gamma, and open interest for US contracts via OPRA data.
+3. **Macroeconomic Time Series:** Direct ingestion of inflation series (e.g. `US.core_inflation_rate`), bond yields, and calendar indicators.
+4. **WebSocket Streaming:** Native real-time tick streaming and historical replay support.
+5. **Multi-Provider Fallback:** Seamlessly routes between LSE Data 3.0 and regional providers, ensuring Indian equities (e.g., Reliance, TCS, Adani) and US equities are both natively supported.
 
 ---
 
