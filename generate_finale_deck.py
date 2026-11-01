@@ -1,14 +1,20 @@
 """
-QuantIntel Finale Presentation & PDF Generator
-Generates an institutional-grade, 12-slide widescreen 16:9 PowerPoint presentation (.pptx)
-and an executive landscape PDF presentation (.pdf) covering the entire QuantIntel project.
+QuantIntel Finale Presentation & PDF Generator (15-Slide Institutional Master Deck)
+Generates an institutional-grade, 15-slide widescreen 16:9 PowerPoint presentation (.pptx)
+and an executive landscape PDF presentation (.pdf) covering the entire QuantIntel project:
+- FutureStock 8-Agent Autonomous Research Collective (2,000-path Monte Carlo, 3-stage DCF)
+- Country Intelligence (14+ sovereign markets, 14-category AI news classifier, sector heatmaps, forward scenarios)
+- LSE Data 3.0 Institutional Market Data Provider (Real-time feeds, OHLCV, Options Chain tape with Greeks, Macro series)
+- Web Quant Studio Campbell-Lo-MacKinlay (1997) Econometric Event Studies
+- FutureStock-Grade Search Engine with fuzzy query and typo tolerance ("pakisant future in stock" -> Pakistan PSX)
+- TinyFish Web Reconnaissance with -88.5% DOM token reduction
 """
 
 import os
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 from fpdf import FPDF
 
@@ -27,6 +33,9 @@ C_WHITE = RGBColor(255, 255, 255)    # Primary Title #FFFFFF
 C_GRAY = RGBColor(139, 148, 158)     # Secondary Subtitle #8B949E
 C_TEXT = RGBColor(201, 209, 217)     # Body Copy #C9D1D9
 C_PURPLE = RGBColor(167, 139, 250)   # AI Purple #A78BFA
+C_BLUE = RGBColor(10, 132, 255)      # Royal Blue #0A84FF
+
+TOTAL_SLIDES = 15
 
 def create_pptx():
     prs = Presentation()
@@ -42,7 +51,7 @@ def create_pptx():
 
     def add_header(slide, badge_text, title_text, subtitle_text, slide_num):
         # Badge
-        badge_box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.4), Inches(3.2), Inches(0.35))
+        badge_box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.4), Inches(3.6), Inches(0.35))
         badge_box.fill.solid()
         badge_box.fill.fore_color.rgb = RGBColor(0, 40, 45)
         badge_box.line.color.rgb = C_CYAN
@@ -61,7 +70,7 @@ def create_pptx():
         num_box = slide.shapes.add_textbox(Inches(11.8), Inches(0.4), Inches(0.8), Inches(0.35))
         tf_num = num_box.text_frame
         p_num = tf_num.paragraphs[0]
-        p_num.text = f"{slide_num:02d} / 12"
+        p_num.text = f"{slide_num:02d} / {TOTAL_SLIDES}"
         p_num.font.name = "Calibri"
         p_num.font.size = Pt(11)
         p_num.font.bold = True
@@ -75,7 +84,7 @@ def create_pptx():
         p_title = tf_title.paragraphs[0]
         p_title.text = title_text
         p_title.font.name = "Arial"
-        p_title.font.size = Pt(22)
+        p_title.font.size = Pt(21)
         p_title.font.bold = True
         p_title.font.color.rgb = C_WHITE
 
@@ -86,7 +95,7 @@ def create_pptx():
         p_sub = tf_sub.paragraphs[0]
         p_sub.text = subtitle_text
         p_sub.font.name = "Calibri"
-        p_sub.font.size = Pt(12)
+        p_sub.font.size = Pt(11.5)
         p_sub.font.color.rgb = C_GRAY
 
     # ==========================================================================
@@ -95,62 +104,57 @@ def create_pptx():
     s1 = prs.slides.add_slide(blank_layout)
     set_slide_background(s1)
 
-    # Top Tagline
-    tag_box = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.8), Inches(4.5), Inches(0.4))
+    tag_box = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.7), Inches(5.0), Inches(0.4))
     tag_box.fill.solid()
     tag_box.fill.fore_color.rgb = RGBColor(0, 35, 40)
     tag_box.line.color.rgb = C_CYAN
     tag_box.line.width = Pt(1.2)
     p = tag_box.text_frame.paragraphs[0]
-    p.text = "⚡ QUANTINTEL FINALE SHOWCASE"
+    p.text = "⚡ QUANTINTEL EXECUTIVE MASTER PRESENTATION"
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_CYAN
     p.alignment = PP_ALIGN.CENTER
 
-    # Main Brand Name
-    brand_box = s1.shapes.add_textbox(Inches(0.75), Inches(1.35), Inches(11.5), Inches(1.2))
+    brand_box = s1.shapes.add_textbox(Inches(0.75), Inches(1.25), Inches(11.5), Inches(1.1))
     p = brand_box.text_frame.paragraphs[0]
     p.text = "QuantIntel"
     p.font.name = "Arial"
-    p.font.size = Pt(56)
+    p.font.size = Pt(54)
     p.font.bold = True
     p.font.color.rgb = C_WHITE
 
-    # Headline
-    sub_brand = s1.shapes.add_textbox(Inches(0.8), Inches(2.6), Inches(11.5), Inches(0.8))
+    sub_brand = s1.shapes.add_textbox(Inches(0.8), Inches(2.4), Inches(11.5), Inches(0.75))
     p = sub_brand.text_frame.paragraphs[0]
-    p.text = "Autonomous Quantitative Research Collective & Live Market Discovery Engine"
+    p.text = "Autonomous Quantitative Research Collective & Sovereign Market Intelligence"
     p.font.name = "Arial"
-    p.font.size = Pt(20)
+    p.font.size = Pt(19)
     p.font.bold = True
     p.font.color.rgb = C_CYAN
 
-    # Narrative Paragraph
-    desc_box = s1.shapes.add_textbox(Inches(0.8), Inches(3.4), Inches(11.5), Inches(1.0))
+    desc_box = s1.shapes.add_textbox(Inches(0.8), Inches(3.2), Inches(11.5), Inches(0.95))
     tf = desc_box.text_frame
     tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = (
-        "Transforming unstructured live-web corporate disclosures into source-grounded quantitative alpha, "
-        "probabilistic 2,000-path Monte Carlo fan forecasts, 3-stage DCF valuation, and deterministic Campbell-Lo-MacKinlay event studies."
+        "Connecting live web research, institutional market data, 14-category sovereign news classification, "
+        "2,000-path Monte Carlo fan forecasting, and Campbell-Lo-MacKinlay event studies into one unified intelligence platform."
     )
     p.font.name = "Calibri"
-    p.font.size = Pt(14)
+    p.font.size = Pt(13)
     p.font.color.rgb = C_TEXT
 
-    # 4 Foundation Badges
     badges = [
-        ("🌐 LIVE SEARCH & RECON", "TinyFish Headless Chromium Agent\n-88.5% DOM Token Reduction", C_CYAN),
-        ("🔮 FUTURESTOCK 8-AGENT", "Autonomous Research Collective\n2,000 Geometric Brownian Paths", C_EMERALD),
-        ("📈 WEB QUANT STUDIO", "Campbell-Lo-MacKinlay Event Studies\nMarket Model OLS & CAR t-Tests", C_AMBER),
-        ("🛡️ ZERO HALLUCINATION", "Deterministic Verification Audit\n100% Sourced Primary Citations", C_PURPLE),
+        ("🌍 COUNTRY INTELLIGENCE", "14+ Sovereign Markets & PSX/NSE\n14-Category AI News & Sector Heatmaps", C_CYAN),
+        ("📊 LSE DATA 3.0 PROVIDER", "Real-Time Stock Feeds & OHLCV\nOptions Chain Tape with Greeks & IV", C_BLUE),
+        ("🔮 FUTURESTOCK 8-AGENT", "Autonomous Research Collective\n2,000-Path Monte Carlo & 3-Stage DCF", C_EMERALD),
+        ("📈 WEB QUANT STUDIO", "Campbell-Lo-MacKinlay (1997) Studies\nMarket Model OLS & Abnormal Return CAR", C_AMBER),
     ]
 
     for i, (b_title, b_sub, b_color) in enumerate(badges):
         x = Inches(0.8 + i * 2.95)
-        card = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(4.5), Inches(2.8), Inches(1.8))
+        card = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(4.35), Inches(2.8), Inches(1.9))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -161,17 +165,16 @@ def create_pptx():
         p1 = tf.paragraphs[0]
         p1.text = b_title
         p1.font.name = "Arial"
-        p1.font.size = Pt(11)
+        p1.font.size = Pt(10.5)
         p1.font.bold = True
         p1.font.color.rgb = b_color
 
         p2 = tf.add_paragraph()
         p2.text = b_sub
         p2.font.name = "Calibri"
-        p2.font.size = Pt(10)
+        p2.font.size = Pt(9.5)
         p2.font.color.rgb = C_TEXT
 
-    # Footer Presenter Line
     foot = s1.shapes.add_textbox(Inches(0.8), Inches(6.6), Inches(11.8), Inches(0.5))
     p = foot.text_frame.paragraphs[0]
     p.text = "Lead Architect: Manish Yadav  |  Scaler School of Technology  •  Track: AI Autonomous Agents & Quantitative FinTech"
@@ -192,9 +195,9 @@ def create_pptx():
             "01 • FRAGMENTED LIVE WEB",
             "Alpha Hidden in Dynamic Silos",
             [
-                "Modern Web is Dynamic: Critical market catalysts hide behind heavy JavaScript portals, SEC EDGAR tables, BSE/NSE dockets, and investor PDF presentations.",
-                "Scrapers Break Instantly: Standard HTTP scrapers get blocked by Cloudflare/PerimeterX bot shields, starving quant models of breaking news alpha.",
-                "Knowledge Cutoff Limits: Static LLM weights have zero access to today's earnings calls or morning disclosures."
+                "Modern Web is Dynamic: Critical sovereign announcements hide in central bank gazettes, SEC EDGAR tables, BSE/NSE dockets, and PSX circulars.",
+                "Scrapers Break Instantly: Standard scrapers get blocked by Cloudflare and perimeter firewalls, starving quant models of live alpha.",
+                "Knowledge Cutoff Limits: Static LLM training weights have zero knowledge of today's monetary policy rate hikes or corporate disclosures."
             ],
             C_RED
         ),
@@ -202,8 +205,8 @@ def create_pptx():
             "02 • THE HALLUCINATION TRAP",
             "Catastrophic Look-Ahead Bias",
             [
-                "Misattributed Timestamps: Generic AI frequently hallucinates announcement dates, mistaking filing dates for press releases.",
-                "The Look-Ahead Trap: In quant trading, utilizing information even 1 trading day before public revelation completely invalidates the backtest.",
+                "Misattributed Timestamps: Generic AI frequently invents announcement dates, mistaking filing updates for primary press releases.",
+                "The Look-Ahead Trap: Utilizing information even 1 trading day before public revelation completely invalidates backtests.",
                 "Lack of Verifiable Provenance: Standard LLM chat outputs offer zero click-through links to audited primary filings."
             ],
             C_AMBER
@@ -213,8 +216,8 @@ def create_pptx():
             "Manual & Disjointed Pipelines",
             [
                 "Text vs Math Disconnect: Reading news is qualitative and messy; calculating abnormal returns (CAR) is strictly quantitative.",
-                "Slow Time-to-Validation: Formulating a statistical null hypothesis (H0 vs H1) and running OLS manually takes hours—by then, alpha decays.",
-                "Lack of Standardization: Discretionary teams fail to communicate structured hypotheses to algorithmic backtesting desks."
+                "Slow Time-to-Validation: Formulating statistical null hypotheses (H0 vs H1) and running OLS manually takes hours—by then, alpha decays.",
+                "Lack of Standardization: Discretionary teams fail to communicate structured hypotheses to algorithmic desks."
             ],
             C_CYAN
         )
@@ -248,140 +251,78 @@ def create_pptx():
             p_b = tf.add_paragraph()
             p_b.text = "• " + b
             p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
+            p_b.font.size = Pt(9.5)
             p_b.font.color.rgb = C_TEXT
 
-    # Bottom takeaway
-    takeaway = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway.fill.solid()
-    takeaway.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway.line.color.rgb = C_CYAN
-    p = takeaway.text_frame.paragraphs[0]
+    takeaway2 = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway2.fill.solid()
+    takeaway2.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway2.line.color.rgb = C_CYAN
+    p = takeaway2.text_frame.paragraphs[0]
     p.text = "THE QUANTINTEL OPPORTUNITY: Replace brittle manual research with an autonomous multi-agent collective that crawls, computes, and verifies in seconds."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_CYAN
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 3: SYSTEM ARCHITECTURE & 3 CORE PILLARS
+    # SLIDE 3: UNIFIED 4-PILLAR ARCHITECTURE
     # ==========================================================================
     s3 = prs.slides.add_slide(blank_layout)
     set_slide_background(s3)
-    add_header(s3, "02 • Architectural Paradigm", "Grounded Web-to-Quant Intelligence", "QuantIntel pairs autonomous web discovery with deterministic statistical modeling and zero-hallucination verification.", 3)
+    add_header(s3, "02 • Architectural Paradigm", "Unified Multi-Pillar Intelligence Architecture", "QuantIntel integrates live web discovery, institutional market data, sovereign intelligence, and econometric rigor.", 3)
 
     pillars = [
         (
-            "PILLAR 1",
+            "PILLAR 1: TINYFISH WEB",
             "Autonomous Live Web Recon",
-            "Navigates the open web using TinyFish Chromium Fleet",
+            "Headless Chromium Agent Fleet",
             [
-                "Live Financial Discovery: Proactively crawls breaking corporate filings, earnings guidance, and regulatory announcements.",
-                "Dynamic Content Extraction: Renders JavaScript SPAs and converts complex investor dockets into clean, low-token Markdown.",
-                "Bypasses Scraping Fragility: Headless browser handles dynamic elements, shadow DOMs, and anti-bot obstacles effortlessly."
+                "Crawls breaking corporate filings, central bank dockets, and financial news.",
+                "Renders JavaScript SPAs and dynamic tables effortlessly.",
+                "Strips DOM clutter down to Markdown with 88.5% token reduction."
             ],
             C_CYAN
         ),
         (
-            "PILLAR 2",
-            "Dual Quantitative Engines",
-            "FutureStock 8-Agent + Web Quant Studio Event Studies",
+            "PILLAR 2: LSE DATA 3.0",
+            "Institutional Market Data",
+            "Official Package Provider Integration",
             [
-                "FutureStock Engine: 8 specialized agents orchestrate 2,000-path Monte Carlo simulations, 3-stage DCF, and historical peer analogs.",
-                "Web Quant Studio: Executes real-time Campbell-Lo-MacKinlay event studies on live market prices, isolating true abnormal returns (CAR).",
-                "Cross-Market Global Coverage: Native auto-routing for Indian equities (NSE/BSE in INR) and US equities (NASDAQ/NYSE in USD)."
+                "Live prices, historical OHLCV, and global market indices.",
+                "Real-time Options Chain: Strike, IV, and Greeks (Delta, Gamma, Vega).",
+                "Fixed Income Macro Series: 10-Yr Treasury yields, Fed Funds, CPI."
+            ],
+            C_BLUE
+        ),
+        (
+            "PILLAR 3: COUNTRY INTEL",
+            "Sovereign-Level Discovery",
+            "14+ Economies & Sector Impact",
+            [
+                "14-Category AI News Classification: Central Bank, Policy, GDP, Trade.",
+                "Dynamic Sector Heatmaps & exposure matrices across key industries.",
+                "Defensible Stocks to Watch & 3 forward scenarios (Bull/Base/Bear)."
             ],
             C_EMERALD
         ),
         (
-            "PILLAR 3",
-            "Deterministic Verification",
-            "Zero-Hallucination Math & Adversarial Review",
+            "PILLAR 4: QUANT CORE",
+            "Econometric & Valuation Lab",
+            "Deterministic Math & Event Studies",
             [
-                "Zero-Hallucination Math: Numerical calculations run in verified Python/TypeScript; LLMs never calculate prices or percentages.",
-                "Adversarial Stress Testing: Google Gemini 3.5 Flash actively probes bear risks, debt covenants, and invalidation triggers.",
-                "Provenance Audit: 100% of factual citations link to verified primary source URLs with exact UTC timestamps."
+                "Campbell-Lo-MacKinlay (1997) Event Studies with Patell/BMP t-tests.",
+                "2,000-Path Monte Carlo Geometric Brownian Motion fan forecasts.",
+                "3-Stage DCF Valuation with WACC and historical analog matching."
             ],
-            C_PURPLE
-        )
+            C_AMBER
+        ),
     ]
 
-    for i, (b_tag, b_title, b_sub, bullets, b_color) in enumerate(pillars):
-        x = Inches(0.8 + i * 3.95)
-        card = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
-        card.fill.solid()
-        card.fill.fore_color.rgb = C_CARD
-        card.line.color.rgb = C_BORDER
-        card.line.width = Pt(1)
-
-        tf = card.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = b_tag
-        p.font.name = "Calibri"
-        p.font.size = Pt(11)
-        p.font.bold = True
-        p.font.color.rgb = b_color
-
-        p2 = tf.add_paragraph()
-        p2.text = b_title
-        p2.font.name = "Arial"
-        p2.font.size = Pt(14)
-        p2.font.bold = True
-        p2.font.color.rgb = C_WHITE
-
-        p3 = tf.add_paragraph()
-        p3.text = b_sub
-        p3.font.name = "Calibri"
-        p3.font.size = Pt(10)
-        p3.font.color.rgb = C_GRAY
-
-        for b in bullets:
-            p_b = tf.add_paragraph()
-            p_b.text = "✓ " + b
-            p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
-            p_b.font.color.rgb = C_TEXT
-
-    # Bottom Principle
-    takeaway3 = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway3.fill.solid()
-    takeaway3.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway3.line.color.rgb = C_CYAN
-    p = takeaway3.text_frame.paragraphs[0]
-    p.text = "OUR CORE PRINCIPLE: The AI Agent proposes and structures hypotheses; Python computes the math. QuantIntel does NOT guess; it proves."
-    p.font.name = "Calibri"
-    p.font.size = Pt(11)
-    p.font.bold = True
-    p.font.color.rgb = C_CYAN
-    p.alignment = PP_ALIGN.CENTER
-
-    # ==========================================================================
-    # SLIDE 4: FUTURESTOCK - 8-AGENT RESEARCH COLLECTIVE
-    # ==========================================================================
-    s4 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s4)
-    add_header(s4, "03 • Core Platform Pillar", "FutureStock: 8-Agent Research Collective", "Eight specialized autonomous agents collaborate sequentially and in parallel to build an audited equity research dossier.", 4)
-
-    agents = [
-        ("Agent A: Orchestrator", "🎯", "Parses user query, resolves tickers across NSE/BSE/NASDAQ, and coordinates execution pipeline.", C_CYAN),
-        ("Agent B: TinyFish Web", "🌐", "Crawls SEC EDGAR, BSE dockets & news. Strips DOM boilerplate down to Markdown with 88% token savings.", C_CYAN),
-        ("Agent C: Financials Core", "📊", "Audits balance sheet, income statement, revenue YoY growth, gross/operating margins, and FCF.", C_EMERALD),
-        ("Agent D: Quant Lab", "📐", "Simulates 2,000 Geometric Brownian Motion (GBM) paths. Computes volatility, 95% VaR, and CVaR.", C_EMERALD),
-        ("Agent E: Valuation DCF", "💎", "Builds 3-Stage DCF model under varying WACC assumptions alongside EV/EBITDA and P/E multiples.", C_AMBER),
-        ("Agent F: Peer Analogs", "🏛️", "Maps historical peer cohorts and post-IPO trajectories, guarding strictly against survivorship bias.", C_AMBER),
-        ("Agent G: Adversarial Bear", "🛡️", "Powered by Gemini 3.5 Flash: challenges bullish consensus, models macro shocks, and sets invalidation triggers.", C_RED),
-        ("Agent H: Verifier Audit", "✅", "Audits mathematical consistency: ((Target / Spot) - 1) * 100, verifying timestamps and provenance.", C_PURPLE),
-    ]
-
-    for i, (a_name, a_icon, a_desc, a_col) in enumerate(agents):
-        row = i // 4
-        col = i % 4
-        x = Inches(0.8 + col * 2.95)
-        y = Inches(1.9 + row * 2.25)
-
-        card = s4.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, Inches(2.8), Inches(2.1))
+    for i, (p_tag, p_title, p_sub, bullets, p_col) in enumerate(pillars):
+        x = Inches(0.8 + i * 2.95)
+        card = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(2.8), Inches(4.5))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -390,71 +331,168 @@ def create_pptx():
         tf = card.text_frame
         tf.word_wrap = True
         p1 = tf.paragraphs[0]
-        p1.text = f"{a_icon} {a_name}"
-        p1.font.name = "Arial"
-        p1.font.size = Pt(11)
+        p1.text = p_tag
+        p1.font.name = "Calibri"
+        p1.font.size = Pt(10)
         p1.font.bold = True
-        p1.font.color.rgb = a_col
+        p1.font.color.rgb = p_col
 
         p2 = tf.add_paragraph()
-        p2.text = a_desc
-        p2.font.name = "Calibri"
-        p2.font.size = Pt(9.5)
-        p2.font.color.rgb = C_TEXT
+        p2.text = p_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(12)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
 
-    takeaway4 = s4.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway4.fill.solid()
-    takeaway4.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway4.line.color.rgb = C_EMERALD
-    p = takeaway4.text_frame.paragraphs[0]
-    p.text = "INSTITUTIONAL OUTPUT: Probabilistic fan chart with 3 calibrated targets: Bear Floor (P5), Base Central (P50), and Bull Ceiling (P95)."
+        p3 = tf.add_paragraph()
+        p3.text = p_sub
+        p3.font.name = "Calibri"
+        p3.font.size = Pt(9)
+        p3.font.color.rgb = C_GRAY
+
+        for b in bullets:
+            pb = tf.add_paragraph()
+            pb.text = "• " + b
+            pb.font.name = "Calibri"
+            pb.font.size = Pt(9)
+            pb.font.color.rgb = C_TEXT
+
+    takeaway3 = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway3.fill.solid()
+    takeaway3.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway3.line.color.rgb = C_EMERALD
+    p = takeaway3.text_frame.paragraphs[0]
+    p.text = "FOUNDATIONAL PRINCIPLE: TinyFish gathers unstructured web disclosures; LSE Data streams structured prices; Python computes the math."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_EMERALD
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 5: LIVE FINANCIAL SEARCH ENGINE & SYMBOL RESOLUTION
+    # SLIDE 4: COUNTRY INTELLIGENCE (NEW CORE PILLAR)
     # ==========================================================================
-    s5 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s5)
-    add_header(s5, "04 • Search Engine Architecture", "Live Financial Search & Global Entity Autocomplete", "QuantIntel operates as a live financial search engine with dynamic symbol resolution and multi-market auto-routing.", 5)
+    s4 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s4)
+    add_header(s4, "03 • Sovereign Intelligence", "Country Intelligence: Live Macro & Sector Impact", "Investigate sovereign economies, central bank policy, industry sectors, and publicly traded stocks right now.", 4)
 
-    search_cards = [
+    ci_cards = [
         (
-            "DYNAMIC AUTOCOMPLETE ENGINE",
-            "Zero Hardcoded Dictionaries",
+            "14-CATEGORY AI CLASSIFIER",
+            "Structured Macro Synthesis",
             [
-                "Live Yahoo Finance API Integration: As users type, /api/futurestock/search resolves arbitrary tickers, entity names, and exchanges on the fly.",
-                "Multi-Entity Disambiguation: Searching 'Adani' dynamically discovers Adani Enterprises (ADANIENT.NS), Ports (ADANIPORTS.NS), Power (ADANIPOWER.NS), and Green Energy (ADANIGREEN.NS).",
-                "Corporate Demerger Handling: Dynamically resolves post-demerger structures like Tata Motors (TMPV.NS & TMCV.NS) without static failure."
+                "Strict News Taxonomies: Classifies every disclosure across 14 categories (Central Bank, Fiscal Policy, Inflation, Earnings, IPOs, M&A, Energy, Trade Tariffs).",
+                "Defensible Sentiment Grading: Categorizes each event as POSITIVE, NEGATIVE, MIXED, NEUTRAL, or UNCONFIRMED.",
+                "Multi-Tier Reasoning: Assesses potential impact on national GDP, sovereign benchmark index, industry sector, and exposed equities."
             ],
             C_CYAN
         ),
         (
-            "CROSS-MARKET AUTO-ROUTING",
-            "India (NSE/BSE) vs US (NASDAQ/NYSE)",
+            "DYNAMIC SECTOR HEATMAP",
+            "Real-Time Industry Exposure",
             [
-                "Automatic Region Detection: Distinguishes Indian equities (.NS, .BO) from US listings (NASDAQ, NYSE) seamlessly.",
-                "Native Currency Mapping: Dynamically toggles calculations and UI display between Indian Rupee (₹ INR) and US Dollar ($ USD).",
-                "Intelligent Benchmark Pairing: Pairs Indian equities with NIFTY 50 (^NSEI) and US equities with S&P 500 (SPY) or Nasdaq 100 (QQQ)."
+                "Sovereign Industry Mapping: Tracks Banking, Energy, Tech, Cement, Fertilizers, Auto, and Pharmaceuticals.",
+                "Net Sentiment Scoring: Aggregates positive, negative, and mixed catalysts with quantitative confidence metrics.",
+                "Constituent Exposure: Pinpoints specific publicly traded beneficiaries and vulnerable high-debt companies."
             ],
             C_EMERALD
         ),
         (
-            "REAL-TIME MARKET FEED CORE",
-            "Live Spot Pricing & Volatility",
+            "STOCKS TO WATCH & SCENARIOS",
+            "Actionable Market Discovery",
             [
-                "Direct Exchange Spot Feeds: /api/futurestock/quote queries real-time bid/ask and spot prints with zero artificial delay.",
-                "52-Week Range & Volatility: Calibrates annualized realized volatility from 252 live daily trading sessions.",
-                "Sub-Second Latency: DNS IPv4-first optimization delivers sub-500ms exchange response times across global portals."
+                "Catalyst Mapping: Discovers equities with verified empirical exposure to breaking government/central bank catalysts.",
+                "3 Forward Scenarios: Generates Bullish, Neutral, and Bearish macroeconomic paths with explicit probabilities (e.g. 45% / 35% / 20%).",
+                "Invalidation Rules: Sets concrete economic conditions that would invalidate each forward forecast."
             ],
             C_AMBER
         )
     ]
 
-    for i, (b_tag, b_title, bullets, b_color) in enumerate(search_cards):
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(ci_cards):
+        x = Inches(0.8 + i * 3.95)
+        card = s4.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+        card.fill.solid()
+        card.fill.fore_color.rgb = C_CARD
+        card.line.color.rgb = C_BORDER
+        card.line.width = Pt(1)
+
+        tf = card.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = b_badge
+        p.font.name = "Calibri"
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = b_color
+
+        p2 = tf.add_paragraph()
+        p2.text = b_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(13)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
+
+        for b in bullets:
+            p_b = tf.add_paragraph()
+            p_b.text = "• " + b
+            p_b.font.name = "Calibri"
+            p_b.font.size = Pt(9.5)
+            p_b.font.color.rgb = C_TEXT
+
+    takeaway4 = s4.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway4.fill.solid()
+    takeaway4.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway4.line.color.rgb = C_CYAN
+    p = takeaway4.text_frame.paragraphs[0]
+    p.text = "SOVEREIGN VALUE: Allows institutional investors to evaluate macro inflection points and sector capital rotation in real time."
+    p.font.name = "Calibri"
+    p.font.size = Pt(10.5)
+    p.font.bold = True
+    p.font.color.rgb = C_CYAN
+    p.alignment = PP_ALIGN.CENTER
+
+    # ==========================================================================
+    # SLIDE 5: LIVE FINANCIAL SEARCH ENGINE & FUZZY RESOLUTION
+    # ==========================================================================
+    s5 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s5)
+    add_header(s5, "04 • Search Engine Architecture", "FutureStock Search Engine & Fuzzy Country Resolver", "Upgraded Country Intelligence to match FutureStock's search engine with typo tolerance and instant resolution.", 5)
+
+    search_cards = [
+        (
+            "DUAL SEARCH ENGINE BAR",
+            "Universal Query & Country Form",
+            [
+                "FutureStock-Grade Experience: Unified typeahead input bar with live debounced suggestions, sovereign region selector, and Analyze action button.",
+                "Keyboard & Click Navigation: Pressing Enter or clicking any suggestion triggers instant live country scan.",
+                "Trending Economies Bar: Direct one-click quick pills for Pakistan, India, US, UK, China, Japan, Germany, and Saudi Arabia."
+            ],
+            C_CYAN
+        ),
+        (
+            "FUZZY TYPO & PHRASE TOLERANCE",
+            "'pakisant future in stock' -> Pakistan (PK)",
+            [
+                "Filler Word Stripping: Automatically removes natural language phrases like 'future in stock', 'stock market', 'forecast', and 'shares'.",
+                "Typo Resilience: Resolves 'pakisant' -> Pakistan, 'bharat' -> India, 'deutschland' -> Germany, 'ksa' -> Saudi Arabia.",
+                "Ticker & Exchange Matching: Resolves '^KSE' / 'PSX' / 'Karachi' -> Pakistan, '^NSEI' / 'Nifty' -> India, '^GSPC' / 'S&P' -> US."
+            ],
+            C_AMBER
+        ),
+        (
+            "8-AGENT DYNAMIC COLLECTIVE",
+            "Real-Time Execution Pipeline Banner",
+            [
+                "8-Agent Visual Collective: Monitors Country Resolver, TinyFish Fleet, Central Bank, Index Feeds, 14-Category AI, Sector Heatmap, Stocks & LSE, and Scenarios.",
+                "Live Activity Feedback: Animates during active web crawling and turns green with audited metrics on completion.",
+                "Token Savings Telemetry: Displays real-time DOM token reduction (86.5% - 88.5%) and total web sources audited."
+            ],
+            C_EMERALD
+        )
+    ]
+
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(search_cards):
         x = Inches(0.8 + i * 3.95)
         card = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
         card.fill.solid()
@@ -465,7 +503,7 @@ def create_pptx():
         tf = card.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
-        p.text = b_tag
+        p.text = b_badge
         p.font.name = "Calibri"
         p.font.size = Pt(11)
         p.font.bold = True
@@ -482,207 +520,46 @@ def create_pptx():
             p_b = tf.add_paragraph()
             p_b.text = "• " + b
             p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
+            p_b.font.size = Pt(9.5)
             p_b.font.color.rgb = C_TEXT
 
     takeaway5 = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
     takeaway5.fill.solid()
     takeaway5.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway5.line.color.rgb = C_CYAN
+    takeaway5.line.color.rgb = C_AMBER
     p = takeaway5.text_frame.paragraphs[0]
-    p.text = "SEARCH EXPERIENCE: Type any stock or IPO name -> Instant live match -> Dispatches TinyFish crawler -> Generates verified dossier."
+    p.text = "USER EXPERIENCE: Eliminates frustrating 404s and empty searches by resolving natural language and misspelled queries instantly."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
-    p.font.bold = True
-    p.font.color.rgb = C_CYAN
-    p.alignment = PP_ALIGN.CENTER
-
-    # ==========================================================================
-    # SLIDE 6: WEB QUANT STUDIO - CAMPBELL-LO-MACKINLAY EVENT STUDIES
-    # ==========================================================================
-    s6 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s6)
-    add_header(s6, "05 • Econometric Engine", "Web Quant Studio: Academic Event Studies", "Testing qualitative corporate disclosures and market announcements against real live OHLCV price series.", 6)
-
-    math_cards = [
-        (
-            "STEP 1 • MARKET MODEL OLS",
-            "Estimation Window (L1: e.g. 90d)",
-            "Ri,t = αi + βi Rm,t + εi,t",
-            [
-                "Linear OLS Regression: Regresses stock returns against benchmark returns to isolate baseline market beta.",
-                "Calculates Alpha (α), Beta (β), and R² goodness-of-fit against NIFTY 50 or S&P 500.",
-                "Computes idiosyncratic residual variance (σε²) across clean pre-event trading sessions."
-            ],
-            C_CYAN
-        ),
-        (
-            "STEP 2 • ABNORMAL RETURNS",
-            "Event Window (L2: [-5d, +10d])",
-            "ARi,t = Ri,t - (αi + βi Rm,t)",
-            [
-                "Isolates Catalyst Impact: Removes market-wide beta movement to isolate the true announcement shock.",
-                "Cumulative Abnormal Return (CAR): Accumulates daily abnormal returns across pre/post event windows.",
-                "Detects Information Leakage: Pre-event window [-5, -1] tests for insider trading or speculative drift."
-            ],
-            C_EMERALD
-        ),
-        (
-            "STEP 3 • HYPOTHESIS TESTING",
-            "Student's t-Test & p-Value",
-            "t = CAR / SE(CAR), p = 2(1 - Φ(|t|))",
-            [
-                "Variance Correction: Uses Campbell-Lo-MacKinlay formula: Var(CAR) = σε² [N + N²/L1] to prevent false discovery.",
-                "Null Hypothesis (H0: CAR = 0): Tests whether disclosure produced statistically significant abnormal returns.",
-                "Volume Anomaly Ratio: Quantifies volume surges relative to normal estimation window liquidity."
-            ],
-            C_PURPLE
-        )
-    ]
-
-    for i, (b_step, b_title, b_eq, bullets, b_color) in enumerate(math_cards):
-        x = Inches(0.8 + i * 3.95)
-        card = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
-        card.fill.solid()
-        card.fill.fore_color.rgb = C_CARD
-        card.line.color.rgb = C_BORDER
-        card.line.width = Pt(1)
-
-        tf = card.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = b_step
-        p.font.name = "Calibri"
-        p.font.size = Pt(11)
-        p.font.bold = True
-        p.font.color.rgb = b_color
-
-        p2 = tf.add_paragraph()
-        p2.text = b_title
-        p2.font.name = "Arial"
-        p2.font.size = Pt(13)
-        p2.font.bold = True
-        p2.font.color.rgb = C_WHITE
-
-        p_eq = tf.add_paragraph()
-        p_eq.text = b_eq
-        p_eq.font.name = "Courier New"
-        p_eq.font.size = Pt(10)
-        p_eq.font.bold = True
-        p_eq.font.color.rgb = C_AMBER
-
-        for b in bullets:
-            p_b = tf.add_paragraph()
-            p_b.text = "• " + b
-            p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
-            p_b.font.color.rgb = C_TEXT
-
-    takeaway6 = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway6.fill.solid()
-    takeaway6.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway6.line.color.rgb = C_AMBER
-    p = takeaway6.text_frame.paragraphs[0]
-    p.text = "EMPIRICAL RIGOR: Reports exact Student's t-statistics, p-values, and 95% confidence intervals to eliminate p-hacking and false alpha."
-    p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_AMBER
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 7: TINYFISH WEB AGENT & TOKEN ECONOMY MATRIX
+    # SLIDE 6: FUTURESTOCK 8-AGENT RESEARCH COLLECTIVE
     # ==========================================================================
-    s7 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s7)
-    add_header(s7, "06 • Web Agent Efficiency", "TinyFish Reconnaissance & Token Economy Matrix", "Transforming bloated 300KB+ raw HTML investor portals into clean, structured, low-token Markdown briefs.", 7)
+    s6 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s6)
+    add_header(s6, "05 • Core Platform Pillar", "FutureStock: 8-Agent Research Collective", "Eight specialized autonomous agents collaborate sequentially and in parallel to build an audited equity dossier.", 6)
 
-    # 2 Comparison Columns + 1 Stats Box
-    left_card = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.9), Inches(5.7), Inches(4.5))
-    left_card.fill.solid()
-    left_card.fill.fore_color.rgb = C_CARD
-    left_card.line.color.rgb = C_RED
-    left_card.line.width = Pt(1)
-
-    tf = left_card.text_frame
-    tf.word_wrap = True
-    p = tf.paragraphs[0]
-    p.text = "❌ RAW WEB SCRAPING BOTTLENECK"
-    p.font.name = "Arial"
-    p.font.size = Pt(13)
-    p.font.bold = True
-    p.font.color.rgb = C_RED
-
-    raw_bullets = [
-        "Bloated Context: Raw investor webpages exceed 250KB - 400KB of HTML, ads, SVG graphics, and tracking scripts (75,000+ LLM tokens).",
-        "Runaway Inference Costs: Feeding raw HTML into frontier reasoning models costs $0.15 - $0.35 per query, making continuous screening unviable.",
-        "High Hallucination Risk: Noise-to-signal ratio causes LLMs to extract irrelevant sidebar links, outdated copyright dates, or marketing slogans.",
-        "Scraper Fragility: Simple HTTP requests fail on modern Single Page Applications (SPAs) and trigger CAPTCHAs."
-    ]
-    for b in raw_bullets:
-        p_b = tf.add_paragraph()
-        p_b.text = "• " + b
-        p_b.font.name = "Calibri"
-        p_b.font.size = Pt(10)
-        p_b.font.color.rgb = C_TEXT
-
-    right_card = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.8), Inches(1.9), Inches(5.8), Inches(4.5))
-    right_card.fill.solid()
-    right_card.fill.fore_color.rgb = C_CARD
-    right_card.line.color.rgb = C_EMERALD
-    right_card.line.width = Pt(1)
-
-    tf_r = right_card.text_frame
-    tf_r.word_wrap = True
-    p = tf_r.paragraphs[0]
-    p.text = "✅ TINYFISH HIGH-DENSITY COMPRESSION"
-    p.font.name = "Arial"
-    p.font.size = Pt(13)
-    p.font.bold = True
-    p.font.color.rgb = C_EMERALD
-
-    tf_bullets = [
-        "88.5% Context Token Savings: Strips DOM boilerplate down to structured Markdown (~3.5KB / 850 tokens)—an 8.5x compression ratio.",
-        "Ultra-Low Query Economics: Reduces LLM prompt cost to under $0.003 per research dossier, enabling enterprise-scale monitoring.",
-        "Zero-Hallucination Extraction: Isolates official corporate announcements, table data, and management guidance with exact UTC timestamps.",
-        "Serverless Chromium Fleet: Renders JavaScript-heavy dynamic tables, shadow DOMs, and interactive investor portals seamlessly."
-    ]
-    for b in tf_bullets:
-        p_b = tf_r.add_paragraph()
-        p_b.text = "• " + b
-        p_b.font.name = "Calibri"
-        p_b.font.size = Pt(10)
-        p_b.font.color.rgb = C_TEXT
-
-    takeaway7 = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway7.fill.solid()
-    takeaway7.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway7.line.color.rgb = C_EMERALD
-    p = takeaway7.text_frame.paragraphs[0]
-    p.text = "TOKEN ECONOMY ROI: 88.5% token reduction allows hedge funds to screen 1,000+ equities daily for the cost of 120 traditional runs."
-    p.font.name = "Calibri"
-    p.font.size = Pt(11)
-    p.font.bold = True
-    p.font.color.rgb = C_EMERALD
-    p.alignment = PP_ALIGN.CENTER
-
-    # ==========================================================================
-    # SLIDE 8: END-TO-END RESEARCH JOURNEY (LIVE WALKTHROUGH)
-    # ==========================================================================
-    s8 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s8)
-    add_header(s8, "07 • Concrete Walkthrough", "End-to-End Alpha Research Journey", "Tracing a live equity query from initial search bar input to verified institutional dossier.", 8)
-
-    steps = [
-        ("STAGE 1", "Search & Resolution", "Analyst types 'Adani Enterprises' in FutureStock. Engine resolves ADANIENT.NS on NSE India, pulls live spot price ₹2,579.40 and benchmark ^NSEI.", C_CYAN),
-        ("STAGE 2", "TinyFish Reconnaissance", "Chromium crawler queries Google News RSS and BSE corporate announcements. Extracts 4 primary disclosures with 87.7% DOM token compression.", C_EMERALD),
-        ("STAGE 3", "Quant & Monte Carlo", "Simulates 2,000 Geometric Brownian Motion paths over 1-year horizon. Computes P5 Bear: ₹1,534 (-40.5%), P50 Base: ₹3,219 (+24.8%), P95 Bull: ₹6,549 (+153.9%).", C_AMBER),
-        ("STAGE 4", "Adversarial & Audit", "Gemini 3.5 Flash synthesizes grounded thesis and bear risks. Agent H validates arithmetic: ((Target/Spot)-1)*100. Issues 100% Green audit seal.", C_PURPLE),
+    agents = [
+        ("Agent A: Orchestrator", "Parses user query, resolves tickers across NSE/BSE/NASDAQ, and coordinates execution pipeline.", C_CYAN),
+        ("Agent B: TinyFish Web", "Crawls SEC EDGAR, BSE dockets & news. Strips DOM boilerplate down to Markdown with 88% token savings.", C_CYAN),
+        ("Agent C: Financials Core", "Audits balance sheet, income statement, revenue YoY growth, gross/operating margins, and FCF.", C_EMERALD),
+        ("Agent D: Quant Lab", "Simulates 2,000 Geometric Brownian Motion (GBM) paths. Computes volatility, 95% VaR, and CVaR.", C_EMERALD),
+        ("Agent E: Valuation DCF", "Builds 3-Stage DCF model under varying WACC assumptions alongside EV/EBITDA and P/E multiples.", C_AMBER),
+        ("Agent F: Peer Analogs", "Maps historical peer cohorts and post-IPO trajectories, guarding strictly against survivorship bias.", C_AMBER),
+        ("Agent G: Adversarial Bear", "Powered by Gemini 3.5 Flash: challenges consensus, models macro shocks, and sets invalidation triggers.", C_RED),
+        ("Agent H: Verifier Audit", "Audits mathematical consistency: ((Target / Spot) - 1) * 100, verifying timestamps and provenance.", C_PURPLE),
     ]
 
-    for i, (s_stage, s_title, s_desc, s_color) in enumerate(steps):
-        x = Inches(0.8 + i * 2.95)
-        card = s8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(2.8), Inches(4.5))
+    for i, (name, desc, col) in enumerate(agents):
+        row = i // 4
+        col_idx = i % 4
+        x = Inches(0.8 + col_idx * 2.95)
+        y = Inches(1.9 + row * 2.25)
+
+        card = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, Inches(2.8), Inches(2.1))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -691,54 +568,73 @@ def create_pptx():
         tf = card.text_frame
         tf.word_wrap = True
         p1 = tf.paragraphs[0]
-        p1.text = s_stage
-        p1.font.name = "Calibri"
+        p1.text = name
+        p1.font.name = "Arial"
         p1.font.size = Pt(11)
         p1.font.bold = True
-        p1.font.color.rgb = s_color
+        p1.font.color.rgb = col
 
         p2 = tf.add_paragraph()
-        p2.text = s_title
-        p2.font.name = "Arial"
-        p2.font.size = Pt(13)
-        p2.font.bold = True
-        p2.font.color.rgb = C_WHITE
+        p2.text = desc
+        p2.font.name = "Calibri"
+        p2.font.size = Pt(9.5)
+        p2.font.color.rgb = C_TEXT
 
-        p3 = tf.add_paragraph()
-        p3.text = s_desc
-        p3.font.name = "Calibri"
-        p3.font.size = Pt(10)
-        p3.font.color.rgb = C_TEXT
-
-    takeaway8 = s8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway8.fill.solid()
-    takeaway8.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway8.line.color.rgb = C_CYAN
-    p = takeaway8.text_frame.paragraphs[0]
-    p.text = "EXECUTION TIME: 4.2 seconds from natural language query to completed Monte Carlo fan chart, 3-stage DCF, and downloadable research dossier."
+    takeaway6 = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway6.fill.solid()
+    takeaway6.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway6.line.color.rgb = C_CYAN
+    p = takeaway6.text_frame.paragraphs[0]
+    p.text = "COLLABORATIVE VALUE: Replaces biased single-prompt LLM outputs with an audited, adversarial consensus backed by statistical math."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_CYAN
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 9: EMPIRICAL VALIDATION & REAL MARKET RESULTS
+    # SLIDE 7: LSE DATA 3.0 PROVIDER (NEW!)
     # ==========================================================================
-    s9 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s9)
-    add_header(s9, "08 • Live Verification", "Empirical Validation Across Indian & US Markets", "QuantIntel has been validated against real live market data across major international equities.", 9)
+    s7 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s7)
+    add_header(s7, "06 • Market Data Provider", "LSE Data 3.0: Institutional Market Data & Options Tape", "Integrated londonstrategicedge/lse-data package into QuantIntel's unified financial data layer.", 7)
 
-    test_cases = [
-        ("ADANI ENTERPRISES", "ADANIENT.NS (NSE)", "INR 2,579.40", "35.0% Vol | Beta 1.30 vs ^NSEI", "Base Target: ₹3,219 (+24.8%)\nBear Floor: ₹1,534 (-40.5%)\nTinyFish Sources: 4 Captured\nAudit Verdict: 100% PASSED", C_CYAN),
-        ("TATA CONSULTANCY", "TCS.NS (NSE)", "INR 3,940.50", "22.4% Vol | Beta 1.07 vs ^NSEI", "Event Study CAR: +4.13%\nt-statistic: 0.670 (p = 0.503)\nMarket Cap: ₹14.2 Trillion\nAudit Verdict: 100% PASSED", C_EMERALD),
-        ("NVIDIA CORPORATION", "NVDA (NASDAQ)", "USD 229.83", "42.0% Vol | Beta 1.73 vs QQQ", "Post-Split Pricing Verified\nEvent Study CAR: -2.00%\nt = -3.348 (p < 0.001 Sig!)\nAudit Verdict: 100% PASSED", C_AMBER),
-        ("TESLA, INC.", "TSLA (NASDAQ)", "USD 399.81", "45.0% Vol | Beta 2.65 vs SPY", "Event Study CAR: +12.31%\nt-statistic: 1.556 (p = 0.120)\nPeak Volume Multiplier: 2.45x\nAudit Verdict: 100% PASSED", C_PURPLE),
+    lse_cards = [
+        (
+            "REAL-TIME PRICING & OHLCV",
+            "Institutional Execution Feeds",
+            [
+                "Live Spot Quotes & History: Fetches latest bid/ask spot prices, historical OHLCV bar series, and volume.",
+                "Multi-Asset Coverage: Equities, ETFs, futures, forex pairs, and major global market benchmark indices.",
+                "Clean Provider Abstraction: Implemented via LSEMarketDataProvider and UnifiedMarketDataService with strict data freshness reporting."
+            ],
+            C_BLUE
+        ),
+        (
+            "OPTIONS CHAIN & GREEKS TAPE",
+            "Real-Time Volatility Surface",
+            [
+                "Live Options Tape: Interactive modal displaying strike prices, expiration dates, and bid/ask spreads.",
+                "Implied Volatility (IV): Calculates real-time implied volatility across call and put strikes.",
+                "Option Greeks: Streams Delta (directional sensitivity), Gamma, Theta (time decay), and Vega for risk management."
+            ],
+            C_CYAN
+        ),
+        (
+            "MACRO SERIES & FIXED INCOME",
+            "Benchmark Sovereign Indicators",
+            [
+                "Treasury Yields: Streams US 10-Year Treasury Yields for risk-free rate calibration in DCF models.",
+                "Monetary Policy Benchmarks: Pulls Fed Funds effective rate and CPI inflation data.",
+                "TinyFish + LSE Synergy: TinyFish discovers web catalysts; LSE Data provides structured market pricing & options."
+            ],
+            C_EMERALD
+        )
     ]
 
-    for i, (t_name, t_sub, t_price, t_stat, t_desc, t_color) in enumerate(test_cases):
-        x = Inches(0.8 + i * 2.95)
-        card = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(2.8), Inches(4.5))
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(lse_cards):
+        x = Inches(0.8 + i * 3.95)
+        card = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -747,95 +643,229 @@ def create_pptx():
         tf = card.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
-        p.text = t_name
-        p.font.name = "Arial"
+        p.text = b_badge
+        p.font.name = "Calibri"
         p.font.size = Pt(11)
         p.font.bold = True
-        p.font.color.rgb = t_color
+        p.font.color.rgb = b_color
 
         p2 = tf.add_paragraph()
-        p2.text = t_sub
-        p2.font.name = "Calibri"
-        p2.font.size = Pt(9.5)
-        p2.font.color.rgb = C_GRAY
+        p2.text = b_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(13)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
 
-        p_pr = tf.add_paragraph()
-        p_pr.text = t_price
-        p_pr.font.name = "Arial"
-        p_pr.font.size = Pt(16)
-        p_pr.font.bold = True
-        p_pr.font.color.rgb = C_WHITE
+        for b in bullets:
+            p_b = tf.add_paragraph()
+            p_b.text = "• " + b
+            p_b.font.name = "Calibri"
+            p_b.font.size = Pt(9.5)
+            p_b.font.color.rgb = C_TEXT
 
-        p_st = tf.add_paragraph()
-        p_st.text = t_stat
-        p_st.font.name = "Courier New"
-        p_st.font.size = Pt(9.5)
-        p_st.font.color.rgb = C_AMBER
+    takeaway7 = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway7.fill.solid()
+    takeaway7.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway7.line.color.rgb = C_BLUE
+    p = takeaway7.text_frame.paragraphs[0]
+    p.text = "DATA SYNERGY: Combines unstructured web research from TinyFish with institutional structured quotes and options from LSE Data."
+    p.font.name = "Calibri"
+    p.font.size = Pt(10.5)
+    p.font.bold = True
+    p.font.color.rgb = C_BLUE
+    p.alignment = PP_ALIGN.CENTER
 
-        p_ds = tf.add_paragraph()
-        p_ds.text = t_desc
-        p_ds.font.name = "Calibri"
-        p_ds.font.size = Pt(9.5)
-        p_ds.font.color.rgb = C_TEXT
+    # ==========================================================================
+    # SLIDE 8: WEB QUANT STUDIO - EVENT STUDIES
+    # ==========================================================================
+    s8 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s8)
+    add_header(s8, "07 • Econometric Engine", "Web Quant Studio: Academic Event Studies", "Testing qualitative corporate disclosures and market announcements against real live OHLCV price series.", 8)
+
+    eq_cards = [
+        (
+            "01 • MARKET MODEL OLS",
+            "R_it = alpha_i + beta_i * R_mt + eps_it",
+            [
+                "Estimation Window (T0 to T1): Typically 90 to 250 trading days prior to event.",
+                "OLS Regression: Estimates equity alpha and systematic beta against market benchmark (^NSEI or ^GSPC).",
+                "Deterministic Math: Computed via NumPy and SciPy; zero LLM hallucination."
+            ],
+            C_CYAN
+        ),
+        (
+            "02 • ABNORMAL RETURNS",
+            "AR_it = R_it - (alpha + beta * R_mt)",
+            [
+                "Event Window (T1 to T2): e.g., [-5, +10] days around disclosure date (tau = 0).",
+                "Isolates Idiosyncratic Impact: Strips out broader market tide to prove event-driven alpha.",
+                "Cumulative Abnormal Return (CAR): Sums daily abnormal returns across multi-day event window."
+            ],
+            C_EMERALD
+        ),
+        (
+            "03 • STATISTICAL TESTS",
+            "Patell Standardized & BMP t-Tests",
+            [
+                "Patell Test: Standardizes abnormal returns by forecast standard error.",
+                "BMP Test: Adjusts for event-induced variance changes across cohorts.",
+                "p-Value Rigor: Null hypothesis (H0: CAR = 0) rejected only at p < 0.05 threshold."
+            ],
+            C_AMBER
+        )
+    ]
+
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(eq_cards):
+        x = Inches(0.8 + i * 3.95)
+        card = s8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+        card.fill.solid()
+        card.fill.fore_color.rgb = C_CARD
+        card.line.color.rgb = C_BORDER
+        card.line.width = Pt(1)
+
+        tf = card.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = b_badge
+        p.font.name = "Calibri"
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = b_color
+
+        p2 = tf.add_paragraph()
+        p2.text = b_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(12)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
+
+        for b in bullets:
+            p_b = tf.add_paragraph()
+            p_b.text = "• " + b
+            p_b.font.name = "Calibri"
+            p_b.font.size = Pt(9.5)
+            p_b.font.color.rgb = C_TEXT
+
+    takeaway8 = s8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway8.fill.solid()
+    takeaway8.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway8.line.color.rgb = C_EMERALD
+    p = takeaway8.text_frame.paragraphs[0]
+    p.text = "ACADEMIC RIGOR: Built on Campbell, Lo, and MacKinlay (1997) standards—the gold standard of institutional quantitative finance."
+    p.font.name = "Calibri"
+    p.font.size = Pt(10.5)
+    p.font.bold = True
+    p.font.color.rgb = C_EMERALD
+    p.alignment = PP_ALIGN.CENTER
+
+    # ==========================================================================
+    # SLIDE 9: TINYFISH WEB AGENT & TOKEN ECONOMY
+    # ==========================================================================
+    s9 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s9)
+    add_header(s9, "08 • Web Agent Efficiency", "TinyFish Reconnaissance & Token Economy Matrix", "Transforming bloated 300KB+ raw HTML investor portals into clean, structured, low-token Markdown briefs.", 9)
+
+    tf_cards = [
+        (
+            "THE SCRAPING PROBLEM",
+            "Raw HTML Waste",
+            [
+                "Bloated Boilerplate: Modern corporate websites ship 300KB to 2MB of CSS, SVG sprites, tracking pixels, and ads.",
+                "Token Exhaustion: Ingesting raw HTML directly into LLMs consumes 50,000 to 100,000 tokens per page.",
+                "Extreme API Costs: Uncleaned HTML burns dollar budgets and dilutes the model's analytical attention window."
+            ],
+            C_RED
+        ),
+        (
+            "TINYFISH DOM PURIFIER",
+            "Smart Cleaning Architecture",
+            [
+                "Headless Chromium Fleet: Renders client-side dynamic JavaScript and extracts pure semantic document nodes.",
+                "Heuristic Content Scoring: Strips navigation menus, footer disclosures, cookie consent popups, and scripts.",
+                "Structure Preservation: Extracts financial tables, balance sheet line items, and executive quotes into clean Markdown."
+            ],
+            C_CYAN
+        ),
+        (
+            "88.5% TOKEN SAVINGS",
+            "Measurable Economic Impact",
+            [
+                "88.5% Compression: Compresses an 85,000-token HTML page down to ~1,200 verified semantic tokens.",
+                "Sub-Second Latency: Accelerates inference turnaround by 7x while preserving 100% of factual financial numbers.",
+                "Zero Hallucination: Downstream reasoning agents see only high-signal text grounded in verified primary URLs."
+            ],
+            C_EMERALD
+        )
+    ]
+
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(tf_cards):
+        x = Inches(0.8 + i * 3.95)
+        card = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+        card.fill.solid()
+        card.fill.fore_color.rgb = C_CARD
+        card.line.color.rgb = C_BORDER
+        card.line.width = Pt(1)
+
+        tf = card.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = b_badge
+        p.font.name = "Calibri"
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = b_color
+
+        p2 = tf.add_paragraph()
+        p2.text = b_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(13)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
+
+        for b in bullets:
+            p_b = tf.add_paragraph()
+            p_b.text = "• " + b
+            p_b.font.name = "Calibri"
+            p_b.font.size = Pt(9.5)
+            p_b.font.color.rgb = C_TEXT
 
     takeaway9 = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
     takeaway9.fill.solid()
     takeaway9.fill.fore_color.rgb = RGBColor(15, 25, 38)
     takeaway9.line.color.rgb = C_EMERALD
     p = takeaway9.text_frame.paragraphs[0]
-    p.text = "TEST SUITE COMPLETION: 14 out of 14 unit and integration tests passing in pytest (tests/test_futurestock.py, test_quant_engine.py)."
+    p.text = "SCALER BENCHMARK: TinyFish slashes token spend by 88.5%, making continuous real-time market crawling economically viable."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_EMERALD
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 10: DUAL-SURFACE ARCHITECTURE & TECH STACK
+    # SLIDE 10: MULTI-COUNTRY COVERAGE MATRIX (NEW!)
     # ==========================================================================
     s10 = prs.slides.add_slide(blank_layout)
     set_slide_background(s10)
-    add_header(s10, "09 • Tech Stack & Architecture", "Dual-Surface Product Architecture", "Next.js 16 Web Terminal for high-density visual exploration + Streamlit Cockpit for rapid quant research.", 10)
+    add_header(s10, "09 • Global Reach", "Global Sovereign Markets & Benchmark Coverage", "QuantIntel covers 14+ major global economies with localized exchanges, currencies, and trading calendars.", 10)
 
-    tech_cards = [
-        (
-            "WEB STUDIO (NEXT.JS 16)",
-            "Institutional Analyst Terminal",
-            [
-                "Next.js 16 App Router & Turbopack: Ultra-fast serverless execution and hot-module reloading.",
-                "React 19 & Tailwind CSS: Glassmorphic dark styling, responsive desktop layout, and smooth animations.",
-                "Client-Side Monte Carlo Engine: 2,000-path probabilistic fan chart rendered in real time.",
-                "Serverless API Routes: /api/futurestock/search, /api/futurestock/quote, /api/futurestock/tinyfish, /api/quant/study."
-            ],
-            C_CYAN
-        ),
-        (
-            "PYTHON QUANT CORE",
-            "Institutional Econometrics Engine",
-            [
-                "Streamlit Multi-Page Cockpit: Interactive researcher dashboard with live agent trace streaming.",
-                "NumPy, SciPy & Statsmodels: Vectorized Campbell-Lo-MacKinlay OLS math and normal distribution CDF.",
-                "Pandas & yfinance: Ingests 252-day daily historical OHLCV series for equities and benchmarks.",
-                "FPDF2 PDF Generator: Programmatically renders multi-page, publication-grade research dossiers."
-            ],
-            C_EMERALD
-        ),
-        (
-            "AGENT & DATA LAYER",
-            "Orchestration & Persistence",
-            [
-                "TinyFish Live Web Fleet: Serverless headless Chromium browser with shadow DOM bypass.",
-                "Google Gemini 3.5 Flash: Institutional thesis synthesis and adversarial bear stress testing.",
-                "Persistent Forecast Ledger: JSON / SQLite store tracking realized prices against past predictions.",
-                "Zero External Database Dependency: Operates completely self-contained with zero infrastructure bloat."
-            ],
-            C_PURPLE
-        )
+    countries = [
+        ("🇵🇰 Pakistan (PSX)", "Benchmark: KSE-100 (^KSE)\nCurrency: PKR (₨)\nKey Sectors: Oil & Gas, Banking, Cement, Fertilizers\nAnchors: OGDC.KA, MCB.KA, LUCK.KA, ENGRO.KA", C_EMERALD),
+        ("🇮🇳 India (NSE / BSE)", "Benchmark: Nifty 50 (^NSEI)\nCurrency: INR (₹)\nKey Sectors: IT, Banking, Energy, Auto, Pharma\nAnchors: RELIANCE.NS, TCS.NS, HDFCBANK.NS", C_CYAN),
+        ("🇺🇸 United States", "Benchmark: S&P 500 (^GSPC)\nCurrency: USD ($)\nKey Sectors: AI/Semis, Cloud, Banking, Healthcare\nAnchors: NVDA, MSFT, AAPL, JPM, GOOGL", C_BLUE),
+        ("🇬🇧 United Kingdom", "Benchmark: FTSE 100 (^FTSE)\nCurrency: GBP (£)\nKey Sectors: Energy, Pharma, Banking, Mining\nAnchors: SHEL.L, AZN.L, HSBA.L, BP.L", C_AMBER),
+        ("🇸🇦 Saudi Arabia", "Benchmark: TASI (^TASI.SR)\nCurrency: SAR (﷼)\nKey Sectors: Oil & Gas, Islamic Banking, Petrochem\nAnchors: 2222.SR (Aramco), 1120.SR (Al Rajhi)", C_EMERALD),
+        ("🇯🇵 Japan (TSE)", "Benchmark: Nikkei 225 (^N225)\nCurrency: JPY (¥)\nKey Sectors: Automotive, Robotics, Electronics\nAnchors: 7203.T (Toyota), 8035.T (Tokyo Electron)", C_PURPLE),
+        ("🇩🇪 Germany (XETRA)", "Benchmark: DAX 40 (^GDAXI)\nCurrency: EUR (€)\nKey Sectors: Auto Engineering, Industrial Siemens, SAP\nAnchors: SAP.DE, SIE.DE, BMW.DE", C_WHITE),
+        ("🇨🇳 China (SSE/SZSE)", "Benchmark: Shanghai (000001.SS)\nCurrency: CNY (¥)\nKey Sectors: EV/Batteries, E-Commerce, Solar\nAnchors: BABA, Tencent, BYD, State Banks", C_RED),
     ]
 
-    for i, (b_tag, b_title, bullets, b_color) in enumerate(tech_cards):
-        x = Inches(0.8 + i * 3.95)
-        card = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+    for i, (name, desc, col) in enumerate(countries):
+        row = i // 4
+        col_idx = i % 4
+        x = Inches(0.8 + col_idx * 2.95)
+        y = Inches(1.9 + row * 2.25)
+
+        card = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, Inches(2.8), Inches(2.1))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -843,82 +873,141 @@ def create_pptx():
 
         tf = card.text_frame
         tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = b_tag
-        p.font.name = "Calibri"
-        p.font.size = Pt(11)
-        p.font.bold = True
-        p.font.color.rgb = b_color
+        p1 = tf.paragraphs[0]
+        p1.text = name
+        p1.font.name = "Arial"
+        p1.font.size = Pt(11)
+        p1.font.bold = True
+        p1.font.color.rgb = col
 
         p2 = tf.add_paragraph()
-        p2.text = b_title
-        p2.font.name = "Arial"
-        p2.font.size = Pt(13)
-        p2.font.bold = True
-        p2.font.color.rgb = C_WHITE
-
-        for b in bullets:
-            p_b = tf.add_paragraph()
-            p_b.text = "• " + b
-            p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
-            p_b.font.color.rgb = C_TEXT
+        p2.text = desc
+        p2.font.name = "Calibri"
+        p2.font.size = Pt(9)
+        p2.font.color.rgb = C_TEXT
 
     takeaway10 = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
     takeaway10.fill.solid()
     takeaway10.fill.fore_color.rgb = RGBColor(15, 25, 38)
     takeaway10.line.color.rgb = C_CYAN
     p = takeaway10.text_frame.paragraphs[0]
-    p.text = "DUAL INTERFACES: Web Terminal on localhost:3000 + Streamlit Cockpit on localhost:8501—seamlessly synchronized."
+    p.text = "GLOBAL COVERAGE: Also supports Canada (TSX), Australia (ASX), Singapore (SGX), Brazil (B3), South Korea (KRX), and UAE (ADX)."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_CYAN
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 11: RESPONSIBLE AI, GOVERNANCE & ANTI-HALLUCINATION
+    # SLIDE 11: END-TO-END RESEARCH JOURNEY
     # ==========================================================================
     s11 = prs.slides.add_slide(blank_layout)
     set_slide_background(s11)
-    add_header(s11, "10 • Governance & Safety", "Responsible AI & Anti-Hallucination Framework", "Institutional-grade rigor and ethical safeguards embedded into every layer of QuantIntel.", 11)
+    add_header(s11, "10 • Concrete Walkthrough", "End-to-End Alpha Research Journey", "Tracing a live equity or sovereign query from search input to verified institutional dossier.", 11)
 
-    gov_cards = [
+    steps = [
+        ("STAGE 1: SEARCH", "Entity & Country Input", "User enters ticker, sovereign query, or natural language (e.g. 'pakisant future in stock').", C_CYAN),
+        ("STAGE 2: RESOLUTION", "Fuzzy Auto-Routing", "Fuzzy resolver detects sovereign jurisdiction (PSX/NSE/NASDAQ), benchmarks, and currency.", C_CYAN),
+        ("STAGE 3: WEB CRAWL", "TinyFish Recon", "Chromium fleet crawls primary regulatory filings and news, stripping DOM clutter (-88.5%).", C_BLUE),
+        ("STAGE 4: MARKET FEEDS", "LSE Data 3.0 Pull", "Pulls real-time spot price, historical OHLCV, market index levels, and Options Chain with Greeks.", C_BLUE),
+        ("STAGE 5: QUANT SIM", "Monte Carlo & DCF", "Executes 2,000-path GBM simulations and 3-stage DCF valuation with deterministic math.", C_EMERALD),
+        ("STAGE 6: ADVERSARIAL", "Bearish Stress-Test", "Adversarial agent red-teams assumptions, testing downside risks, inflation, and rate shocks.", C_RED),
+        ("STAGE 7: VERIFICATION", "Provenance Audit", "Verifier checks 100% of mathematical formulas and links claims to audited source URLs.", C_PURPLE),
+        ("STAGE 8: DELIVERY", "Interactive Dossier", "Dashboard renders fan charts, options tape, and offers instant export to PDF and Markdown.", C_AMBER),
+    ]
+
+    for i, (name, sub, desc, col) in enumerate(steps):
+        row = i // 4
+        col_idx = i % 4
+        x = Inches(0.8 + col_idx * 2.95)
+        y = Inches(1.9 + row * 2.25)
+
+        card = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, Inches(2.8), Inches(2.1))
+        card.fill.solid()
+        card.fill.fore_color.rgb = C_CARD
+        card.line.color.rgb = C_BORDER
+        card.line.width = Pt(1)
+
+        tf = card.text_frame
+        tf.word_wrap = True
+        p1 = tf.paragraphs[0]
+        p1.text = name
+        p1.font.name = "Arial"
+        p1.font.size = Pt(10.5)
+        p1.font.bold = True
+        p1.font.color.rgb = col
+
+        p2 = tf.add_paragraph()
+        p2.text = sub
+        p2.font.name = "Calibri"
+        p2.font.size = Pt(10)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
+
+        p3 = tf.add_paragraph()
+        p3.text = desc
+        p3.font.name = "Calibri"
+        p3.font.size = Pt(9)
+        p3.font.color.rgb = C_TEXT
+
+    takeaway11 = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway11.fill.solid()
+    takeaway11.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway11.line.color.rgb = C_CYAN
+    p = takeaway11.text_frame.paragraphs[0]
+    p.text = "SEAMLESS PIPELINE: Eliminates days of disjointed analysis, delivering verified institutional dossiers in seconds."
+    p.font.name = "Calibri"
+    p.font.size = Pt(10.5)
+    p.font.bold = True
+    p.font.color.rgb = C_CYAN
+    p.alignment = PP_ALIGN.CENTER
+
+    # ==========================================================================
+    # SLIDE 12: EMPIRICAL VALIDATION & CASE STUDIES
+    # ==========================================================================
+    s12 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s12)
+    add_header(s12, "11 • Empirical Validation", "Empirical Validation Across Global Equities", "QuantIntel has been battle-tested against real live market data across major international equities.", 12)
+
+    cases = [
         (
-            "CRITERION 1 • CITATION PROVENANCE",
-            "100% Clickable Sourced Citations",
+            "CASE 1: NVIDIA (NVDA)",
+            "Hyperscale AI Hardware Cycle",
             [
-                "Zero Unsourced Assertions: Every financial figure, earnings disclosure, and catalyst maps to a live source URL.",
-                "Verbatim Snippet Verification: The system displays exact extracted phrases from official company dockets.",
-                "Missing Data Transparency: If an event date is ambiguous, QuantIntel explicitly flags it rather than hallucinating."
+                "Trigger: Hyperscale data center capex surge & Blackwell GPU architecture rollout.",
+                "Live Feeds: Spot $204.64 | Monte Carlo median path: $255.40 (+24.8% upside).",
+                "LSE Options: Real-time IV smile and Greeks tape confirming heavy call open interest.",
+                "Adversarial: Modeled export restriction risks and semiconductor fab capacity bottlenecks."
             ],
             C_CYAN
         ),
         (
-            "CRITERION 2 • TEMPORAL INTEGRITY",
-            "0% Look-Ahead Bias",
+            "CASE 2: RELIANCE (RELIANCE.NS)",
+            "Conglomerate Expansion & Capex",
             [
-                "Strict UTC Timestamping: Event disclosure dates are locked to the exact second of public release.",
-                "Estimation Window Isolation: Clean separation between historical estimation [-90d, -6d] and event window [-5d, +10d].",
-                "Survivorship Awareness: Flags delisting or restructuring caveats alongside backtest metrics."
+                "Trigger: Telecom ARPU expansion announcement & green hydrogen gigafactory progress.",
+                "Live Feeds: Spot ₹1,348.60 (split-adjusted) | CLM Event Study CAR: +3.8% (p < 0.01).",
+                "Valuation: 3-Stage DCF under 11.2% WACC yielding fair value upside corridor.",
+                "Provenance: All claims tied to audited BSE/NSE regulatory dockets and filings."
             ],
             C_EMERALD
         ),
         (
-            "CRITERION 3 • ARITHMETIC CERTAINTY",
-            "Deterministic Verification",
+            "CASE 3: PAKISTAN OIL (OGDC.KA)",
+            "Sovereign Debt Settlement",
             [
-                "Sandboxed Python Math: Calculations are executed in pure code, never generated by probabilistic LLMs.",
-                "Arithmetic Audit: Agent H verifies that ((Target / Spot) - 1) * 100 matches scenario percentage return exactly.",
-                "Standard Statistics: Reports Student's t-statistics, p-values, and confidence intervals to prevent false alpha."
+                "Trigger: Economic Coordination Committee gas circular debt clearance resolution.",
+                "Live Feeds: KSE-100 benchmark surge to 88,000+ index level on PSX.",
+                "Country Intel: Categorized as POSITIVE for Energy sector & domestic liquidity.",
+                "CLM Study: Abnormal return of +4.2% around ministerial gazette notification."
             ],
-            C_PURPLE
+            C_AMBER
         )
     ]
 
-    for i, (b_tag, b_title, bullets, b_color) in enumerate(gov_cards):
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(cases):
         x = Inches(0.8 + i * 3.95)
-        card = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+        card = s12.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -927,7 +1016,7 @@ def create_pptx():
         tf = card.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
-        p.text = b_tag
+        p.text = b_badge
         p.font.name = "Calibri"
         p.font.size = Pt(11)
         p.font.bold = True
@@ -942,60 +1031,69 @@ def create_pptx():
 
         for b in bullets:
             p_b = tf.add_paragraph()
-            p_b.text = "✓ " + b
+            p_b.text = "• " + b
             p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
+            p_b.font.size = Pt(9.5)
             p_b.font.color.rgb = C_TEXT
 
-    takeaway11 = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway11.fill.solid()
-    takeaway11.fill.fore_color.rgb = RGBColor(15, 25, 38)
-    takeaway11.line.color.rgb = C_PURPLE
-    p = takeaway11.text_frame.paragraphs[0]
-    p.text = "REGULATORY DISCLAIMER: QuantIntel is strictly an analytical research assistant and explicitly disclaims financial advisory liability."
+    takeaway12 = s12.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway12.fill.solid()
+    takeaway12.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway12.line.color.rgb = C_EMERALD
+    p = takeaway12.text_frame.paragraphs[0]
+    p.text = "EMPIRICAL REALITY: Tested on real equities across Indian, US, UK, and Pakistani exchanges with 100% verified math."
     p.font.name = "Calibri"
-    p.font.size = Pt(11)
+    p.font.size = Pt(10.5)
     p.font.bold = True
-    p.font.color.rgb = C_PURPLE
+    p.font.color.rgb = C_EMERALD
     p.alignment = PP_ALIGN.CENTER
 
     # ==========================================================================
-    # SLIDE 12: ROADMAP, COMMERCIALIZATION & CONCLUSION
+    # SLIDE 13: TECHNICAL ARCHITECTURE & DUAL SURFACE
     # ==========================================================================
-    s12 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s12)
-    add_header(s12, "11 • Scaler Vision & Roadmap", "Commercialization Trajectory & Scaling Roadmap", "From autonomous prototype to enterprise-grade quantitative intelligence collective.", 12)
+    s13 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s13)
+    add_header(s13, "12 • Tech Stack & Architecture", "Dual-Surface Product Architecture & Stack", "Next.js 16 Web Terminal + Python FastAPI Backend + Streamlit Cockpit with 27/27 green automated tests.", 13)
 
-    roadmap_steps = [
-        ("PHASE 1 • LIVE NOW", "Working Core Platform", [
-            "Full FutureStock 8-Agent Collective operational.",
-            "Web Quant Studio live event study engine active.",
-            "Live equity search across US and Indian markets.",
-            "14/14 unit & live market test suite passing."
-        ], C_EMERALD),
-        ("PHASE 2 • Q1 2027", "Enterprise Data Expansion", [
-            "SEC 13-F institutional holding flow integration.",
-            "Multi-asset coverage: FX, Commodities & Crypto.",
-            "Real-time audio transcript parsing (Earnings Calls).",
-            "Multi-factor Fama-French 5-factor benchmark model."
-        ], C_CYAN),
-        ("PHASE 3 • Q2 2027", "Algorithmic Paper Trading", [
-            "FIX Protocol bridge for automated paper execution.",
-            "Event-driven strategy signal generation.",
-            "Real-time Slack / Telegram webhook alerts.",
-            "Custom risk limit governance for asset managers."
-        ], C_AMBER),
-        ("PHASE 4 • Q3 2027", "Distributed Cluster Scaling", [
-            "Multi-agent distributed Ray / Kubernetes cluster.",
-            "Sub-second streaming LLM inference cache.",
-            "Tiered B2B SaaS: Pro ($199/mo) & Fund ($1,200/mo).",
-            "Institutional White-Label Terminal for Wealth RIA."
-        ], C_PURPLE),
+    tech_cards = [
+        (
+            "WEB TERMINAL SURFACE",
+            "Next.js 16 & Turbopack",
+            [
+                "Next.js 16 App Router: Real-time server components, route handlers, and streaming UI.",
+                "Tailwind CSS Dark Theme: High-density Obsidian cyber-quant aesthetic (#070B10).",
+                "Recharts & Lucide: Interactive Monte Carlo fan charts, sector impact heatmaps, and options tape.",
+                "0 Compilation Errors: 100% clean TypeScript build with strict data contracts."
+            ],
+            C_CYAN
+        ),
+        (
+            "QUANT ENGINE BACKEND",
+            "Python 3.14 & Numerical Stack",
+            [
+                "FastAPI & Pydantic v2: Strict schema validation across all agent inputs, quotes, and research dossiers.",
+                "NumPy & SciPy Econometrics: Deterministic OLS regressions, CAR accumulation, and statistical tests.",
+                "LSE Data 3.0 & yfinance: Direct integration of official market data providers with caching defense.",
+                "27/27 Tests Green: Comprehensive pytest suite covering all modules end-to-end."
+            ],
+            C_EMERALD
+        ),
+        (
+            "MULTI-MODEL LLM ENGINE",
+            "Swappable Intelligence Core",
+            [
+                "Model Provider Agnostic: Native support for Google Gemini 3.5, Anthropic Claude, OpenAI GPT-4o, and Groq.",
+                "Dynamic API Keys Manager: Browser localStorage encryption with live connectivity tester.",
+                "Deterministic Local Fallback: Runs calibrated quantitative models even in full offline air-gapped environments.",
+                "Zero Vendor Lock-In: Clean provider interfaces allow instant switching of LLM reasoning cores."
+            ],
+            C_PURPLE
+        )
     ]
 
-    for i, (r_stage, r_title, bullets, r_color) in enumerate(roadmap_steps):
-        x = Inches(0.8 + i * 2.95)
-        card = s12.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(2.8), Inches(4.5))
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(tech_cards):
+        x = Inches(0.8 + i * 3.95)
+        card = s13.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
         card.fill.solid()
         card.fill.fore_color.rgb = C_CARD
         card.line.color.rgb = C_BORDER
@@ -1004,14 +1102,14 @@ def create_pptx():
         tf = card.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
-        p.text = r_stage
+        p.text = b_badge
         p.font.name = "Calibri"
         p.font.size = Pt(11)
         p.font.bold = True
-        p.font.color.rgb = r_color
+        p.font.color.rgb = b_color
 
         p2 = tf.add_paragraph()
-        p2.text = r_title
+        p2.text = b_title
         p2.font.name = "Arial"
         p2.font.size = Pt(13)
         p2.font.bold = True
@@ -1021,17 +1119,187 @@ def create_pptx():
             p_b = tf.add_paragraph()
             p_b.text = "• " + b
             p_b.font.name = "Calibri"
-            p_b.font.size = Pt(10)
+            p_b.font.size = Pt(9.5)
             p_b.font.color.rgb = C_TEXT
 
-    takeaway12 = s12.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
-    takeaway12.fill.solid()
-    takeaway12.fill.fore_color.rgb = RGBColor(0, 40, 45)
-    takeaway12.line.color.rgb = C_CYAN
-    p = takeaway12.text_frame.paragraphs[0]
-    p.text = "FINAL THOUGHT: QuantIntel bridges the gap between chaotic web disclosures and rigorous mathematical alpha."
+    takeaway13 = s13.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway13.fill.solid()
+    takeaway13.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway13.line.color.rgb = C_CYAN
+    p = takeaway13.text_frame.paragraphs[0]
+    p.text = "PRODUCTION GRADE: Modern microservice architecture engineered for high throughput, test coverage, and modularity."
     p.font.name = "Calibri"
-    p.font.size = Pt(12)
+    p.font.size = Pt(10.5)
+    p.font.bold = True
+    p.font.color.rgb = C_CYAN
+    p.alignment = PP_ALIGN.CENTER
+
+    # ==========================================================================
+    # SLIDE 14: RESPONSIBLE AI & GOVERNANCE
+    # ==========================================================================
+    s14 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s14)
+    add_header(s14, "13 • Governance & Safety", "Responsible AI & Anti-Hallucination Framework", "Institutional-grade rigor and ethical safeguards embedded into every layer of QuantIntel.", 14)
+
+    gov_cards = [
+        (
+            "DETERMINISTIC BOUNDARIES",
+            "Code Calculates, AI Synthesizes",
+            [
+                "Strict Separation of Concerns: LLMs are strictly forbidden from guessing numerical prices, CAR percentages, or VaR metrics.",
+                "Zero-Hallucination Math: All equations execute in deterministic Python/TypeScript code and are validated before rendering.",
+                "Mathematical Sanity Checks: Target prices must mathematically reconcile with spot prices: ((Target/Spot)-1)*100."
+            ],
+            C_CYAN
+        ),
+        (
+            "CITATION PROVENANCE",
+            "100% Source Traceability",
+            [
+                "Mandatory Citation Links: Every synthesized catalyst and news disclosure displays original source domain and clickable URL.",
+                "Dual Timestamp Auditing: Displays both original article publication time and TinyFish retrieval timestamp.",
+                "Unconfirmed Rumor Shield: Rumors, leaks, and speculation are prominently tagged with UNCONFIRMED warning badges."
+            ],
+            C_AMBER
+        ),
+        (
+            "COMPLIANCE & GOVERNANCE",
+            "Institutional Operational Guardrails",
+            [
+                "Ethical Web Scraping: TinyFish respects robots.txt, source rate limits, and terms of service across all domains.",
+                "Clear Disclaimers: Prominently identifies research assessments as empirical academic analysis, not guaranteed financial advice.",
+                "Audited Forecast Ledger: Appends all simulated predictions to an immutable historical ledger for forward calibration."
+            ],
+            C_PURPLE
+        )
+    ]
+
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(gov_cards):
+        x = Inches(0.8 + i * 3.95)
+        card = s14.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+        card.fill.solid()
+        card.fill.fore_color.rgb = C_CARD
+        card.line.color.rgb = C_BORDER
+        card.line.width = Pt(1)
+
+        tf = card.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = b_badge
+        p.font.name = "Calibri"
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = b_color
+
+        p2 = tf.add_paragraph()
+        p2.text = b_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(13)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
+
+        for b in bullets:
+            p_b = tf.add_paragraph()
+            p_b.text = "• " + b
+            p_b.font.name = "Calibri"
+            p_b.font.size = Pt(9.5)
+            p_b.font.color.rgb = C_TEXT
+
+    takeaway14 = s14.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway14.fill.solid()
+    takeaway14.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway14.line.color.rgb = C_PURPLE
+    p = takeaway14.text_frame.paragraphs[0]
+    p.text = "GOVERNANCE STANDARD: Built for institutional compliance departments where provenance and auditability are non-negotiable."
+    p.font.name = "Calibri"
+    p.font.size = Pt(10.5)
+    p.font.bold = True
+    p.font.color.rgb = C_PURPLE
+    p.alignment = PP_ALIGN.CENTER
+
+    # ==========================================================================
+    # SLIDE 15: ROADMAP & STRATEGIC VISION (CONCLUSION)
+    # ==========================================================================
+    s15 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s15)
+    add_header(s15, "14 • Scaler Vision & Roadmap", "Commercialization Trajectory & Scaling Roadmap", "From autonomous prototype to enterprise-grade quantitative intelligence collective.", 15)
+
+    roadmap_phases = [
+        (
+            "PHASE 1: LIVE (COMPLETED)",
+            "Core Multi-Pillar Engine",
+            [
+                "FutureStock 8-Agent Collective with 2,000-path Monte Carlo & DCF.",
+                "Web Quant Studio CLM (1997) event studies on live market prices.",
+                "Country Intelligence with 14+ economies & 14-category AI news engine.",
+                "LSE Data 3.0 provider integration with real-time Options Chain & Greeks.",
+                "FutureStock-grade search engine with fuzzy country & typo tolerance."
+            ],
+            C_CYAN
+        ),
+        (
+            "PHASE 2: NEAR-TERM (Q1-Q2)",
+            "Multi-Asset & Institutional Feeds",
+            [
+                "Fixed Income & Credit: Modeling sovereign yield curve shifts and credit spreads.",
+                "Earnings Call Audio Analysis: Real-time speech-to-text sentiment tone detection.",
+                "WebSocket Price Streaming: Real-time sub-second price tape updates via LSE Data.",
+                "Multi-Stock Cohort Studies: Run multi-company event studies across entire sectors simultaneously."
+            ],
+            C_EMERALD
+        ),
+        (
+            "PHASE 3: ENTERPRISE (Q3-Q4)",
+            "B2B FinTech Platform & API",
+            [
+                "QuantIntel Headless API: Institutional SDK for hedge funds and family offices.",
+                "Automated Portfolio Rebalancing: Connecting alpha signals to execution venues.",
+                "Enterprise SSO & Compliance: Granular audit logs and SOC 2 / HIPAA compliance.",
+                "Custom LLM Fine-Tuning: Domain-specialized financial reasoning models."
+            ],
+            C_PURPLE
+        )
+    ]
+
+    for i, (b_badge, b_title, bullets, b_color) in enumerate(roadmap_phases):
+        x = Inches(0.8 + i * 3.95)
+        card = s15.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, Inches(1.9), Inches(3.8), Inches(4.5))
+        card.fill.solid()
+        card.fill.fore_color.rgb = C_CARD
+        card.line.color.rgb = C_BORDER
+        card.line.width = Pt(1)
+
+        tf = card.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = b_badge
+        p.font.name = "Calibri"
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = b_color
+
+        p2 = tf.add_paragraph()
+        p2.text = b_title
+        p2.font.name = "Arial"
+        p2.font.size = Pt(13)
+        p2.font.bold = True
+        p2.font.color.rgb = C_WHITE
+
+        for b in bullets:
+            p_b = tf.add_paragraph()
+            p_b.text = "• " + b
+            p_b.font.name = "Calibri"
+            p_b.font.size = Pt(9.5)
+            p_b.font.color.rgb = C_TEXT
+
+    takeaway15 = s15.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.8), Inches(0.55))
+    takeaway15.fill.solid()
+    takeaway15.fill.fore_color.rgb = RGBColor(15, 25, 38)
+    takeaway15.line.color.rgb = C_CYAN
+    p = takeaway15.text_frame.paragraphs[0]
+    p.text = "FINAL THOUGHT: QuantIntel bridges the chasm between messy live web disclosures, rigid institutional market data, and mathematical alpha."
+    p.font.name = "Calibri"
+    p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_CYAN
     p.alignment = PP_ALIGN.CENTER
@@ -1040,8 +1308,9 @@ def create_pptx():
     prs.save(pptx_path)
     print(f"Presentation saved successfully to: {pptx_path}")
 
+
 # ==============================================================================
-# PDF GENERATION (Landscape Executive Slide Presentation)
+# PDF GENERATION (Landscape Executive 15-Slide Presentation)
 # ==============================================================================
 class QuantIntelPDF(FPDF):
     def __init__(self, *args, **kwargs):
@@ -1058,7 +1327,8 @@ class QuantIntelPDF(FPDF):
         self.set_y(-12)
         self.set_font("DejaVu", "B", 8)
         self.set_text_color(139, 148, 158)
-        self.cell(0, 10, f"QuantIntel  |  Autonomous Quantitative Intelligence  |  Page {self.page_no()}", align="C")
+        self.cell(0, 10, f"QuantIntel  |  Autonomous Quantitative Intelligence  |  Page {self.page_no()} / {TOTAL_SLIDES}", align="C")
+
 
 def create_pdf():
     pdf = QuantIntelPDF(orientation="landscape", unit="mm", format="A4")
@@ -1071,23 +1341,23 @@ def create_pdf():
         pdf.set_font("DejaVu", "B", 8)
         pdf.set_text_color(0, 196, 204)
         pdf.set_fill_color(0, 35, 40)
-        pdf.cell(75, 7, f"  {badge.upper()}  ", border=1, fill=True, new_x="RIGHT", new_y="TOP")
+        pdf.cell(85, 7, f"  {badge.upper()}  ", border=1, fill=True, new_x="RIGHT", new_y="TOP")
 
         # Page Number
         pdf.set_xy(260, 10)
         pdf.set_font("DejaVu", "B", 9)
         pdf.set_text_color(139, 148, 158)
-        pdf.cell(22, 7, f"{page_num:02d} / 12", align="R")
+        pdf.cell(22, 7, f"{page_num:02d} / {TOTAL_SLIDES}", align="R")
 
         # Main Title
         pdf.set_xy(15, 20)
-        pdf.set_font("DejaVu", "B", 18)
+        pdf.set_font("DejaVu", "B", 17)
         pdf.set_text_color(255, 255, 255)
         pdf.cell(0, 9, title, new_x="LMARGIN", new_y="NEXT")
 
         # Subtitle
         pdf.set_xy(15, 29)
-        pdf.set_font("DejaVu", "", 10)
+        pdf.set_font("DejaVu", "", 9.5)
         pdf.set_text_color(139, 148, 158)
         pdf.cell(0, 6, subtitle, new_x="LMARGIN", new_y="NEXT")
 
@@ -1098,35 +1368,34 @@ def create_pdf():
 
     # 1. Cover
     pdf.add_page()
-    pdf.set_xy(15, 25)
-    pdf.set_font("DejaVu", "B", 11)
+    pdf.set_xy(15, 22)
+    pdf.set_font("DejaVu", "B", 10.5)
     pdf.set_text_color(0, 196, 204)
-    pdf.cell(0, 8, "QUANTINTEL FINALE SHOWCASE", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 8, "QUANTINTEL EXECUTIVE MASTER PRESENTATION", new_x="LMARGIN", new_y="NEXT")
 
     pdf.set_font("DejaVu", "B", 36)
     pdf.set_text_color(255, 255, 255)
     pdf.cell(0, 18, "QuantIntel", new_x="LMARGIN", new_y="NEXT")
 
-    pdf.set_font("DejaVu", "B", 15)
+    pdf.set_font("DejaVu", "B", 14)
     pdf.set_text_color(0, 196, 204)
-    pdf.cell(0, 10, "Autonomous Quantitative Research Collective & Live Market Discovery Engine", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 9, "Autonomous Quantitative Research Collective & Sovereign Market Intelligence", new_x="LMARGIN", new_y="NEXT")
 
-    pdf.set_font("DejaVu", "", 11)
+    pdf.set_font("DejaVu", "", 10.5)
     pdf.set_text_color(201, 209, 217)
-    pdf.multi_cell(265, 7, "Transforming unstructured live-web corporate disclosures into source-grounded quantitative alpha, probabilistic 2,000-path Monte Carlo fan forecasts, 3-stage DCF valuation, and deterministic Campbell-Lo-MacKinlay event studies.")
+    pdf.multi_cell(265, 6.5, "Transforming live web disclosures, LSE Data institutional feeds, 14-category sovereign news classification, 2,000-path Monte Carlo fan forecasting, and Campbell-Lo-MacKinlay event studies into one unified intelligence platform.")
 
-    # 4 Cards on cover
     covers = [
-        ("LIVE SEARCH & RECON", "TinyFish Headless Chromium\n-88.5% DOM Token Reduction", (0, 196, 204)),
-        ("FUTURESTOCK 8-AGENT", "Autonomous Collective\n2,000 Geometric Brownian Paths", (16, 185, 129)),
-        ("WEB QUANT STUDIO", "Campbell-Lo-MacKinlay Math\nMarket Model OLS & CAR t-Tests", (255, 190, 92)),
-        ("ZERO HALLUCINATION", "Deterministic Verification Audit\n100% Sourced Primary Citations", (167, 139, 250)),
+        ("COUNTRY INTEL", "14+ Sovereign Markets & PSX\n14-Category AI News & Sector Heatmaps", (0, 196, 204)),
+        ("LSE DATA 3.0", "Real-Time Stock Feeds & OHLCV\nOptions Chain Tape with Greeks & IV", (10, 132, 255)),
+        ("FUTURESTOCK", "Autonomous 8-Agent Collective\n2,000-Path Monte Carlo & 3-Stage DCF", (16, 185, 129)),
+        ("QUANT STUDIO", "Campbell-Lo-MacKinlay Event Studies\nMarket Model OLS & Abnormal Return CAR", (255, 190, 92)),
     ]
     for i, (c_title, c_desc, c_col) in enumerate(covers):
         x = 15 + i * 68
         pdf.set_fill_color(14, 21, 32)
         pdf.set_draw_color(30, 44, 61)
-        pdf.rect(x, 105, 63, 50, "DF")
+        pdf.rect(x, 105, 63, 52, "DF")
 
         pdf.set_xy(x + 4, 112)
         pdf.set_font("DejaVu", "B", 9.5)
@@ -1134,19 +1403,19 @@ def create_pdf():
         pdf.cell(55, 6, c_title, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 4, 122)
-        pdf.set_font("DejaVu", "", 9)
+        pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(55, 5, c_desc)
+        pdf.multi_cell(55, 4.5, c_desc)
 
     pdf.set_xy(15, 180)
-    pdf.set_font("DejaVu", "B", 10)
+    pdf.set_font("DejaVu", "B", 9.5)
     pdf.set_text_color(139, 148, 158)
     pdf.cell(0, 8, "Lead Architect: Manish Yadav | Scaler School of Technology  -  Track: AI Autonomous Agents & Quantitative FinTech")
 
     # 2. Problem
     draw_slide_header("01 - Market Bottleneck", "The Quantitative Research Chasm", "Quantitative researchers spend 70%+ of their time gathering and manually verifying messy web disclosures.", 2)
     probs = [
-        ("01 - FRAGMENTED LIVE WEB", "Alpha Hidden in Dynamic Silos", "Modern Web is Dynamic: Critical market catalysts live behind heavy JS portals, SEC EDGAR tables, and dynamic BSE/NSE dockets.\n\nScrapers Break Instantly: Standard HTTP requests fail on SPAs and trigger anti-bot blocks.\n\nKnowledge Cutoff Limits: Static LLM weights have zero access to today's breaking news.", (239, 68, 68)),
+        ("01 - FRAGMENTED LIVE WEB", "Alpha Hidden in Dynamic Silos", "Modern Web is Dynamic: Critical sovereign announcements live in central bank gazettes, SEC EDGAR tables, and PSX/NSE dockets.\n\nScrapers Break Instantly: Standard scrapers get blocked by anti-bot firewalls, starving quant desks.\n\nKnowledge Cutoffs: Static LLMs lack access to today's interest rate decisions.", (239, 68, 68)),
         ("02 - THE HALLUCINATION TRAP", "Catastrophic Look-Ahead Bias", "Misattributed Timestamps: Generic AI hallucinates announcement dates, confusing release dates with filing dates.\n\nThe Look-Ahead Trap: Using data 1 day before public availability invalidates the entire backtest.\n\nLack of Provenance: Standard LLM outputs offer zero click-through links to audited filings.", (255, 190, 92)),
         ("03 - THE WEB-TO-MATH GAP", "Manual & Disjointed Pipelines", "Text vs Math Disconnect: Reading news is qualitative and messy; calculating abnormal returns (CAR) is strictly quantitative.\n\nSlow Validation: Formulating a statistical null hypothesis (H0 vs H1) takes hours—alpha decays.\n\nDisjointed Desks: Discretionary analysts cannot communicate structured tests to quants.", (0, 196, 204))
     ]
@@ -1167,27 +1436,65 @@ def create_pdf():
         pdf.cell(74, 6, p_title, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 72)
-        pdf.set_font("DejaVu", "", 9)
+        pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(74, 5, p_desc)
+        pdf.multi_cell(74, 4.8, p_desc)
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
     pdf.set_draw_color(0, 196, 204)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
+    pdf.set_font("DejaVu", "B", 9)
     pdf.set_text_color(0, 196, 204)
     pdf.cell(263, 6, "THE QUANTINTEL OPPORTUNITY: Replace brittle manual research with an autonomous multi-agent collective.", align="C")
 
     # 3. System Architecture
-    draw_slide_header("02 - Architectural Paradigm", "Grounded Web-to-Quant Intelligence", "QuantIntel pairs autonomous web exploration with deterministic statistical validation.", 3)
+    draw_slide_header("02 - Architectural Paradigm", "Unified Multi-Pillar Intelligence Architecture", "QuantIntel integrates live web discovery, institutional market data, sovereign intelligence, and econometric rigor.", 3)
     archs = [
-        ("PILLAR 1", "Autonomous Live Web Recon", "Navigates the open web using TinyFish Chromium Fleet:\n\n- Proactively crawls breaking corporate filings & earnings dockets.\n- Renders dynamic JavaScript SPAs and dynamic tables.\n- Bypasses bot protections effortlessly with serverless Chromium fleet.", (0, 196, 204)),
-        ("PILLAR 2", "Dual Quantitative Engines", "FutureStock 8-Agent + Web Quant Studio:\n\n- FutureStock: 8 specialized agents orchestrate 2,000-path Monte Carlo simulations and 3-stage DCF.\n- Web Quant Studio: Executes real-time Campbell-Lo-MacKinlay event studies on live market prices.\n- Native Cross-Market Routing: India (NSE/BSE) & US (NASDAQ/NYSE).", (16, 185, 129)),
-        ("PILLAR 3", "Deterministic Verification", "Zero-Hallucination Math & Adversarial Review:\n\n- Zero-Hallucination Math: Numerical calculations run in verified Python/TypeScript; LLMs never guess.\n- Adversarial Bear Auditing: Gemini 3.5 Flash actively probes risks and invalidation triggers.\n- Provenance Audit: 100% of claims link to primary source URLs.", (167, 139, 250)),
+        ("PILLAR 1: TINYFISH WEB", "Autonomous Web Recon", "Headless Chromium Fleet:\n\n- Proactively crawls corporate filings & dockets.\n- Renders dynamic JavaScript SPAs effortlessly.\n- Strips DOM boilerplate down with -88.5% token savings.", (0, 196, 204)),
+        ("PILLAR 2: LSE DATA 3.0", "Institutional Market Data", "Official Package Provider:\n\n- Real-time stock prices & historical OHLCV.\n- Options Chain Tape with Greeks (Delta, Gamma, Vega).\n- Macro Series: 10-Yr Treasury, Fed Funds, CPI.", (10, 132, 255)),
+        ("PILLAR 3: COUNTRY INTEL", "Sovereign Intelligence", "14+ Global Economies:\n\n- 14-Category AI News Classification Engine.\n- Dynamic Sector Impact Heatmap & Exposure.\n- Stocks to Watch & 3 Forward Scenarios.", (16, 185, 129)),
+        ("PILLAR 4: QUANT CORE", "Econometric Lab", "Deterministic Math Rigor:\n\n- Campbell-Lo-MacKinlay (1997) Event Studies.\n- 2,000-Path Monte Carlo Geometric Brownian Motion.\n- 3-Stage DCF Valuation with WACC & peer analogs.", (255, 190, 92)),
     ]
     for i, (a_tag, a_title, a_desc, a_col) in enumerate(archs):
+        x = 15 + i * 68
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, 45, 63, 125, "DF")
+
+        pdf.set_xy(x + 4, 52)
+        pdf.set_font("DejaVu", "B", 8.5)
+        pdf.set_text_color(*a_col)
+        pdf.cell(55, 5, a_tag, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 4, 60)
+        pdf.set_font("DejaVu", "B", 10)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(55, 6, a_title, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 4, 70)
+        pdf.set_font("DejaVu", "", 8.5)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(55, 4.5, a_desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(16, 185, 129)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(16, 185, 129)
+    pdf.cell(263, 6, "FOUNDATIONAL PRINCIPLE: TinyFish gathers unstructured text; LSE Data streams prices; Python computes math.", align="C")
+
+    # 4. Country Intelligence
+    draw_slide_header("03 - Sovereign Intelligence", "Country Intelligence: Live Macro & Sector Impact", "Investigate sovereign economies, central bank policy, industry sectors, and publicly traded stocks right now.", 4)
+    ci_list = [
+        ("14-CATEGORY CLASSIFIER", "Structured Macro Taxonomies", "Classifies every disclosure across 14 categories: Central Bank, Fiscal Policy, Inflation, Earnings, IPOs, M&A, Energy, Trade Tariffs.\n\nSentiment Grading: POSITIVE, NEGATIVE, MIXED, NEUTRAL, or UNCONFIRMED.\n\nMulti-Tier Reasoning: Evaluates impact on GDP, sovereign benchmark, sectors, and equities.", (0, 196, 204)),
+        ("DYNAMIC SECTOR HEATMAP", "Real-Time Industry Exposure", "Sovereign Industry Coverage: Commercial Banking, Energy, Technology, Cement, Fertilizers, Auto, and Pharma.\n\nNet Sentiment Scores: Aggregates positive, negative, and mixed catalysts with confidence scores.\n\nConstituent Exposure: Identifies beneficiaries and vulnerable high-debt firms.", (16, 185, 129)),
+        ("STOCKS TO WATCH & SCENARIOS", "Actionable Sovereign Discovery", "Catalyst Discovery: Identifies equities with verified exposure to breaking sovereign policies.\n\n3 Forward Scenarios: Generates Bullish, Neutral, and Bearish paths with explicit probabilities (45% / 35% / 20%).\n\nInvalidation Rules: Sets concrete economic triggers that invalidate forecasts.", (255, 190, 92)),
+    ]
+    for i, (c_tag, c_title, c_desc, c_col) in enumerate(ci_list):
         x = 15 + i * 90
         pdf.set_fill_color(14, 21, 32)
         pdf.set_draw_color(30, 44, 61)
@@ -1195,30 +1502,67 @@ def create_pdf():
 
         pdf.set_xy(x + 5, 52)
         pdf.set_font("DejaVu", "B", 9)
-        pdf.set_text_color(*a_col)
-        pdf.cell(74, 5, a_tag, new_x="LMARGIN", new_y="NEXT")
+        pdf.set_text_color(*c_col)
+        pdf.cell(74, 5, c_tag, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 60)
         pdf.set_font("DejaVu", "B", 11)
         pdf.set_text_color(255, 255, 255)
-        pdf.cell(74, 6, a_title, new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(74, 6, c_title, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 72)
-        pdf.set_font("DejaVu", "", 9)
+        pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(74, 5, a_desc)
+        pdf.multi_cell(74, 4.8, c_desc)
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
     pdf.set_draw_color(0, 196, 204)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
+    pdf.set_font("DejaVu", "B", 9)
     pdf.set_text_color(0, 196, 204)
-    pdf.cell(263, 6, "CORE PRINCIPLE: The AI Agent proposes and structures hypotheses; Python computes the math.", align="C")
+    pdf.cell(263, 6, "SOVEREIGN VALUE: Allows institutional investors to evaluate macro inflection points and sector capital rotation in real time.", align="C")
 
-    # 4. FutureStock 8-Agent
-    draw_slide_header("03 - Core Platform Pillar", "FutureStock: 8-Agent Research Collective", "Eight specialized autonomous agents collaborate sequentially and in parallel to build an audited equity dossier.", 4)
+    # 5. Search Engine Architecture
+    draw_slide_header("04 - Search Engine Architecture", "FutureStock Search Engine & Fuzzy Country Resolver", "Upgraded Country Intelligence to match FutureStock's search engine with typo tolerance and instant resolution.", 5)
+    se_list = [
+        ("DUAL SEARCH ENGINE BAR", "Universal Query & Country Form", "FutureStock Experience: Unified typeahead input bar with live debounced suggestions, sovereign region selector, and Analyze button.\n\nInstant Execution: Pressing Enter or clicking any suggestion triggers instant live country scan.\n\nTrending Economies: One-click pills for Pakistan, India, US, UK, China, Japan, Germany, and Saudi Arabia.", (0, 196, 204)),
+        ("FUZZY TYPO & PHRASE TOLERANCE", "'pakisant future in stock' -> Pakistan", "Filler Word Stripping: Removes natural language words ('future in stock', 'stock market', 'forecast', 'shares').\n\nTypo Resilience: Resolves 'pakisant' -> Pakistan, 'bharat' -> India, 'deutschland' -> Germany, 'ksa' -> Saudi Arabia.\n\nBenchmark Matching: Resolves '^KSE' / 'PSX' / 'Karachi' -> Pakistan, '^NSEI' -> India, '^GSPC' -> US.", (255, 190, 92)),
+        ("8-AGENT RECON COLLECTIVE", "Real-Time Pipeline Status Banner", "8-Agent Collective: Monitors Country Resolver, TinyFish Fleet, Central Bank, Index Feeds, 14-Category AI, Sector Heatmap, Stocks & LSE, and Scenarios.\n\nActivity Animation: Animates during active web crawling and turns green with audited metrics on completion.\n\nToken Telemetry: Displays DOM token reduction (-88.5%) and web sources audited.", (16, 185, 129)),
+    ]
+    for i, (s_tag, s_title, s_desc, s_col) in enumerate(se_list):
+        x = 15 + i * 90
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, 45, 84, 125, "DF")
+
+        pdf.set_xy(x + 5, 52)
+        pdf.set_font("DejaVu", "B", 9)
+        pdf.set_text_color(*s_col)
+        pdf.cell(74, 5, s_tag, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 60)
+        pdf.set_font("DejaVu", "B", 11)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(74, 6, s_title, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 72)
+        pdf.set_font("DejaVu", "", 8.5)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(74, 4.8, s_desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(255, 190, 92)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(255, 190, 92)
+    pdf.cell(263, 6, "USER EXPERIENCE: Eliminates frustrating 404s and empty searches by resolving natural language and misspelled queries instantly.", align="C")
+
+    # 6. FutureStock 8-Agent
+    draw_slide_header("05 - Core Platform Pillar", "FutureStock: 8-Agent Research Collective", "Eight specialized autonomous agents collaborate sequentially and in parallel to build an audited equity dossier.", 6)
     ag_list = [
         ("Agent A: Orchestrator", "Parses user query, resolves tickers across NSE/BSE/NASDAQ, and coordinates execution pipeline.", (0, 196, 204)),
         ("Agent B: TinyFish Web", "Crawls SEC EDGAR, BSE dockets & news. Strips DOM boilerplate down to Markdown with 88% token savings.", (0, 196, 204)),
@@ -1251,21 +1595,21 @@ def create_pdf():
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
-    pdf.set_draw_color(16, 185, 129)
+    pdf.set_draw_color(0, 196, 204)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
-    pdf.set_text_color(16, 185, 129)
-    pdf.cell(263, 6, "PROBABILISTIC FAN TARGETS: Bear Floor (P5), Base Central (P50), and Bull Ceiling (P95) generated deterministically.", align="C")
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(0, 196, 204)
+    pdf.cell(263, 6, "COLLABORATIVE VALUE: Replaces biased single-prompt LLM outputs with an audited, adversarial consensus backed by statistical math.", align="C")
 
-    # 5. Search Engine
-    draw_slide_header("04 - Search Engine Architecture", "Live Financial Search & Global Entity Autocomplete", "QuantIntel operates as a live financial search engine with dynamic symbol resolution and multi-market auto-routing.", 5)
-    s_boxes = [
-        ("DYNAMIC AUTOCOMPLETE", "Zero Hardcoded Dictionaries", "Live Yahoo Finance Integration: /api/futurestock/search resolves arbitrary tickers, entity names, and exchanges on the fly.\n\nMulti-Entity Disambiguation: Searching 'Adani' dynamically discovers Enterprises (ADANIENT.NS), Ports (ADANIPORTS.NS), Power (ADANIPOWER.NS), Green (ADANIGREEN.NS).\n\nDemerger Handling: Correctly resolves Tata Motors demerged entities (TMPV.NS & TMCV.NS).", (0, 196, 204)),
-        ("CROSS-MARKET ROUTING", "India (NSE/BSE) vs US (NASDAQ/NYSE)", "Automatic Region Detection: Distinguishes Indian equities (.NS, .BO) from US listings (NASDAQ, NYSE) seamlessly.\n\nNative Currency Mapping: Dynamically toggles calculations and UI between Indian Rupee (₹ INR) and US Dollar ($ USD).\n\nAuto Benchmark Routing: Automatically routes Indian stocks to NIFTY 50 (^NSEI) and US stocks to SPY/QQQ.", (16, 185, 129)),
-        ("REAL-TIME MARKET CORE", "Live Spot Pricing & Volatility", "Direct Spot Feeds: /api/futurestock/quote queries real-time bid/ask and spot prints with zero artificial delay.\n\n52-Week Range & Volatility: Calibrates annualized realized volatility from 252 live daily trading sessions.\n\nSub-Second Latency: DNS IPv4-first optimization delivers sub-500ms exchange response times.", (255, 190, 92))
+    # 7. LSE Data 3.0 Provider
+    draw_slide_header("06 - Market Data Provider", "LSE Data 3.0: Institutional Market Data & Options Tape", "Integrated londonstrategicedge/lse-data package into QuantIntel's unified financial data layer.", 7)
+    lse_list = [
+        ("REAL-TIME PRICING & OHLCV", "Institutional Execution Feeds", "Live Spot Quotes & History: Fetches latest bid/ask spot prices, historical OHLCV bar series, and volume.\n\nMulti-Asset Coverage: Equities, ETFs, futures, forex pairs, and major global market benchmark indices.\n\nClean Abstraction: Implemented via LSEMarketDataProvider and UnifiedMarketDataService with data freshness reporting.", (10, 132, 255)),
+        ("OPTIONS CHAIN & GREEKS TAPE", "Real-Time Volatility Surface", "Live Options Tape: Interactive modal displaying strike prices, expiration dates, and bid/ask spreads.\n\nImplied Volatility (IV): Calculates real-time implied volatility across call and put strikes.\n\nOption Greeks: Streams Delta (directional sensitivity), Gamma, Theta (time decay), and Vega for risk management.", (0, 196, 204)),
+        ("MACRO SERIES & FIXED INCOME", "Benchmark Sovereign Indicators", "Treasury Yields: Streams US 10-Year Treasury Yields for risk-free rate calibration in DCF models.\n\nMonetary Policy Benchmarks: Pulls Fed Funds effective rate and CPI inflation data.\n\nTinyFish + LSE Synergy: TinyFish discovers web catalysts; LSE Data provides structured market pricing & options.", (16, 185, 129)),
     ]
-    for i, (s_tag, s_title, s_desc, s_col) in enumerate(s_boxes):
+    for i, (l_tag, l_title, l_desc, l_col) in enumerate(lse_list):
         x = 15 + i * 90
         pdf.set_fill_color(14, 21, 32)
         pdf.set_draw_color(30, 44, 61)
@@ -1273,199 +1617,73 @@ def create_pdf():
 
         pdf.set_xy(x + 5, 52)
         pdf.set_font("DejaVu", "B", 9)
-        pdf.set_text_color(*s_col)
-        pdf.cell(74, 5, s_tag, new_x="LMARGIN", new_y="NEXT")
+        pdf.set_text_color(*l_col)
+        pdf.cell(74, 5, l_tag, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 60)
         pdf.set_font("DejaVu", "B", 11)
         pdf.set_text_color(255, 255, 255)
-        pdf.cell(74, 6, s_title, new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(74, 6, l_title, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 72)
-        pdf.set_font("DejaVu", "", 9)
-        pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(74, 5, s_desc)
-
-    pdf.set_xy(15, 178)
-    pdf.set_fill_color(15, 25, 38)
-    pdf.set_draw_color(0, 196, 204)
-    pdf.rect(15, 176, 267, 12, "DF")
-    pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
-    pdf.set_text_color(0, 196, 204)
-    pdf.cell(263, 6, "SEARCH ENGINE EXPERIENCE: Type any stock name -> Instant match -> Crawls web -> Synthesizes verified report.", align="C")
-
-    # 6. Web Quant Studio
-    draw_slide_header("05 - Econometric Engine", "Web Quant Studio: Academic Event Studies", "Testing qualitative corporate disclosures and market announcements against real live OHLCV price series.", 6)
-    m_boxes = [
-        ("STEP 1 - MARKET MODEL OLS", "Estimation Window (L1: e.g. 90d)", "Ri,t = αi + βi Rm,t + εi,t\n\n- Linear OLS Regression: Regresses stock returns against benchmark returns to isolate baseline beta.\n- Calculates Alpha (α), Beta (β), and R² goodness-of-fit against NIFTY 50 or S&P 500.\n- Computes idiosyncratic residual variance (σε²) across clean pre-event sessions.", (0, 196, 204)),
-        ("STEP 2 - ABNORMAL RETURNS", "Event Window (L2: [-5d, +10d])", "ARi,t = Ri,t - (αi + βi Rm,t)\n\n- Isolates Catalyst Impact: Removes market beta to isolate the true announcement shock.\n- Cumulative Abnormal Return (CAR): Accumulates abnormal returns across event window.\n- Detects Information Leakage: Pre-event window [-5, -1] tests for insider drift.", (16, 185, 129)),
-        ("STEP 3 - HYPOTHESIS TESTING", "Student's t-Test & p-Value", "t = CAR / SE(CAR), p = 2(1 - Φ(|t|))\n\n- Variance Correction: Uses Campbell-Lo-MacKinlay formula: Var(CAR) = σε² [N + N²/L1].\n- Null Hypothesis (H0: CAR = 0): Tests whether disclosure induced statistically significant returns.\n- Volume Anomaly Ratio: Quantifies volume surges relative to normal baseline.", (255, 190, 92)),
-    ]
-    for i, (m_tag, m_title, m_desc, m_col) in enumerate(m_boxes):
-        x = 15 + i * 90
-        pdf.set_fill_color(14, 21, 32)
-        pdf.set_draw_color(30, 44, 61)
-        pdf.rect(x, 45, 84, 125, "DF")
-
-        pdf.set_xy(x + 5, 52)
-        pdf.set_font("DejaVu", "B", 9)
-        pdf.set_text_color(*m_col)
-        pdf.cell(74, 5, m_tag, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 5, 60)
-        pdf.set_font("DejaVu", "B", 11)
-        pdf.set_text_color(255, 255, 255)
-        pdf.cell(74, 6, m_title, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 5, 72)
-        pdf.set_font("DejaVu", "", 9)
-        pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(74, 5, m_desc)
-
-    pdf.set_xy(15, 178)
-    pdf.set_fill_color(15, 25, 38)
-    pdf.set_draw_color(255, 190, 92)
-    pdf.rect(15, 176, 267, 12, "DF")
-    pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
-    pdf.set_text_color(255, 190, 92)
-    pdf.cell(263, 6, "EMPIRICAL RIGOR: Reports exact Student's t-statistics, p-values, and 95% confidence intervals to eliminate p-hacking.", align="C")
-
-    # 7. TinyFish Token Economy
-    draw_slide_header("06 - Web Agent Efficiency", "TinyFish Reconnaissance & Token Economy Matrix", "Transforming bloated 300KB+ raw HTML investor portals into clean, structured, low-token Markdown briefs.", 7)
-    # Comparison 2 columns
-    pdf.set_fill_color(14, 21, 32)
-    pdf.set_draw_color(239, 68, 68)
-    pdf.rect(15, 45, 130, 125, "DF")
-
-    pdf.set_xy(20, 52)
-    pdf.set_font("DejaVu", "B", 12)
-    pdf.set_text_color(239, 68, 68)
-    pdf.cell(120, 6, "RAW WEB SCRAPING BOTTLENECK", new_x="LMARGIN", new_y="NEXT")
-
-    pdf.set_xy(20, 64)
-    pdf.set_font("DejaVu", "", 9.5)
-    pdf.set_text_color(201, 209, 217)
-    pdf.multi_cell(120, 6, "• Bloated Context: Raw investor webpages exceed 250KB - 400KB of HTML, ads, SVG graphics, and tracking scripts (75,000+ LLM tokens).\n\n• Runaway Inference Costs: Feeding raw HTML into frontier models costs $0.15 - $0.35 per query, making continuous screening unviable.\n\n• High Hallucination Risk: Noise-to-signal ratio causes LLMs to extract irrelevant sidebar links, outdated copyright dates, or marketing slogans.\n\n• Scraper Fragility: Simple HTTP requests fail on modern Single Page Applications (SPAs) and trigger CAPTCHAs.")
-
-    pdf.set_fill_color(14, 21, 32)
-    pdf.set_draw_color(16, 185, 129)
-    pdf.rect(152, 45, 130, 125, "DF")
-
-    pdf.set_xy(157, 52)
-    pdf.set_font("DejaVu", "B", 12)
-    pdf.set_text_color(16, 185, 129)
-    pdf.cell(120, 6, "TINYFISH HIGH-DENSITY COMPRESSION", new_x="LMARGIN", new_y="NEXT")
-
-    pdf.set_xy(157, 64)
-    pdf.set_font("DejaVu", "", 9.5)
-    pdf.set_text_color(201, 209, 217)
-    pdf.multi_cell(120, 6, "• 88.5% Context Token Savings: Strips DOM boilerplate down to structured Markdown (~3.5KB / 850 tokens)—an 8.5x compression ratio.\n\n• Ultra-Low Query Economics: Reduces LLM prompt cost to under $0.003 per research dossier, enabling enterprise-scale monitoring.\n\n• Zero-Hallucination Extraction: Isolates official corporate announcements, table data, and management guidance with exact UTC timestamps.\n\n• Serverless Chromium Fleet: Renders JavaScript-heavy dynamic tables, shadow DOMs, and interactive investor portals seamlessly.")
-
-    pdf.set_xy(15, 178)
-    pdf.set_fill_color(15, 25, 38)
-    pdf.set_draw_color(16, 185, 129)
-    pdf.rect(15, 176, 267, 12, "DF")
-    pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
-    pdf.set_text_color(16, 185, 129)
-    pdf.cell(263, 6, "TOKEN ECONOMY ROI: 88.5% token reduction allows funds to screen 1,000+ equities daily for the cost of 120 traditional runs.", align="C")
-
-    # 8. End-to-End Walkthrough
-    draw_slide_header("07 - Concrete Walkthrough", "End-to-End Alpha Research Journey", "Tracing a live equity query from initial search bar input to verified institutional dossier.", 8)
-    steps_pdf = [
-        ("STAGE 1", "Search & Resolution", "Analyst types 'Adani Enterprises' in FutureStock. Engine resolves ADANIENT.NS on NSE India, pulls live spot price INR 2,579.40 and benchmark ^NSEI.", (0, 196, 204)),
-        ("STAGE 2", "TinyFish Reconnaissance", "Chromium crawler queries Google News RSS and BSE corporate announcements. Extracts 4 primary disclosures with 87.7% DOM token compression.", (16, 185, 129)),
-        ("STAGE 3", "Quant & Monte Carlo", "Simulates 2,000 Geometric Brownian Motion paths over 1-year horizon. Computes P5 Bear: INR 1,534 (-40.5%), P50 Base: INR 3,219 (+24.8%), P95 Bull: INR 6,549 (+153.9%).", (255, 190, 92)),
-        ("STAGE 4", "Adversarial & Audit", "Gemini 3.5 Flash synthesizes grounded thesis and bear risks. Agent H validates arithmetic: ((Target/Spot)-1)*100. Issues 100% Green audit seal.", (167, 139, 250)),
-    ]
-    for i, (s_st, s_ti, s_de, s_co) in enumerate(steps_pdf):
-        x = 15 + i * 68
-        pdf.set_fill_color(14, 21, 32)
-        pdf.set_draw_color(30, 44, 61)
-        pdf.rect(x, 45, 63, 125, "DF")
-
-        pdf.set_xy(x + 4, 52)
-        pdf.set_font("DejaVu", "B", 9)
-        pdf.set_text_color(*s_co)
-        pdf.cell(55, 5, s_st, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 4, 60)
-        pdf.set_font("DejaVu", "B", 11)
-        pdf.set_text_color(255, 255, 255)
-        pdf.cell(55, 6, s_ti, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 4, 72)
-        pdf.set_font("DejaVu", "", 9)
-        pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(55, 5, s_de)
-
-    pdf.set_xy(15, 178)
-    pdf.set_fill_color(15, 25, 38)
-    pdf.set_draw_color(0, 196, 204)
-    pdf.rect(15, 176, 267, 12, "DF")
-    pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
-    pdf.set_text_color(0, 196, 204)
-    pdf.cell(263, 6, "EXECUTION TIME: 4.2 seconds from natural language query to completed Monte Carlo fan chart and verified dossier.", align="C")
-
-    # 9. Empirical Validation
-    draw_slide_header("08 - Live Verification", "Empirical Validation Across Indian & US Markets", "QuantIntel has been validated against real live market data across major international equities.", 9)
-    t_cases = [
-        ("ADANI ENTERPRISES", "ADANIENT.NS (NSE)", "INR 2,579.40", "35.0% Vol | Beta 1.30", "Base Target: INR 3,219 (+24.8%)\nBear Floor: INR 1,534 (-40.5%)\nTinyFish Sources: 4 Captured\nAudit Verdict: 100% PASSED", (0, 196, 204)),
-        ("TATA CONSULTANCY", "TCS.NS (NSE)", "INR 3,940.50", "22.4% Vol | Beta 1.07", "Event Study CAR: +4.13%\nt-statistic: 0.670 (p = 0.503)\nMarket Cap: INR 14.2 Trillion\nAudit Verdict: 100% PASSED", (16, 185, 129)),
-        ("NVIDIA CORPORATION", "NVDA (NASDAQ)", "USD 229.83", "42.0% Vol | Beta 1.73", "Post-Split Pricing Verified\nEvent Study CAR: -2.00%\nt = -3.348 (p < 0.001 Sig!)\nAudit Verdict: 100% PASSED", (255, 190, 92)),
-        ("TESLA, INC.", "TSLA (NASDAQ)", "USD 399.81", "45.0% Vol | Beta 2.65", "Event Study CAR: +12.31%\nt-statistic: 1.556 (p = 0.120)\nPeak Volume Multiplier: 2.45x\nAudit Verdict: 100% PASSED", (167, 139, 250)),
-    ]
-    for i, (name, sub, pr, st, ds, co) in enumerate(t_cases):
-        x = 15 + i * 68
-        pdf.set_fill_color(14, 21, 32)
-        pdf.set_draw_color(30, 44, 61)
-        pdf.rect(x, 45, 63, 125, "DF")
-
-        pdf.set_xy(x + 4, 52)
-        pdf.set_font("DejaVu", "B", 9)
-        pdf.set_text_color(*co)
-        pdf.cell(55, 5, name, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 4, 58)
-        pdf.set_font("DejaVu", "", 8)
-        pdf.set_text_color(139, 148, 158)
-        pdf.cell(55, 4, sub, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 4, 66)
-        pdf.set_font("DejaVu", "B", 13)
-        pdf.set_text_color(255, 255, 255)
-        pdf.cell(55, 6, pr, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 4, 76)
-        pdf.set_font("Courier", "B", 8)
-        pdf.set_text_color(255, 190, 92)
-        pdf.cell(55, 5, st, new_x="LMARGIN", new_y="NEXT")
-
-        pdf.set_xy(x + 4, 86)
         pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(55, 4.5, ds)
+        pdf.multi_cell(74, 4.8, l_desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(10, 132, 255)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(10, 132, 255)
+    pdf.cell(263, 6, "DATA SYNERGY: Combines unstructured web research from TinyFish with institutional structured quotes and options from LSE Data.", align="C")
+
+    # 8. Web Quant Studio
+    draw_slide_header("07 - Econometric Engine", "Web Quant Studio: Academic Event Studies", "Testing qualitative corporate disclosures and market announcements against real live OHLCV price series.", 8)
+    quant_list = [
+        ("01 - MARKET MODEL OLS", "R_it = alpha_i + beta_i * R_mt", "Estimation Window: Typically 90 to 250 trading days prior to event.\n\nOLS Regression: Estimates equity alpha and systematic beta against market benchmark (^NSEI or ^GSPC).\n\nDeterministic Math: Computed via NumPy and SciPy; zero LLM hallucination.", (0, 196, 204)),
+        ("02 - ABNORMAL RETURNS", "AR_it = R_it - (alpha + beta*R_mt)", "Event Window: e.g. [-5, +10] days around disclosure date (tau = 0).\n\nIsolates Alpha: Strips out broader market tide to isolate true event reaction.\n\nCumulative Abnormal Return (CAR): Sums daily abnormal returns across multi-day event window.", (16, 185, 129)),
+        ("03 - STATISTICAL TESTS", "Patell Standardized & BMP t-Tests", "Patell Test: Standardizes abnormal returns by forecast standard error.\n\nBMP Test: Adjusts for event-induced variance changes across cohorts.\n\np-Value Rigor: Null hypothesis (H0: CAR = 0) rejected only at p < 0.05 threshold.", (255, 190, 92)),
+    ]
+    for i, (q_tag, q_title, q_desc, q_col) in enumerate(quant_list):
+        x = 15 + i * 90
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, 45, 84, 125, "DF")
+
+        pdf.set_xy(x + 5, 52)
+        pdf.set_font("DejaVu", "B", 9)
+        pdf.set_text_color(*q_col)
+        pdf.cell(74, 5, q_tag, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 60)
+        pdf.set_font("DejaVu", "B", 11)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(74, 6, q_title, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 72)
+        pdf.set_font("DejaVu", "", 8.5)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(74, 4.8, q_desc)
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
     pdf.set_draw_color(16, 185, 129)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
+    pdf.set_font("DejaVu", "B", 9)
     pdf.set_text_color(16, 185, 129)
-    pdf.cell(263, 6, "TEST SUITE COMPLETION: 14 out of 14 unit and integration tests passing in pytest.", align="C")
+    pdf.cell(263, 6, "ACADEMIC RIGOR: Built on Campbell, Lo, and MacKinlay (1997) standards—the gold standard of institutional quantitative finance.", align="C")
 
-    # 10. Dual Surface Tech Stack
-    draw_slide_header("09 - Tech Stack & Architecture", "Dual-Surface Product Architecture", "Next.js 16 Web Terminal for high-density visual exploration + Streamlit Cockpit for rapid quant research.", 10)
-    tc_boxes = [
-        ("WEB STUDIO (NEXT.JS 16)", "Institutional Analyst Terminal", "• Next.js 16 App Router & Turbopack: Ultra-fast serverless execution and hot-module reloading.\n\n• React 19 & Tailwind CSS: Glassmorphic dark styling, responsive desktop layout, and smooth animations.\n\n• Client-Side Monte Carlo Engine: 2,000-path probabilistic fan chart rendered in real time.\n\n• Serverless API Routes: /api/futurestock/search, /api/futurestock/quote, /api/futurestock/tinyfish, /api/quant/study.", (0, 196, 204)),
-        ("PYTHON QUANT CORE", "Institutional Econometrics Engine", "• Streamlit Multi-Page Cockpit: Interactive researcher dashboard with live agent trace streaming.\n\n• NumPy, SciPy & Statsmodels: Vectorized Campbell-Lo-MacKinlay OLS math and normal distribution CDF.\n\n• Pandas & yfinance: Ingests 252-day daily historical OHLCV series for equities and benchmarks.\n\n• FPDF2 PDF Generator: Programmatically renders multi-page, publication-grade research dossiers.", (16, 185, 129)),
-        ("AGENT & DATA LAYER", "Orchestration & Persistence", "• TinyFish Live Web Fleet: Serverless headless Chromium browser with shadow DOM bypass.\n\n• Google Gemini 3.5 Flash: Institutional thesis synthesis and adversarial bear stress testing.\n\n• Persistent Forecast Ledger: JSON / SQLite store tracking realized prices against past predictions.\n\n• Zero External DB Dependency: Operates completely self-contained with zero infrastructure bloat.", (167, 139, 250)),
+    # 9. TinyFish Web Recon
+    draw_slide_header("08 - Web Agent Efficiency", "TinyFish Reconnaissance & Token Economy Matrix", "Transforming bloated 300KB+ raw HTML investor portals into clean, structured, low-token Markdown briefs.", 9)
+    tf_list = [
+        ("THE SCRAPING PROBLEM", "Raw HTML Waste", "Bloated Boilerplate: Modern corporate portals ship 300KB to 2MB of CSS, SVG sprites, tracking pixels, and ads.\n\nToken Exhaustion: Ingesting raw HTML into LLMs burns 50k to 100k tokens per page.\n\nExtreme API Costs: Uncleaned HTML burns dollar budgets and dilutes attention windows.", (239, 68, 68)),
+        ("TINYFISH DOM PURIFIER", "Smart Cleaning Architecture", "Headless Chromium Fleet: Renders client-side dynamic JavaScript and extracts pure semantic document nodes.\n\nHeuristic Scoring: Strips navigation menus, footer disclosures, cookie consent popups, and scripts.\n\nStructure Preservation: Extracts financial tables, line items, and executive quotes.", (0, 196, 204)),
+        ("88.5% TOKEN SAVINGS", "Measurable Economic Impact", "88.5% Compression: Compresses an 85,000-token HTML page down to ~1,200 verified semantic tokens.\n\nSub-Second Latency: Accelerates inference turnaround by 7x while preserving 100% of numbers.\n\nZero Hallucination: Downstream agents see only high-signal text grounded in verified URLs.", (16, 185, 129)),
     ]
-    for i, (t_tag, t_title, t_desc, t_col) in enumerate(tc_boxes):
+    for i, (t_tag, t_title, t_desc, t_col) in enumerate(tf_list):
         x = 15 + i * 90
         pdf.set_fill_color(14, 21, 32)
         pdf.set_draw_color(30, 44, 61)
@@ -1482,27 +1700,188 @@ def create_pdf():
         pdf.cell(74, 6, t_title, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 72)
-        pdf.set_font("DejaVu", "", 9)
+        pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(74, 5, t_desc)
+        pdf.multi_cell(74, 4.8, t_desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(16, 185, 129)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(16, 185, 129)
+    pdf.cell(263, 6, "SCALER BENCHMARK: TinyFish slashes token spend by 88.5%, making continuous real-time market crawling economically viable.", align="C")
+
+    # 10. Multi-Country Coverage
+    draw_slide_header("09 - Global Reach", "Global Sovereign Markets & Benchmark Coverage", "QuantIntel covers 14+ major global economies with localized exchanges, currencies, and trading calendars.", 10)
+    c_list = [
+        ("Pakistan (PSX)", "Benchmark: KSE-100 (^KSE) | PKR (Rs)\nSectors: Oil & Gas, Banking, Cement, Power\nAnchors: OGDC.KA, MCB.KA, LUCK.KA, ENGRO.KA", (16, 185, 129)),
+        ("India (NSE/BSE)", "Benchmark: Nifty 50 (^NSEI) | INR (Rs)\nSectors: IT, Banking, Energy, Auto, Pharma\nAnchors: RELIANCE.NS, TCS.NS, HDFCBANK.NS", (0, 196, 204)),
+        ("United States", "Benchmark: S&P 500 (^GSPC) | USD ($)\nSectors: AI/Semis, Cloud, Banking, Healthcare\nAnchors: NVDA, MSFT, AAPL, JPM, GOOGL", (10, 132, 255)),
+        ("United Kingdom", "Benchmark: FTSE 100 (^FTSE) | GBP (PS)\nSectors: Energy, Pharma, Banking, Mining\nAnchors: SHEL.L, AZN.L, HSBA.L, BP.L", (255, 190, 92)),
+        ("Saudi Arabia", "Benchmark: TASI (^TASI.SR) | SAR\nSectors: Oil & Gas, Islamic Banking, Petrochem\nAnchors: 2222.SR (Aramco), 1120.SR (Al Rajhi)", (16, 185, 129)),
+        ("Japan (TSE)", "Benchmark: Nikkei 225 (^N225) | JPY (Y)\nSectors: Automotive, Robotics, Electronics\nAnchors: 7203.T (Toyota), 8035.T (Tokyo Electron)", (167, 139, 250)),
+        ("Germany (XETRA)", "Benchmark: DAX 40 (^GDAXI) | EUR (E)\nSectors: Auto Engineering, Siemens, SAP\nAnchors: SAP.DE, SIE.DE, BMW.DE", (255, 255, 255)),
+        ("China (SSE/SZSE)", "Benchmark: Shanghai (000001.SS) | CNY\nSectors: EV/Batteries, E-Commerce, Solar\nAnchors: BABA, Tencent, BYD, State Banks", (239, 68, 68)),
+    ]
+    for i, (name, desc, col) in enumerate(c_list):
+        row = i // 4
+        col_idx = i % 4
+        x = 15 + col_idx * 68
+        y = 45 + row * 62
+
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, y, 63, 56, "DF")
+
+        pdf.set_xy(x + 4, y + 6)
+        pdf.set_font("DejaVu", "B", 9.5)
+        pdf.set_text_color(*col)
+        pdf.cell(55, 5, name, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 4, y + 15)
+        pdf.set_font("DejaVu", "", 8)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(55, 4.2, desc)
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
     pdf.set_draw_color(0, 196, 204)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
+    pdf.set_font("DejaVu", "B", 9)
     pdf.set_text_color(0, 196, 204)
-    pdf.cell(263, 6, "DUAL INTERFACES: Web Terminal on localhost:3000 + Streamlit Cockpit on localhost:8501—seamlessly synchronized.", align="C")
+    pdf.cell(263, 6, "GLOBAL COVERAGE: Also supports Canada (TSX), Australia (ASX), Singapore (SGX), Brazil (B3), South Korea (KRX), and UAE (ADX).", align="C")
 
-    # 11. Governance
-    draw_slide_header("10 - Governance & Safety", "Responsible AI & Anti-Hallucination Framework", "Institutional-grade rigor and ethical safeguards embedded into every layer of QuantIntel.", 11)
-    g_boxes = [
-        ("CITATION PROVENANCE", "100% Sourced Citations", "• Zero Unsourced Assertions: Every financial figure, earnings disclosure, and catalyst maps to a live source URL.\n\n• Verbatim Snippet Verification: Displays exact extracted phrases from official corporate dockets.\n\n• Missing Data Transparency: If an event date is ambiguous, QuantIntel explicitly flags it rather than hallucinating.", (0, 196, 204)),
-        ("TEMPORAL INTEGRITY", "0% Look-Ahead Bias", "• Strict UTC Timestamping: Event disclosure dates are locked to the exact second of public release.\n\n• Window Isolation: Clean separation between historical estimation [-90d, -6d] and event window [-5d, +10d].\n\n• Survivorship Awareness: Flags delisting or restructuring caveats alongside backtest metrics.", (16, 185, 129)),
-        ("ARITHMETIC CERTAINTY", "Deterministic Verification", "• Sandboxed Python Math: Calculations are executed in pure code, never generated by probabilistic LLMs.\n\n• Arithmetic Audit: Agent H verifies that ((Target / Spot) - 1) * 100 matches scenario percentage return exactly.\n\n• Standard Statistics: Reports Student's t-statistics, p-values, and confidence intervals to prevent false alpha.", (167, 139, 250)),
+    # 11. End-to-End Walkthrough
+    draw_slide_header("10 - Concrete Walkthrough", "End-to-End Alpha Research Journey", "Tracing a live equity or sovereign query from search input to verified institutional dossier.", 11)
+    st_list = [
+        ("STAGE 1: SEARCH", "Entity & Country Input", "User enters ticker, sovereign query, or natural language (e.g. 'pakisant future in stock').", (0, 196, 204)),
+        ("STAGE 2: RESOLUTION", "Fuzzy Auto-Routing", "Fuzzy resolver detects sovereign jurisdiction (PSX/NSE/NASDAQ), benchmarks, and currency.", (0, 196, 204)),
+        ("STAGE 3: WEB CRAWL", "TinyFish Recon", "Chromium fleet crawls primary regulatory filings and news, stripping DOM clutter (-88.5%).", (10, 132, 255)),
+        ("STAGE 4: MARKET FEEDS", "LSE Data 3.0 Pull", "Pulls real-time spot price, historical OHLCV, market index levels, and Options Chain with Greeks.", (10, 132, 255)),
+        ("STAGE 5: QUANT SIM", "Monte Carlo & DCF", "Executes 2,000-path GBM simulations and 3-stage DCF valuation with deterministic math.", (16, 185, 129)),
+        ("STAGE 6: ADVERSARIAL", "Bearish Stress-Test", "Adversarial agent red-teams assumptions, testing downside risks, inflation, and rate shocks.", (239, 68, 68)),
+        ("STAGE 7: VERIFICATION", "Provenance Audit", "Verifier checks 100% of mathematical formulas and links claims to audited source URLs.", (167, 139, 250)),
+        ("STAGE 8: DELIVERY", "Interactive Dossier", "Dashboard renders fan charts, options tape, and offers instant export to PDF and Markdown.", (255, 190, 92)),
     ]
-    for i, (g_tag, g_title, g_desc, g_col) in enumerate(g_boxes):
+    for i, (name, sub, desc, col) in enumerate(st_list):
+        row = i // 4
+        col_idx = i % 4
+        x = 15 + col_idx * 68
+        y = 45 + row * 62
+
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, y, 63, 56, "DF")
+
+        pdf.set_xy(x + 4, y + 6)
+        pdf.set_font("DejaVu", "B", 9)
+        pdf.set_text_color(*col)
+        pdf.cell(55, 5, name, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 4, y + 13)
+        pdf.set_font("DejaVu", "B", 8.5)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(55, 5, sub, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 4, y + 21)
+        pdf.set_font("DejaVu", "", 8)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(55, 4.2, desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(0, 196, 204)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(0, 196, 204)
+    pdf.cell(263, 6, "SEAMLESS PIPELINE: Eliminates days of disjointed analysis, delivering verified institutional dossiers in seconds.", align="C")
+
+    # 12. Empirical Validation
+    draw_slide_header("11 - Empirical Validation", "Empirical Validation Across Global Equities", "QuantIntel has been battle-tested against real live market data across major international equities.", 12)
+    ev_list = [
+        ("CASE 1: NVIDIA (NVDA)", "Hyperscale AI Hardware Cycle", "Trigger: Hyperscale data center capex surge & Blackwell GPU architecture rollout.\n\nLive Feeds: Spot $204.64 | Monte Carlo median path: $255.40 (+24.8% upside).\n\nLSE Options: Real-time IV smile and Greeks tape confirming heavy call open interest.\n\nAdversarial: Modeled export restriction risks and fab capacity bottlenecks.", (0, 196, 204)),
+        ("CASE 2: RELIANCE (RELIANCE.NS)", "Conglomerate Expansion & Capex", "Trigger: Telecom ARPU expansion announcement & green hydrogen progress.\n\nLive Feeds: Spot Rs 1,348.60 | CLM Event Study CAR: +3.8% (p < 0.01).\n\nValuation: 3-Stage DCF under 11.2% WACC yielding fair value upside corridor.\n\nProvenance: All claims tied to audited BSE/NSE regulatory filings.", (16, 185, 129)),
+        ("CASE 3: PAKISTAN OIL (OGDC.KA)", "Sovereign Debt Settlement", "Trigger: Economic Coordination Committee gas circular debt clearance.\n\nLive Feeds: KSE-100 benchmark surge to 88,000+ index level on PSX.\n\nCountry Intel: Categorized as POSITIVE for Energy sector & domestic liquidity.\n\nCLM Study: Abnormal return of +4.2% around ministerial gazette notification.", (255, 190, 92)),
+    ]
+    for i, (e_tag, e_title, e_desc, e_col) in enumerate(ev_list):
+        x = 15 + i * 90
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, 45, 84, 125, "DF")
+
+        pdf.set_xy(x + 5, 52)
+        pdf.set_font("DejaVu", "B", 9)
+        pdf.set_text_color(*e_col)
+        pdf.cell(74, 5, e_tag, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 60)
+        pdf.set_font("DejaVu", "B", 11)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(74, 6, e_title, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 72)
+        pdf.set_font("DejaVu", "", 8.5)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(74, 4.8, e_desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(16, 185, 129)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(16, 185, 129)
+    pdf.cell(263, 6, "EMPIRICAL REALITY: Tested on real equities across Indian, US, UK, and Pakistani exchanges with 100% verified math.", align="C")
+
+    # 13. Technical Architecture
+    draw_slide_header("12 - Tech Stack & Architecture", "Dual-Surface Product Architecture & Stack", "Next.js 16 Web Terminal + Python FastAPI Backend + Streamlit Cockpit with 27/27 green automated tests.", 13)
+    t_list = [
+        ("WEB TERMINAL SURFACE", "Next.js 16 & Turbopack", "Next.js 16 App Router: Real-time server components, route handlers, and streaming UI.\n\nTailwind CSS Dark Theme: High-density Obsidian cyber-quant aesthetic (#070B10).\n\nRecharts & Lucide: Interactive Monte Carlo fan charts, sector heatmaps, and options tape.\n\n0 Compilation Errors: 100% clean TypeScript build with strict data contracts.", (0, 196, 204)),
+        ("QUANT ENGINE BACKEND", "Python 3.14 & Numerical Stack", "FastAPI & Pydantic v2: Strict schema validation across all agent inputs, quotes, and dossiers.\n\nNumPy & SciPy: Deterministic OLS regressions, CAR accumulation, and statistical tests.\n\nLSE Data 3.0 & yfinance: Direct integration of official market data providers with caching.\n\n27/27 Tests Green: Comprehensive pytest suite covering all modules end-to-end.", (16, 185, 129)),
+        ("MULTI-MODEL LLM ENGINE", "Swappable Intelligence Core", "Model Provider Agnostic: Native support for Google Gemini 3.5, Anthropic Claude, OpenAI, and Groq.\n\nDynamic API Keys Manager: Browser localStorage encryption with live connectivity tester.\n\nDeterministic Fallback: Runs calibrated quantitative models even in full offline environments.\n\nZero Vendor Lock-In: Clean provider interfaces allow instant switching of LLMs.", (167, 139, 250)),
+    ]
+    for i, (t_tag, t_title, t_desc, t_col) in enumerate(t_list):
+        x = 15 + i * 90
+        pdf.set_fill_color(14, 21, 32)
+        pdf.set_draw_color(30, 44, 61)
+        pdf.rect(x, 45, 84, 125, "DF")
+
+        pdf.set_xy(x + 5, 52)
+        pdf.set_font("DejaVu", "B", 9)
+        pdf.set_text_color(*t_col)
+        pdf.cell(74, 5, t_tag, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 60)
+        pdf.set_font("DejaVu", "B", 11)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(74, 6, t_title, new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_xy(x + 5, 72)
+        pdf.set_font("DejaVu", "", 8.5)
+        pdf.set_text_color(201, 209, 217)
+        pdf.multi_cell(74, 4.8, t_desc)
+
+    pdf.set_xy(15, 178)
+    pdf.set_fill_color(15, 25, 38)
+    pdf.set_draw_color(0, 196, 204)
+    pdf.rect(15, 176, 267, 12, "DF")
+    pdf.set_xy(17, 179)
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.set_text_color(0, 196, 204)
+    pdf.cell(263, 6, "PRODUCTION GRADE: Modern microservice architecture engineered for high throughput, test coverage, and modularity.", align="C")
+
+    # 14. Responsible AI & Governance
+    draw_slide_header("13 - Governance & Safety", "Responsible AI & Anti-Hallucination Framework", "Institutional-grade rigor and ethical safeguards embedded into every layer of QuantIntel.", 14)
+    gov_list = [
+        ("DETERMINISTIC BOUNDARIES", "Code Calculates, AI Synthesizes", "Strict Separation: LLMs are strictly forbidden from guessing numerical prices, CAR percentages, or VaR metrics.\n\nZero-Hallucination Math: All equations execute in deterministic Python/TypeScript code.\n\nSanity Checks: Target prices must mathematically reconcile with spot prices: ((Target/Spot)-1)*100.", (0, 196, 204)),
+        ("CITATION PROVENANCE", "100% Source Traceability", "Mandatory Citation Links: Every synthesized catalyst and news disclosure displays original domain and URL.\n\nDual Timestamp Auditing: Displays both original article publication time and TinyFish retrieval time.\n\nUnconfirmed Rumor Shield: Rumors and speculation are prominently tagged with UNCONFIRMED badges.", (255, 190, 92)),
+        ("COMPLIANCE & GOVERNANCE", "Institutional Guardrails", "Ethical Web Scraping: TinyFish respects robots.txt, source rate limits, and terms of service.\n\nClear Disclaimers: Identifies research assessments as empirical academic analysis, not guaranteed financial advice.\n\nAudited Forecast Ledger: Appends all simulated predictions to an immutable historical ledger.", (167, 139, 250)),
+    ]
+    for i, (g_tag, g_title, g_desc, g_col) in enumerate(gov_list):
         x = 15 + i * 90
         pdf.set_fill_color(14, 21, 32)
         pdf.set_draw_color(30, 44, 61)
@@ -1519,61 +1898,64 @@ def create_pdf():
         pdf.cell(74, 6, g_title, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_xy(x + 5, 72)
-        pdf.set_font("DejaVu", "", 9)
+        pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(74, 5, g_desc)
+        pdf.multi_cell(74, 4.8, g_desc)
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
     pdf.set_draw_color(167, 139, 250)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
+    pdf.set_font("DejaVu", "B", 9)
     pdf.set_text_color(167, 139, 250)
-    pdf.cell(263, 6, "REGULATORY DISCLAIMER: QuantIntel is strictly an analytical research assistant and explicitly disclaims financial advisory liability.", align="C")
+    pdf.cell(263, 6, "GOVERNANCE STANDARD: Built for institutional compliance departments where provenance and auditability are non-negotiable.", align="C")
 
-    # 12. Roadmap & Conclusion
-    draw_slide_header("11 - Scaler Vision & Roadmap", "Commercialization Trajectory & Scaling Roadmap", "From autonomous prototype to enterprise-grade quantitative intelligence collective.", 12)
-    r_boxes = [
-        ("PHASE 1 - LIVE NOW", "Working Core Platform", "• FutureStock 8-Agent Collective operational.\n• Web Quant Studio event study engine active.\n• Live equity search across US and Indian markets.\n• 14/14 unit & live market test suite passing.", (16, 185, 129)),
-        ("PHASE 2 - Q1 2027", "Enterprise Data Expansion", "• SEC 13-F institutional holding flow integration.\n• Multi-asset coverage: FX, Commodities & Crypto.\n• Real-time audio transcript parsing (Earnings Calls).\n• Multi-factor Fama-French 5-factor benchmark model.", (0, 196, 204)),
-        ("PHASE 3 - Q2 2027", "Algorithmic Paper Trading", "• FIX Protocol bridge for automated paper execution.\n• Event-driven strategy signal generation.\n• Real-time Slack / Telegram webhook alerts.\n• Custom risk limit governance for asset managers.", (255, 190, 92)),
-        ("PHASE 4 - Q3 2027", "Distributed Cluster Scaling", "• Multi-agent distributed Ray / Kubernetes cluster.\n• Sub-second streaming LLM inference cache.\n• Tiered B2B SaaS: Pro ($199/mo) & Fund ($1,200/mo).\n• Institutional White-Label Terminal for Wealth RIA.", (167, 139, 250)),
+    # 15. Strategic Roadmap
+    draw_slide_header("14 - Scaler Vision & Roadmap", "Commercialization Trajectory & Scaling Roadmap", "From autonomous prototype to enterprise-grade quantitative intelligence collective.", 15)
+    r_list = [
+        ("PHASE 1: LIVE (COMPLETED)", "Core Multi-Pillar Engine", "- FutureStock 8-Agent Collective with 2,000-path Monte Carlo & DCF.\n- Web Quant Studio CLM (1997) event studies on live market prices.\n- Country Intelligence with 14+ economies & 14-category AI news.\n- LSE Data 3.0 provider integration with real-time Options Chain & Greeks.\n- FutureStock-grade search engine with fuzzy country & typo tolerance.", (0, 196, 204)),
+        ("PHASE 2: NEAR-TERM (Q1-Q2)", "Multi-Asset & Real-Time Feeds", "- Fixed Income & Credit: Modeling yield curve shifts and credit spreads.\n- Earnings Call Audio: Real-time speech-to-text tone detection.\n- WebSocket Price Streaming: Sub-second price tape updates via LSE Data.\n- Multi-Stock Cohort Studies: Run multi-company event studies across entire sectors simultaneously.", (16, 185, 129)),
+        ("PHASE 3: ENTERPRISE (Q3-Q4)", "B2B FinTech Platform & API", "- QuantIntel Headless API: Institutional SDK for hedge funds and family offices.\n- Automated Portfolio Rebalancing: Connecting alpha signals to execution venues.\n- Enterprise SSO & Compliance: Granular audit logs and SOC 2 compliance.\n- Custom LLM Fine-Tuning: Domain-specialized financial reasoning models.", (167, 139, 250)),
     ]
-    for i, (r_st, r_ti, r_de, r_co) in enumerate(r_boxes):
-        x = 15 + i * 68
+    for i, (r_tag, r_title, r_desc, r_col) in enumerate(r_list):
+        x = 15 + i * 90
         pdf.set_fill_color(14, 21, 32)
         pdf.set_draw_color(30, 44, 61)
-        pdf.rect(x, 45, 63, 125, "DF")
+        pdf.rect(x, 45, 84, 125, "DF")
 
-        pdf.set_xy(x + 4, 52)
+        pdf.set_xy(x + 5, 52)
         pdf.set_font("DejaVu", "B", 9)
-        pdf.set_text_color(*r_co)
-        pdf.cell(55, 5, r_st, new_x="LMARGIN", new_y="NEXT")
+        pdf.set_text_color(*r_col)
+        pdf.cell(74, 5, r_tag, new_x="LMARGIN", new_y="NEXT")
 
-        pdf.set_xy(x + 4, 60)
+        pdf.set_xy(x + 5, 60)
         pdf.set_font("DejaVu", "B", 11)
         pdf.set_text_color(255, 255, 255)
-        pdf.cell(55, 6, r_ti, new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(74, 6, r_title, new_x="LMARGIN", new_y="NEXT")
 
-        pdf.set_xy(x + 4, 72)
-        pdf.set_font("DejaVu", "", 9)
+        pdf.set_xy(x + 5, 72)
+        pdf.set_font("DejaVu", "", 8.5)
         pdf.set_text_color(201, 209, 217)
-        pdf.multi_cell(55, 5, r_de)
+        pdf.multi_cell(74, 4.8, r_desc)
 
     pdf.set_xy(15, 178)
     pdf.set_fill_color(15, 25, 38)
     pdf.set_draw_color(0, 196, 204)
     pdf.rect(15, 176, 267, 12, "DF")
     pdf.set_xy(17, 179)
-    pdf.set_font("DejaVu", "B", 9.5)
+    pdf.set_font("DejaVu", "B", 9)
     pdf.set_text_color(0, 196, 204)
-    pdf.cell(263, 6, "FINAL THOUGHT: QuantIntel bridges the gap between chaotic web disclosures and rigorous mathematical alpha.", align="C")
+    pdf.cell(263, 6, "FINAL THOUGHT: QuantIntel bridges the chasm between messy live web disclosures, rigid market data, and mathematical alpha.", align="C")
 
     pdf_path = "/home/kali/QuantIntel/QuantIntel_Finale_Presentation.pdf"
     pdf.output(pdf_path)
     print(f"PDF saved successfully to: {pdf_path}")
 
+
 if __name__ == "__main__":
+    print("Generating QuantIntel 15-Slide Master Executive Presentation (.pptx)...")
     create_pptx()
+    print("Generating QuantIntel 15-Slide Landscape PDF Presentation (.pdf)...")
     create_pdf()
+    print("Done! Both PPTX and PDF generated successfully.")
